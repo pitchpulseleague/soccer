@@ -16,7 +16,7 @@
 </head>
 <body class="min-h-screen pb-16">
 
-  <!-- Top Header -->
+  <!-- Top Header (Buttons are pre-rendered so they never disappear) -->
   <header class="border-b border-emerald-950/80 bg-[#0b130f]/90 sticky top-0 z-30 backdrop-blur-md">
     <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div class="flex items-center gap-3">
@@ -26,7 +26,12 @@
           <p class="text-xs text-emerald-400/80">Weekly Match Signups • Live Rosters • Pitch Forecast</p>
         </div>
       </div>
-      <div id="auth-bar" class="flex items-center gap-2"></div>
+      <div id="auth-bar" class="flex items-center gap-2">
+        <button onclick="showLoginModal()" class="px-4 py-2 rounded-xl text-xs font-bold neon-btn">🔑 Login (PIN)</button>
+        <button onclick="showRegisterModal()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-800/60 text-slate-200 hover:text-white">
+          ✉️ Register (Invite Only)
+        </button>
+      </div>
     </div>
   </header>
 
@@ -59,66 +64,38 @@
 
   <script>
     // =========================================================================
-    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+    // YOUR LIVE GOOGLE APPS SCRIPT WEB APP URL (PRE-CONFIGURED)
     // =========================================================================
-    const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbxD2w-OIQ6k59BqRc0jbccjq09qYsKADavM4id6o02hVTKrqdV90j1bnjLb_Fp6hEc2/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxD2w-OIQ6k59BqRc0jbccjq09qYsKADavM4id6o02hVTKrqdV90j1bnjLb_Fp6hEc2/exec";
     
-    let API_URL = localStorage.getItem("soccer_api_url") || DEFAULT_API_URL;
-    let currentUser = JSON.parse(localStorage.getItem("soccer_user") || "null");
+    // Clear any stale cached URL from earlier tests
+    localStorage.removeItem("soccer_api_url");
+
+    let currentUser = null;
+    try {
+      currentUser = JSON.parse(localStorage.getItem("soccer_user") || "null");
+    } catch (e) {
+      localStorage.removeItem("soccer_user");
+    }
+
     let activeTab = "upcoming";
     let weatherCache = {};
-
-    // Admin Edit State
     let editingGameId = null;
     let editingLocationId = null;
 
-    // Built-in starter data for instant demo preview
+    // Fallback data so the page never gets stuck on a spinner
     let appData = {
-      games: [
-        {
-          GameID: "DEMO_1",
-          Title: "Thursday Lunchtime Pick-up",
-          LocationName: "Central Turf Field",
-          Date: new Date(Date.now() + 86400000).toISOString().slice(0, 10),
-          Time: "12:00 PM",
-          MaxCap: 18,
-          MinThreshold: 10,
-          Status: "Pending",
-          yesCount: 8,
-          maybeCount: 2,
-          noCount: 1,
-          locationDetails: { name: "Central Turf Field", address: "San Marcos, CA", lat: "33.1434", lng: "-117.1661", notes: "Bring a dark and white shirt" },
-          roster: [
-            { email: "pitchpulseleague@gmail.com", fullName: "League Commissioner", status: "Yes" },
-            { email: "marco@soccer.local", fullName: "Marco V.", status: "Yes" },
-            { email: "david@soccer.local", fullName: "David K.", status: "Maybe" },
-            { email: "sam@soccer.local", fullName: "Sam T.", status: "No" }
-          ]
-        }
-      ],
+      games: [],
       locations: [
-        { LocationID: "LOC_1", Name: "Central Turf Field", Address: "San Marcos, CA", Latitude: "33.1434", Longitude: "-117.1661", Notes: "Field #2 near north lot" }
+        { LocationID: "LOC_1", Name: "Central Turf Field", Address: "San Marcos, CA", Latitude: "33.1434", Longitude: "-117.1661", Notes: "Bring dark and white shirts" }
       ],
-      profiles: {
-        "pitchpulseleague@gmail.com": { email: "pitchpulseleague@gmail.com", fullName: "League Commissioner", joinedDate: "2026-10-01", role: "Admin", status: "Active" },
-        "marco@soccer.local": { email: "marco@soccer.local", fullName: "Marco V.", joinedDate: "2026-10-02", role: "Player", status: "Active" },
-        "david@soccer.local": { email: "david@soccer.local", fullName: "David K.", joinedDate: "2026-10-05", role: "Player", status: "Active" }
-      },
-      invites: [
-        { Email: "pitchpulseleague@gmail.com", Status: "Registered", InvitedDate: "2026-10-01", FullName: "League Commissioner" },
-        { Email: "marco@soccer.local", Status: "Registered", InvitedDate: "2026-10-02", FullName: "Marco V." },
-        { Email: "newplayer@gmail.com", Status: "Pending", InvitedDate: "2026-10-21", FullName: "" }
-      ]
+      profiles: {},
+      invites: []
     };
 
     async function init() {
       renderAuthBar();
-      if (API_URL && API_URL.startsWith("https://script.google.com")) {
-        await syncFromBackend();
-      } else {
-        await fetchWeatherForAllGames();
-        renderCurrentTab();
-      }
+      await syncFromBackend();
     }
 
     function showBanner(msg, isError = false) {
@@ -126,33 +103,56 @@
       b.className = `mb-6 p-4 rounded-xl text-sm font-semibold border ${isError ? 'bg-rose-950/80 border-rose-700 text-rose-200' : 'bg-emerald-950/80 border-[#00f59b]/50 text-[#00f59b]'}`;
       b.innerHTML = msg;
       b.classList.remove("hidden");
-      setTimeout(() => b.classList.add("hidden"), 6000);
     }
 
     async function apiPost(payload) {
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const text = await res.text();
+        return JSON.parse(text);
+      } catch (err) {
+        showBanner("Connection Error: Make sure your Apps Script deployment has 'Who has access' set to 'Anyone' and that you ran initialSetup() once.", true);
         return null;
       }
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      return await res.json();
     }
 
     async function syncFromBackend() {
       try {
-        const res = await fetch(`${API_URL}?action=getPublicData`);
-        const data = await res.json();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+        const res = await fetch(`${API_URL}?action=getPublicData`, {
+          method: "GET",
+          redirect: "follow",
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (jsonErr) {
+          throw new Error("Apps Script returned an HTML page instead of JSON. Please check that 'initialSetup' was run in Apps Script and 'Who has access' is set to 'Anyone'.");
+        }
+
         if (data && data.success) {
           appData = data;
           await fetchWeatherForAllGames();
           renderAuthBar();
           renderCurrentTab();
+        } else {
+          throw new Error(data.error || "Backend returned an error.");
         }
       } catch (e) {
-        await fetchWeatherForAllGames();
+        console.warn("Backend sync issue:", e);
+        showBanner(`⚠️ Backend Sync Notice: ${e.message}. Showing offline view so you can still access the page.`, true);
+        renderAuthBar();
         renderCurrentTab();
       }
     }
@@ -260,13 +260,14 @@
     function renderUpcomingGamesView() {
       const container = document.getElementById("view-container");
       const today = new Date().toISOString().slice(0, 10);
-      const upcoming = appData.games.filter(g => String(g.Date) >= today);
+      const upcoming = (appData.games || []).filter(g => String(g.Date) >= today);
 
       if (upcoming.length === 0) {
         container.innerHTML = `
           <div class="glass-card rounded-2xl p-10 text-center">
             <p class="text-lg font-bold text-white mb-1">No Upcoming Games Scheduled Yet</p>
-            <p class="text-sm text-slate-400">Check back soon or ask a League Admin to publish this week's fixtures.</p>
+            <p class="text-sm text-slate-400 mb-4">Log in as Admin to schedule your first lunchtime match, or register your profile using the buttons in the top right.</p>
+            ${currentUser?.isAdmin ? `<button onclick="switchTab('admin')" class="neon-btn px-5 py-2.5 rounded-xl text-xs">👑 Open Commissioner Admin</button>` : ''}
           </div>
         `;
         return;
@@ -276,16 +277,17 @@
     }
 
     function renderGameCard(game) {
-      const yesList = game.roster.filter(r => r.status === "Yes");
-      const maybeList = game.roster.filter(r => r.status === "Maybe");
-      const noList = game.roster.filter(r => r.status === "No");
+      const roster = game.roster || [];
+      const yesList = roster.filter(r => r.status === "Yes");
+      const maybeList = roster.filter(r => r.status === "Maybe");
+      const noList = roster.filter(r => r.status === "No");
       const yesCount = yesList.length;
       const isConfirmed = yesCount >= Number(game.MinThreshold);
       const pct = Math.min(100, Math.round((yesCount / Number(game.MinThreshold || 10)) * 100));
 
       let myStatus = "";
       if (currentUser) {
-        const found = game.roster.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
+        const found = roster.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
         if (found) myStatus = found.status;
       }
 
@@ -294,7 +296,6 @@
 
       return `
         <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <!-- Top Status & Title Row -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950/80 pb-4 mb-4">
             <div>
               <div class="flex items-center gap-2.5 flex-wrap">
@@ -313,7 +314,6 @@
             ${renderWeatherBadge(game)}
           </div>
 
-          <!-- Location & Progress Meter -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
             <div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950">
               <div class="text-xs uppercase font-bold text-slate-400 mb-1">Pitch Location & Directions</div>
@@ -338,7 +338,6 @@
             </div>
           </div>
 
-          <!-- 1-Click RSVP Buttons -->
           <div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-900/40 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
               <div class="text-sm font-bold text-white">Are you playing in this game?</div>
@@ -357,7 +356,6 @@
             </div>
           </div>
 
-          <!-- Full Transparent Roster Breakdown -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
             <div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950">
               <div class="font-bold text-[#00f59b] mb-2">✅ PLAYING — YES (${yesList.length}/${game.MaxCap})</div>
@@ -392,8 +390,9 @@
             <h2 class="text-lg font-extrabold text-white mb-1">👥 League Player Directory & Attendance History</h2>
             <p class="text-xs text-slate-400 mb-4">View player match participation and contact emails.</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              ${profilesList.length === 0 ? '<p class="text-xs text-slate-500">No registered players yet.</p>' : ''}
               ${profilesList.map(p => {
-                const attended = appData.games.filter(g => g.roster.some(r => r.email.toLowerCase() === p.email.toLowerCase() && r.status === 'Yes')).length;
+                const attended = (appData.games || []).filter(g => (g.roster || []).some(r => r.email.toLowerCase() === p.email.toLowerCase() && r.status === 'Yes')).length;
                 return `
                   <div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 flex justify-between items-center">
                     <div>
@@ -410,9 +409,10 @@
           <div class="glass-card rounded-2xl p-6">
             <h2 class="text-lg font-extrabold text-white mb-4">📜 All Games & Attendance Log</h2>
             <div class="space-y-3">
-              ${appData.games.map(g => {
-                const yesNames = g.roster.filter(r => r.status === "Yes").map(r => r.fullName);
-                const noNames = g.roster.filter(r => r.status === "No").map(r => r.fullName);
+              ${(appData.games || []).length === 0 ? '<p class="text-xs text-slate-500">No games recorded yet.</p>' : ''}
+              ${(appData.games || []).map(g => {
+                const yesNames = (g.roster || []).filter(r => r.status === "Yes").map(r => r.fullName);
+                const noNames = (g.roster || []).filter(r => r.status === "No").map(r => r.fullName);
                 return `
                   <div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-950">
                     <div class="flex justify-between items-center mb-2">
@@ -430,21 +430,16 @@
       `;
     }
 
-    // =========================================================================
-    // FULL COMMISSIONER ADMIN VIEW
-    // =========================================================================
     function renderAdminView() {
       const container = document.getElementById("view-container");
       const profilesList = Object.values(appData.profiles || {});
       const invitesList = appData.invites || [];
 
-      const editingGame = editingGameId ? appData.games.find(g => String(g.GameID) === String(editingGameId)) : null;
-      const editingLoc = editingLocationId ? appData.locations.find(l => String(l.LocationID) === String(editingLocationId)) : null;
+      const editingGame = editingGameId ? (appData.games || []).find(g => String(g.GameID) === String(editingGameId)) : null;
+      const editingLoc = editingLocationId ? (appData.locations || []).find(l => String(l.LocationID) === String(editingLocationId)) : null;
 
       container.innerHTML = `
         <div class="space-y-6">
-
-          <!-- 1. INVITE NEW PLAYERS & TRACK INVITATION STATUS -->
           <div class="glass-card rounded-2xl p-6">
             <h3 class="text-lg font-extrabold text-white mb-1">✉️ 1. Player Invitations & Invite Tracker</h3>
             <p class="text-xs text-slate-400 mb-4">Send new invitations and see everyone who has been invited, whether they have registered yet, or resend/revoke their invite.</p>
@@ -458,7 +453,7 @@
               <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
                 ${invitesList.length === 0 ? '<p class="text-xs text-slate-500">No invitations sent yet.</p>' : ''}
                 ${invitesList.map(inv => {
-                  const isReg = inv.Status === "Registered" || !!appData.profiles[String(inv.Email).toLowerCase()];
+                  const isReg = inv.Status === "Registered" || !!(appData.profiles && appData.profiles[String(inv.Email).toLowerCase()]);
                   return `
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-xs">
                       <div class="flex items-center gap-2.5 flex-wrap">
@@ -481,7 +476,6 @@
             </div>
           </div>
 
-          <!-- 2. SCHEDULE OR EDIT GAME (With Automatic Re-Confirmation Email Blast) -->
           <div id="admin-game-form-card" class="glass-card rounded-2xl p-6 ${editingGame ? 'border-2 border-amber-400' : ''}">
             <div class="flex justify-between items-center mb-1">
               <h3 class="text-lg font-extrabold text-white">
@@ -502,7 +496,7 @@
               <div>
                 <label class="text-xs text-slate-400 block mb-1">Location</label>
                 <select id="g-loc" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-                  ${appData.locations.map(l => `<option value="${l.Name}" ${editingGame && editingGame.LocationName === l.Name ? 'selected' : ''}>${l.Name}</option>`).join("")}
+                  ${(appData.locations || []).map(l => `<option value="${l.Name}" ${editingGame && editingGame.LocationName === l.Name ? 'selected' : ''}>${l.Name}</option>`).join("")}
                 </select>
               </div>
               <div>
@@ -526,15 +520,14 @@
               ${editingGame ? '💾 Save Changes & Notify RSVPed Players' : '⚡ Publish Game to Hub'}
             </button>
 
-            <!-- Scheduled Games List with Edit & Delete -->
             <div class="border-t border-emerald-950 mt-6 pt-4">
-              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Manage Scheduled Games (${appData.games.length})</h4>
+              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Manage Scheduled Games (${(appData.games || []).length})</h4>
               <div class="space-y-2">
-                ${appData.games.map(g => `
+                ${(appData.games || []).map(g => `
                   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-xs">
                     <div>
                       <b class="text-white text-sm">${g.Title}</b> • <span class="text-emerald-300">${g.Date} @${g.Time}</span>
-                      <div class="text-slate-400">📍 ${g.LocationName} •${g.yesCount}/${g.MaxCap} Yes (Min${g.MinThreshold})</div>
+                      <div class="text-slate-400">📍 ${g.LocationName} •${g.yesCount || 0}/${g.MaxCap} Yes (Min${g.MinThreshold})</div>
                     </div>
                     <div class="flex items-center gap-2">
                       <button onclick="startEditGame('${g.GameID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30">✏️ Edit Game</button>
@@ -546,7 +539,6 @@
             </div>
           </div>
 
-          <!-- 3. ADD OR EDIT FIELD LOCATIONS -->
           <div id="admin-loc-form-card" class="glass-card rounded-2xl p-6 ${editingLoc ? 'border-2 border-amber-400' : ''}">
             <div class="flex justify-between items-center mb-1">
               <h3 class="text-lg font-extrabold text-white">
@@ -566,11 +558,10 @@
               ${editingLoc ? '💾 Update Field Location' : '➕ Save New Field Location'}
             </button>
 
-            <!-- Saved Locations List -->
             <div class="border-t border-emerald-950 mt-6 pt-4">
-              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Saved Locations (${appData.locations.length})</h4>
+              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Saved Locations (${(appData.locations || []).length})</h4>
               <div class="space-y-2">
-                ${appData.locations.map(l => `
+                ${(appData.locations || []).map(l => `
                   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-xs">
                     <div>
                       <b class="text-white text-sm">📍 ${l.Name}</b> • <span class="text-slate-300">${l.Address}</span>
@@ -586,11 +577,11 @@
             </div>
           </div>
 
-          <!-- 4. PLAYER MANAGEMENT, CO-ADMINS & ACCOUNT SUSPENSION -->
           <div class="glass-card rounded-2xl p-6">
             <h3 class="text-lg font-extrabold text-white mb-1">🛡️ 4. Manage Players, Co-Admins & Account Suspensions</h3>
             <p class="text-xs text-slate-400 mb-4">Promote trusted players to Co-Admin, suspend accounts (blocks login & RSVPs), or remove players from the league.</p>
             <div class="space-y-2">
+              ${profilesList.length === 0 ? '<p class="text-xs text-slate-500">No players registered yet.</p>' : ''}
               ${profilesList.map(p => {
                 const isAdmin = p.role === "Admin";
                 const isSuspended = String(p.status || "Active").toLowerCase() === "suspended";
@@ -624,14 +615,10 @@
               }).join("")}
             </div>
           </div>
-
         </div>
       `;
     }
 
-    // =========================================================================
-    // USER & ADMIN INTERACTION HANDLERS
-    // =========================================================================
     async function submitRsvp(gameId, status) {
       if (!currentUser) {
         showLoginModal();
@@ -641,42 +628,18 @@
         return showBanner("Your account is currently suspended. Please contact the League Admin.", true);
       }
 
-      const game = appData.games.find(g => String(g.GameID) === String(gameId));
-      if (game) {
-        const existing = game.roster.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
-        if (status === "Yes" && (!existing || existing.status !== "Yes") && game.yesCount >= game.MaxCap) {
-          alert(`Game is capped at ${game.MaxCap} players!`);
-          return;
-        }
-        if (existing) existing.status = status;
-        else game.roster.push({ email: currentUser.email, fullName: currentUser.fullName, status });
-        game.yesCount = game.roster.filter(r => r.status === "Yes").length;
+      const res = await apiPost({ action: "updateSignup", gameId, email: currentUser.email, status });
+      if (res && res.success) {
+        appData = res;
         renderCurrentTab();
-      }
-
-      if (API_URL && API_URL.startsWith("https://script.google.com")) {
-        const res = await apiPost({ action: "updateSignup", gameId, email: currentUser.email, status });
-        if (res && res.success) {
-          appData = res;
-          renderCurrentTab();
-        } else if (res && res.error) {
-          showBanner(res.error, true);
-          await syncFromBackend();
-        }
+      } else if (res && res.error) {
+        showBanner(res.error, true);
       }
     }
 
     async function adminInvitePlayer() {
       const email = document.getElementById("inv-email").value.trim().toLowerCase();
       if (!email) return alert("Enter an email address to invite.");
-
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        appData.invites.push({ Email: email, Status: "Pending", InvitedDate: new Date().toISOString().slice(0, 10), FullName: "" });
-        showBanner(`Demo: Invitation logged for ${email}`);
-        renderAdminView();
-        return;
-      }
-
       const res = await apiPost({ action: "adminSendInvite", requesterEmail: currentUser.email, email });
       if (res && res.success) {
         appData = res;
@@ -691,18 +654,11 @@
         appData = res;
         showBanner(`Invitation re-sent to ${email}!`);
         renderAdminView();
-      } else {
-        showBanner(`Demo: Re-sent invite email to ${email}`);
       }
     }
 
     async function adminRevokeInvite(email) {
       if (!confirm(`Revoke invitation for ${email}?`)) return;
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        appData.invites = appData.invites.filter(i => i.Email.toLowerCase() !== email.toLowerCase());
-        renderAdminView();
-        return;
-      }
       const res = await apiPost({ action: "adminDeleteInvite", requesterEmail: currentUser.email, email });
       if (res && res.success) {
         appData = res;
@@ -733,35 +689,12 @@
       const maxCap = Number(document.getElementById("g-max").value || 18);
       if (!title || !date) return alert("Please enter a Game Title and Date.");
 
-      const payload = {
+      const res = await apiPost({
         action: "adminSaveGame",
         requesterEmail: currentUser.email,
         gameId: editingGameId,
         title, locationName, date, time, minThreshold, maxCap
-      };
-
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        if (editingGameId) {
-          const g = appData.games.find(x => String(x.GameID) === String(editingGameId));
-          if (g) {
-            g.Title = title; g.LocationName = locationName; g.Date = date; g.Time = time;
-            g.MinThreshold = minThreshold; g.MaxCap = maxCap;
-          }
-          editingGameId = null;
-          showBanner("Game updated! All RSVPed players have been emailed to re-confirm attendance.");
-        } else {
-          appData.games.push({
-            GameID: "G_" + Date.now(), Title: title, LocationName: locationName, Date: date, Time: time,
-            MinThreshold: minThreshold, MaxCap: maxCap, Status: "Pending", yesCount: 0, roster: [],
-            locationDetails: appData.locations.find(l => l.Name === locationName) || { address: locationName }
-          });
-          showBanner("New game published!");
-        }
-        renderAdminView();
-        return;
-      }
-
-      const res = await apiPost(payload);
+      });
       if (res && res.success) {
         editingGameId = null;
         appData = res;
@@ -773,11 +706,6 @@
 
     async function adminRemoveGame(gameId) {
       if (!confirm("Delete this scheduled game?")) return;
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        appData.games = appData.games.filter(g => String(g.GameID) !== String(gameId));
-        renderAdminView();
-        return;
-      }
       const res = await apiPost({ action: "adminDeleteGame", requesterEmail: currentUser.email, gameId });
       if (res && res.success) {
         appData = res;
@@ -806,19 +734,6 @@
       const notes = document.getElementById("loc-notes").value.trim();
       if (!name || !address) return alert("Enter Location Name and Address.");
 
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        if (editingLocationId) {
-          const loc = appData.locations.find(l => String(l.LocationID) === String(editingLocationId));
-          if (loc) { loc.Name = name; loc.Address = address; loc.Latitude = lat; loc.Longitude = lng; loc.Notes = notes; }
-          editingLocationId = null;
-        } else {
-          appData.locations.push({ LocationID: "LOC_" + Date.now(), Name: name, Address: address, Latitude: lat, Longitude: lng, Notes: notes });
-        }
-        showBanner("Location saved!");
-        renderAdminView();
-        return;
-      }
-
       const res = await apiPost({
         action: "adminSaveLocation",
         requesterEmail: currentUser.email,
@@ -835,11 +750,6 @@
 
     async function adminRemoveLocation(locationId) {
       if (!confirm("Delete this field location?")) return;
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        appData.locations = appData.locations.filter(l => String(l.LocationID) !== String(locationId));
-        renderAdminView();
-        return;
-      }
       const res = await apiPost({ action: "adminDeleteLocation", requesterEmail: currentUser.email, locationId });
       if (res && res.success) {
         appData = res;
@@ -849,11 +759,6 @@
 
     async function adminToggleRole(targetEmail, newRole) {
       if (!confirm(`Update ${targetEmail} role to ${newRole}?`)) return;
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        appData.profiles[targetEmail].role = newRole;
-        renderAdminView();
-        return;
-      }
       const res = await apiPost({ action: "adminUpdateUserRole", requesterEmail: currentUser.email, targetEmail, newRole });
       if (res && res.success) {
         appData = res;
@@ -864,12 +769,6 @@
     async function adminToggleSuspend(targetEmail, newStatus) {
       const actionVerb = newStatus === "Suspended" ? "SUSPEND" : "REACTIVATE";
       if (!confirm(`Are you sure you want to ${actionVerb} ${targetEmail}?`)) return;
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        appData.profiles[targetEmail].status = newStatus;
-        showBanner(`${targetEmail} status set to ${newStatus}`);
-        renderAdminView();
-        return;
-      }
       const res = await apiPost({ action: "adminToggleSuspendUser", requesterEmail: currentUser.email, targetEmail, newStatus });
       if (res && res.success) {
         appData = res;
@@ -880,12 +779,6 @@
 
     async function adminRemovePlayer(targetEmail) {
       if (!confirm(`Permanently remove ${targetEmail} and revoke their invite?`)) return;
-      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        delete appData.profiles[targetEmail];
-        appData.invites = appData.invites.filter(i => i.Email.toLowerCase() !== targetEmail.toLowerCase());
-        renderAdminView();
-        return;
-      }
       const res = await apiPost({ action: "adminDeleteUser", requesterEmail: currentUser.email, targetEmail });
       if (res && res.success) {
         appData = res;
@@ -901,9 +794,6 @@
       switchTab("admin");
     }
 
-    // =========================================================================
-    // AUTH & PROFILE MODALS
-    // =========================================================================
     function showLoginModal() {
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
@@ -1023,7 +913,7 @@
     }
 
     function openMyProfileModal() {
-      const myHistory = appData.games.filter(g => g.roster.some(r => r.email.toLowerCase() === currentUser.email.toLowerCase()));
+      const myHistory = (appData.games || []).filter(g => (g.roster || []).some(r => r.email.toLowerCase() === currentUser.email.toLowerCase()));
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
           <div class="glass-card rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
@@ -1059,7 +949,7 @@
       switchTab("upcoming");
     }
 
-    window.onload = init;
+    window.addEventListener("DOMContentLoaded", init);
   </script>
 </body>
 </html>
