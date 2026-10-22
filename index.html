@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lunchtime Soccer League Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #070b09; color: #f1f5f9; }
+    h1, h2, h3, .font-display { font-family: 'Outfit', sans-serif; }
+    .glass-card { background: rgba(17, 28, 22, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(0, 245, 155, 0.14); }
+    .neon-btn { background: #00f59b; color: #070b09; font-weight: 700; transition: all 0.2s ease; }
+    .neon-btn:hover { background: #34f7af; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0, 245, 155, 0.25); }
+  </style>
+</head>
+<body class="min-h-screen pb-16">
+
+  <!-- Top Header -->
+  <header class="border-b border-emerald-950/80 bg-[#0b130f]/90 sticky top-0 z-30 backdrop-blur-md">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-xl shadow-inner">⚽</div>
+        <div>
+          <h1 class="text-xl font-extrabold tracking-tight text-white">LUNCHTIME SOCCER HUB</h1>
+          <p class="text-xs text-emerald-400/80">Weekly Match Signups • Live Rosters • Pitch Forecast</p>
+        </div>
+      </div>
+      <div id="auth-bar" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="max-w-5xl mx-auto px-4 mt-6">
+    <!-- Navigation Tabs -->
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-950 pb-4 mb-6">
+      <div class="flex flex-wrap gap-2">
+        <button onclick="switchTab('upcoming')" id="tab-upcoming" class="px-4 py-2 rounded-xl text-sm font-bold neon-btn">📅 Upcoming Games</button>
+        <button onclick="switchTab('history')" id="tab-history" class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40">📜 Past Games & Directory</button>
+        <button onclick="switchTab('admin')" id="tab-admin" class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#111c16] text-amber-300 border border-amber-500/30 hidden">👑 Commissioner Admin</button>
+      </div>
+      <button onclick="enableDemoAdmin()" id="demo-btn" class="text-xs text-slate-400 hover:text-[#00f59b] underline">Preview Admin Mode (Demo)</button>
+    </div>
+
+    <!-- Alert Banner -->
+    <div id="status-banner" class="hidden mb-6 p-4 rounded-xl text-sm font-medium"></div>
+
+    <!-- Dynamic View Container -->
+    <main id="view-container">
+      <div class="glass-card rounded-2xl p-12 text-center">
+        <div class="inline-block animate-spin text-3xl mb-3">⚽</div>
+        <p class="text-slate-300 font-medium">Syncing live rosters & weather forecasts...</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Container -->
+  <div id="modal-root"></div>
+
+  <script>
+    // =========================================================================
+    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+    // =========================================================================
+    const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbxD2w-OIQ6k59BqRc0jbccjq09qYsKADavM4id6o02hVTKrqdV90j1bnjLb_Fp6hEc2/exec";
+    
+    let API_URL = localStorage.getItem("soccer_api_url") || DEFAULT_API_URL;
+    let currentUser = JSON.parse(localStorage.getItem("soccer_user") || "null");
+    let activeTab = "upcoming";
+    let weatherCache = {};
+
+    // Built-in starter data so the site works out-of-the-box before connecting Sheet
+    let appData = {
+      games: [
+        {
+          GameID: "DEMO_1",
+          Title: "Thursday Lunchtime Pick-up",
+          LocationName: "Central Turf Field",
+          Date: new Date(Date.now() + 86400000).toISOString().slice(0, 10),
+          Time: "12:00 PM",
+          MaxCap: 18,
+          MinThreshold: 10,
+          Status: "Pending",
+          yesCount: 8,
+          maybeCount: 2,
+          noCount: 1,
+          locationDetails: { name: "Central Turf Field", address: "San Marcos, CA", lat: "33.1434", lng: "-117.1661", notes: "Bring a dark and white shirt" },
+          roster: [
+            { email: "ralph@soccer.local", fullName: "Ralph H.", status: "Yes" },
+            { email: "marco@soccer.local", fullName: "Marco V.", status: "Yes" },
+            { email: "david@soccer.local", fullName: "David K.", status: "Maybe" },
+            { email: "sam@soccer.local", fullName: "Sam T.", status: "No" }
+          ]
+        }
+      ],
+      locations: [
+        { LocationID: "LOC_1", Name: "Central Turf Field", Address: "San Marcos, CA", Latitude: "33.1434", Longitude: "-117.1661", Notes: "Field #2 near north lot" }
+      ],
+      profiles: {
+        "ralph@soccer.local": { email: "ralph@soccer.local", fullName: "Ralph H.", joinedDate: "2026-10-01", role: "Admin" },
+        "marco@soccer.local": { email: "marco@soccer.local", fullName: "Marco V.", joinedDate: "2026-10-02", role: "Player" },
+        "david@soccer.local": { email: "david@soccer.local", fullName: "David K.", joinedDate: "2026-10-05", role: "Player" }
+      },
+      invites: []
+    };
+
+    async function init() {
+      renderAuthBar();
+      if (API_URL && API_URL.startsWith("https://script.google.com")) {
+        await syncFromBackend();
+      } else {
+        await fetchWeatherForAllGames();
+        renderCurrentTab();
+      }
+    }
+
+    // Use text/plain on POST so Google Apps Script never triggers a CORS preflight block
+    async function apiPost(payload) {
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        alert("Demo Mode: Connect your Google Apps Script Web App URL first.");
+        return null;
+      }
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    }
+
+    async function syncFromBackend() {
+      try {
+        const res = await fetch(`${API_URL}?action=getPublicData`);
+        const data = await res.json();
+        if (data && data.success) {
+          appData = data;
+          await fetchWeatherForAllGames();
+          renderAuthBar();
+          renderCurrentTab();
+        }
+      } catch (e) {
+        console.warn("Using local demo fallback until backend URL is configured.");
+        await fetchWeatherForAllGames();
+        renderCurrentTab();
+      }
+    }
+
+    async function fetchWeatherForAllGames() {
+      for (const g of appData.games) {
+        const lat = g.locationDetails?.lat;
+        const lng = g.locationDetails?.lng;
+        if (!lat || !lng) continue;
+        const key = `${lat},${lng}`;
+        if (!weatherCache[key]) {
+          try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&timezone=auto`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data && data.daily) weatherCache[key] = data.daily;
+          } catch (e) {}
+        }
+      }
+    }
+
+    function renderWeatherBadge(game) {
+      const lat = game.locationDetails?.lat;
+      const lng = game.locationDetails?.lng;
+      if (!lat || !lng) return `<span class="text-xs text-slate-400">Weather pending GPS coordinates</span>`;
+      const daily = weatherCache[`${lat},${lng}`];
+      if (!daily || !daily.time) return `<span class="text-xs text-slate-400">Loading forecast...</span>`;
+
+      const idx = daily.time.indexOf(String(game.Date).slice(0, 10));
+      if (idx === -1) return `<span class="text-xs text-slate-400">Forecast unlocks 7 days prior</span>`;
+
+      const hi = Math.round(daily.temperature_2m_max[idx]);
+      const lo = Math.round(daily.temperature_2m_min[idx]);
+      const rain = daily.precipitation_probability_max[idx] || 0;
+      const code = daily.weathercode[idx];
+      let icon = "☀️", label = "Clear & Sunny";
+      if (code > 0 && code < 3) { icon = "⛅"; label = "Partly Cloudy"; }
+      else if (code >= 3 && code < 50) { icon = "☁️"; label = "Cloudy"; }
+      else if (code >= 50) { icon = "🌧️"; label = "Rain Likely"; }
+
+      return `
+        <div class="flex items-center gap-2.5 bg-emerald-950/50 border border-emerald-800/40 px-3 py-2 rounded-xl text-xs">
+          <span class="text-xl">${icon}</span>
+          <div>
+            <div class="font-bold text-white">${label} • ${hi}°F <span class="text-slate-400 font-normal">/ ${lo}°F</span></div>
+            <div class="text-emerald-300">💧 Rain Chance: ${rain}%</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAuthBar() {
+      const bar = document.getElementById("auth-bar");
+      const adminTab = document.getElementById("tab-admin");
+      const demoBtn = document.getElementById("demo-btn");
+
+      if (currentUser) {
+        if (currentUser.isAdmin) {
+          adminTab.classList.remove("hidden");
+          demoBtn.classList.add("hidden");
+        } else {
+          adminTab.classList.add("hidden");
+          demoBtn.classList.remove("hidden");
+        }
+        bar.innerHTML = `
+          <button onclick="openMyProfileModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 hover:bg-emerald-950">
+            👤 ${currentUser.fullName} ${currentUser.isAdmin ? '👑' : ''}
+          </button>
+          <button onclick="logout()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-rose-950/60 border border-rose-800/50 text-rose-300 hover:bg-rose-900/60">
+            Logout
+          </button>
+        `;
+      } else {
+        adminTab.classList.add("hidden");
+        demoBtn.classList.remove("hidden");
+        bar.innerHTML = `
+          <button onclick="showLoginModal()" class="px-4 py-2 rounded-xl text-xs font-bold neon-btn">🔑 Login (PIN)</button>
+          <button onclick="showRegisterModal()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-800/60 text-slate-200 hover:text-white">
+            ✉️ Register (Invite Only)
+          </button>
+        `;
+      }
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      ["upcoming", "history", "admin"].forEach(t => {
+        const el = document.getElementById("tab-" + t);
+        if (!el) return;
+        if (t === tab) {
+          el.className = "px-4 py-2 rounded-xl text-sm font-bold neon-btn";
+        } else {
+          el.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40" + (t === "admin" && (!currentUser || !currentUser.isAdmin) ? " hidden" : "");
+        }
+      });
+      renderCurrentTab();
+    }
+
+    function renderCurrentTab() {
+      if (activeTab === "admin" && currentUser?.isAdmin) return renderAdminView();
+      if (activeTab === "history") return renderHistoryAndDirectoryView();
+      renderUpcomingGamesView();
+    }
+
+    function renderUpcomingGamesView() {
+      const container = document.getElementById("view-container");
+      const today = new Date().toISOString().slice(0, 10);
+      const upcoming = appData.games.filter(g => String(g.Date) >= today);
+
+      if (upcoming.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card rounded-2xl p-10 text-center">
+            <p class="text-lg font-bold text-white mb-1">No Upcoming Games Scheduled Yet</p>
+            <p class="text-sm text-slate-400">Check back soon or ask a League Admin to publish this week's fixtures.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `<div class="space-y-6">${upcoming.map(g => renderGameCard(g)).join("")}</div>`;
+    }
+
+    function renderGameCard(game) {
+      const yesList = game.roster.filter(r => r.status === "Yes");
+      const maybeList = game.roster.filter(r => r.status === "Maybe");
+      const noList = game.roster.filter(r => r.status === "No");
+      const yesCount = yesList.length;
+      const isConfirmed = yesCount >= Number(game.MinThreshold);
+      const pct = Math.min(100, Math.round((yesCount / Number(game.MinThreshold || 10)) * 100));
+
+      let myStatus = "";
+      if (currentUser) {
+        const found = game.roster.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
+        if (found) myStatus = found.status;
+      }
+
+      const mapsQuery = encodeURIComponent(game.locationDetails?.address || game.LocationName);
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+
+      return `
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <!-- Top Status & Title Row -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950/80 pb-4 mb-4">
+            <div>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <h2 class="text-xl font-extrabold text-white">${game.Title}</h2>
+                <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${isConfirmed ? 'bg-[#00f59b]/20 text-[#00f59b] border border-[#00f59b]/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                  ${isConfirmed ? '🟢 CONFIRMED — GAME ON' : `🟡 PENDING (${yesCount}/${game.MinThreshold} Needed)`}
+                </span>
+              </div>
+              <p class="text-sm text-slate-300 mt-1">🗓️ <b>${game.Date}</b> at <b>${game.Time}</b> • Capped at <b>${game.MaxCap} Players</b></p>
+            </div>
+            ${renderWeatherBadge(game)}
+          </div>
+
+          <!-- Location & Progress Meter -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+            <div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950">
+              <div class="text-xs uppercase font-bold text-slate-400 mb-1">Pitch Location & Directions</div>
+              <div class="text-sm font-bold text-white">📍 ${game.LocationName}</div>
+              <div class="text-xs text-slate-400">${game.locationDetails?.address || ''} ${game.locationDetails?.notes ? '• ' + game.locationDetails.notes : ''}</div>
+              <a href="${mapsUrl}" target="_blank" class="inline-block mt-2 text-xs font-bold text-[#00f59b] hover:underline">
+                🗺️ Open Google Maps Turn-by-Turn Directions &rarr;
+              </a>
+            </div>
+
+            <div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 flex flex-col justify-center">
+              <div class="flex justify-between text-xs font-bold mb-1.5">
+                <span class="text-slate-300">Confirmation Threshold (${game.MinThreshold} Min)</span>
+                <span class="text-[#00f59b]">${yesCount} / ${game.MaxCap} Spots Filled</span>
+              </div>
+              <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-[#00f59b] transition-all duration-300" style="width: ${pct}%"></div>
+              </div>
+              <div class="text-[11px] text-slate-400 mt-1.5">
+                ${isConfirmed ? 'Minimum threshold reached! Game is officially locked in.' : `Need ${Math.max(0, game.MinThreshold - yesCount)} more "Yes" RSVP(s) to confirm this game.`}
+              </div>
+            </div>
+          </div>
+
+          <!-- 1-Click RSVP Buttons -->
+          <div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-900/40 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <div class="text-sm font-bold text-white">Are you playing in this game?</div>
+              <div class="text-xs text-slate-400">Your status updates the live roster immediately.</div>
+            </div>
+            <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+              <button onclick="submitRsvp('${game.GameID}', 'Yes')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition ${myStatus === 'Yes' ? 'bg-[#00f59b] text-[#070b09] shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}">
+                ✅ YES (${yesList.length})
+              </button>
+              <button onclick="submitRsvp('${game.GameID}', 'Maybe')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition ${myStatus === 'Maybe' ? 'bg-amber-400 text-[#070b09] shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}">
+                🤔 MAYBE (${maybeList.length})
+              </button>
+              <button onclick="submitRsvp('${game.GameID}', 'No')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition ${myStatus === 'No' ? 'bg-rose-500 text-white shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}">
+                ❌ NO (${noList.length})
+              </button>
+            </div>
+          </div>
+
+          <!-- Full Transparent Roster Breakdown -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950">
+              <div class="font-bold text-[#00f59b] mb-2">✅ PLAYING — YES (${yesList.length}/${game.MaxCap})</div>
+              <div class="space-y-1 text-slate-200">
+                ${yesList.length ? yesList.map((r, i) => `<div>${i + 1}.${r.fullName}</div>`).join("") : '<span class="text-slate-500">No confirmed players yet</span>'}
+              </div>
+            </div>
+            <div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950">
+              <div class="font-bold text-amber-300 mb-2">🤔 MAYBE (${maybeList.length})</div>
+              <div class="space-y-1 text-slate-300">
+                ${maybeList.length ? maybeList.map(r => `<div>• ${r.fullName}</div>`).join("") : '<span class="text-slate-500">None</span>'}
+              </div>
+            </div>
+            <div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950">
+              <div class="font-bold text-rose-400 mb-2">❌ NOT PLAYING (${noList.length})</div>
+              <div class="space-y-1 text-slate-400">
+                ${noList.length ? noList.map(r => `<div>• ${r.fullName}</div>`).join("") : '<span class="text-slate-500">None</span>'}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHistoryAndDirectoryView() {
+      const container = document.getElementById("view-container");
+      const profilesList = Object.values(appData.profiles || {});
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <!-- League Member Directory & Attendance Count -->
+          <div class="glass-card rounded-2xl p-6">
+            <h2 class="text-lg font-extrabold text-white mb-1">👥 League Player Directory & Attendance History</h2>
+            <p class="text-xs text-slate-400 mb-4">Click any player to view their full match attendance log, or use their email to get in touch.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              ${profilesList.map(p => {
+                const attended = appData.games.filter(g => g.roster.some(r => r.email.toLowerCase() === p.email.toLowerCase() && r.status === 'Yes')).length;
+                return `
+                  <div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 flex justify-between items-center">
+                    <div>
+                      <div class="font-bold text-white text-sm">${p.fullName}${p.role === 'Admin' ? '👑' : ''}</div>
+                      <a href="mailto:${p.email}" class="text-xs text-[#00f59b] hover:underline">${p.email}</a>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 text-xs font-bold">${attended} Games</span>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <!-- Complete Match Archive -->
+          <div class="glass-card rounded-2xl p-6">
+            <h2 class="text-lg font-extrabold text-white mb-4">📜 All Games & Who Attended</h2>
+            <div class="space-y-3">
+              ${appData.games.map(g => {
+                const yesNames = g.roster.filter(r => r.status === "Yes").map(r => r.fullName);
+                const noNames = g.roster.filter(r => r.status === "No").map(r => r.fullName);
+                return `
+                  <div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-950">
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="font-bold text-white text-sm">${g.Title} —${g.Date} @ ${g.Time} (${g.LocationName})</span>
+                      <span class="text-xs font-bold px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300">${yesNames.length} Played</span>
+                    </div>
+                    <div class="text-xs text-slate-300"><b>Attended (Yes):</b> ${yesNames.length ? yesNames.join(", ") : "None"}</div>
+                    <div class="text-xs text-slate-500 mt-1"><b>Absent (No):</b> ${noNames.length ? noNames.join(", ") : "None"}</div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminView() {
+      const container = document.getElementById("view-container");
+      const profilesList = Object.values(appData.profiles || {});
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <!-- 1. Invite New Player -->
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-extrabold text-white mb-1">✉️ 1. Invite New Player (Invite-Only Gate)</h3>
+            <p class="text-xs text-slate-400 mb-4">Players cannot sign up unless their email is invited here first. Sending an invite emails them a direct registration link.</p>
+            <div class="flex flex-col sm:flex-row gap-2 max-w-lg">
+              <input id="inv-email" type="email" placeholder="player@email.com" class="flex-1 bg-[#0b130f] border border-emerald-900 rounded-xl px-3.5 py-2 text-sm text-white">
+              <button onclick="adminInvitePlayer()" class="neon-btn px-5 py-2 rounded-xl text-sm">Send Email Invite</button>
+            </div>
+          </div>
+
+          <!-- 2. Schedule Game & Set Threshold / Cap -->
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-extrabold text-white mb-4">📅 2. Schedule a Game & Set Player Caps</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Game Title</label>
+                <input id="g-title" type="text" placeholder="Wednesday Lunch Match" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Location</label>
+                <select id="g-loc" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+                  ${appData.locations.map(l => `<option value="${l.Name}">${l.Name}</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Game Date</label>
+                <input id="g-date" type="date" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Kickoff Time</label>
+                <input id="g-time" type="text" value="12:00 PM" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Min Players to Confirm</label>
+                <input id="g-min" type="number" value="10" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Max Player Cap (Default 18)</label>
+                <input id="g-max" type="number" value="18" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+            </div>
+            <button onclick="adminCreateGame()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">⚡ Publish Game to Hub</button>
+          </div>
+
+          <!-- 3. Add Pitch Location (With GPS for Weather & Google Maps) -->
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-extrabold text-white mb-1">📍 3. Add Soccer Field Location</h3>
+            <p class="text-xs text-slate-400 mb-4">Adding Latitude & Longitude enables automatic live hourly weather forecasts for that pitch.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              <input id="loc-name" type="text" placeholder="Field Name (e.g. Bradley Park Field 2)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              <input id="loc-addr" type="text" placeholder="Full Street Address or City, State" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              <input id="loc-lat" type="text" placeholder="Latitude (e.g. 33.1434)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              <input id="loc-lng" type="text" placeholder="Longitude (e.g. -117.1661)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+            </div>
+            <button onclick="adminAddLocation()" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-900/60 text-emerald-200 border border-emerald-700 hover:bg-emerald-800">Save Field Location</button>
+          </div>
+
+          <!-- 4. Multi-Admin Role Manager -->
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-extrabold text-white mb-1">🛡️ 4. Assign Co-Admins</h3>
+            <p class="text-xs text-slate-400 mb-4">Promote any registered player to Co-Admin so they can schedule games and invite players.</p>
+            <div class="divide-y divide-emerald-950">
+              ${profilesList.map(p => {
+                const isAdmin = p.role === "Admin";
+                return `
+                  <div class="py-3 flex justify-between items-center text-sm">
+                    <div>
+                      <span class="font-bold text-white">${p.fullName}</span>
+                      <span class="text-xs text-slate-400 ml-2">${p.email}</span>
+                    </div>
+                    <button onclick="adminToggleRole('${p.email}', '${isAdmin ? 'Player' : 'Admin'}')" class="px-3 py-1 rounded-lg text-xs font-bold ${isAdmin ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-300 hover:text-white'}">
+                      ${isAdmin ? '👑 Admin (Click to Demote)' : 'Promote to Admin'}
+                    </button>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <!-- 5. Manage / Remove Games -->
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-extrabold text-white mb-4">🗑️ 5. Manage Scheduled Games</h3>
+            <div class="space-y-2">
+              ${appData.games.map(g => `
+                <div class="flex justify-between items-center bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-sm">
+                  <div><b>${g.Title}</b> • ${g.Date} @${g.Time} (${g.yesCount}/${g.MaxCap} Yes)</div>
+                  <button onclick="adminRemoveGame('${g.GameID}')" class="px-3 py-1 rounded-lg bg-rose-950 text-rose-300 text-xs font-bold hover:bg-rose-900">Delete</button>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // USER & ADMIN INTERACTION HANDLERS
+    // =========================================================================
+    async function submitRsvp(gameId, status) {
+      if (!currentUser) {
+        showLoginModal();
+        return;
+      }
+      // Instant optimistic update in Demo mode
+      const game = appData.games.find(g => String(g.GameID) === String(gameId));
+      if (game) {
+        const existing = game.roster.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
+        if (status === "Yes" && (!existing || existing.status !== "Yes") && game.yesCount >= game.MaxCap) {
+          alert(`Game is capped at ${game.MaxCap} players!`);
+          return;
+        }
+        if (existing) existing.status = status;
+        else game.roster.push({ email: currentUser.email, fullName: currentUser.fullName, status });
+        game.yesCount = game.roster.filter(r => r.status === "Yes").length;
+        renderCurrentTab();
+      }
+
+      if (API_URL && API_URL.startsWith("https://script.google.com")) {
+        const res = await apiPost({ action: "updateSignup", gameId, email: currentUser.email, status });
+        if (res && res.success) {
+          appData = res;
+          renderCurrentTab();
+        } else if (res && res.error) {
+          alert(res.error);
+          await syncFromBackend();
+        }
+      }
+    }
+
+    async function adminInvitePlayer() {
+      const email = document.getElementById("inv-email").value.trim();
+      if (!email) return alert("Enter an email address to invite.");
+      const res = await apiPost({ action: "adminSendInvite", requesterEmail: currentUser.email, email });
+      if (res && res.success) {
+        appData = res;
+        alert(`Invitation email sent to ${email}!`);
+        document.getElementById("inv-email").value = "";
+      }
+    }
+
+    async function adminCreateGame() {
+      const title = document.getElementById("g-title").value.trim();
+      const locationName = document.getElementById("g-loc").value;
+      const date = document.getElementById("g-date").value;
+      const time = document.getElementById("g-time").value.trim();
+      const minThreshold = Number(document.getElementById("g-min").value || 10);
+      const maxCap = Number(document.getElementById("g-max").value || 18);
+      if (!title || !date) return alert("Please enter a Game Title and Date.");
+
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        appData.games.push({
+          GameID: "G_" + Date.now(), Title: title, LocationName: locationName, Date: date, Time: time,
+          MinThreshold: minThreshold, MaxCap: maxCap, Status: "Pending", yesCount: 0, roster: [],
+          locationDetails: appData.locations.find(l => l.Name === locationName) || { address: locationName }
+        });
+        switchTab("upcoming");
+        return;
+      }
+
+      const res = await apiPost({ action: "adminSaveGame", requesterEmail: currentUser.email, title, locationName, date, time, minThreshold, maxCap });
+      if (res && res.success) {
+        appData = res;
+        await fetchWeatherForAllGames();
+        switchTab("upcoming");
+      }
+    }
+
+    async function adminAddLocation() {
+      const name = document.getElementById("loc-name").value.trim();
+      const address = document.getElementById("loc-addr").value.trim();
+      const lat = document.getElementById("loc-lat").value.trim();
+      const lng = document.getElementById("loc-lng").value.trim();
+      if (!name || !address) return alert("Enter Location Name and Address.");
+
+      const res = await apiPost({ action: "adminSaveLocation", requesterEmail: currentUser.email, name, address, lat, lng });
+      if (res && res.success) {
+        appData = res;
+        alert("Location saved!");
+        renderAdminView();
+      }
+    }
+
+    async function adminToggleRole(targetEmail, newRole) {
+      if (!confirm(`Update ${targetEmail} to ${newRole}?`)) return;
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        appData.profiles[targetEmail].role = newRole;
+        renderAdminView();
+        return;
+      }
+      const res = await apiPost({ action: "adminUpdateUserRole", requesterEmail: currentUser.email, targetEmail, newRole });
+      if (res && res.success) {
+        appData = res;
+        renderAdminView();
+      }
+    }
+
+    async function adminRemoveGame(gameId) {
+      if (!confirm("Delete this scheduled game?")) return;
+      const res = await apiPost({ action: "adminDeleteGame", requesterEmail: currentUser.email, gameId });
+      if (res && res.success) {
+        appData = res;
+        renderAdminView();
+      }
+    }
+
+    function enableDemoAdmin() {
+      currentUser = { email: "ralph@soccer.local", fullName: "Ralph (Admin Demo)", role: "Admin", isAdmin: true };
+      localStorage.setItem("soccer_user", JSON.stringify(currentUser));
+      renderAuthBar();
+      switchTab("admin");
+    }
+
+    // =========================================================================
+    // AUTH & PROFILE MODALS
+    // =========================================================================
+    function showLoginModal() {
+      document.getElementById("modal-root").innerHTML = `
+        <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+          <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
+            <h3 class="text-lg font-extrabold text-white mb-1">🔑 Player Login</h3>
+            <p class="text-xs text-slate-400 mb-4">Enter your email and 6-digit PIN code.</p>
+            <input id="l-email" type="email" placeholder="Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+            <input id="l-pin" type="password" maxlength="6" inputmode="numeric" placeholder="6-Digit PIN" class="w-full mb-2 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white tracking-widest">
+            <div class="text-right mb-4">
+              <button onclick="showForgotPinModal()" class="text-xs text-[#00f59b] hover:underline">Forgot 6-Digit PIN?</button>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300">Cancel</button>
+              <button onclick="doLogin()" class="px-5 py-2 rounded-xl text-xs neon-btn">Login</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function doLogin() {
+      const email = document.getElementById("l-email").value.trim();
+      const pin = document.getElementById("l-pin").value.trim();
+      const res = await apiPost({ action: "login", email, pin });
+      if (res && res.success) {
+        currentUser = res.user;
+        localStorage.setItem("soccer_user", JSON.stringify(currentUser));
+        closeModal();
+        renderAuthBar();
+        renderCurrentTab();
+      } else if (res) {
+        alert(res.error);
+      }
+    }
+
+    function showRegisterModal() {
+      document.getElementById("modal-root").innerHTML = `
+        <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+          <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
+            <h3 class="text-lg font-extrabold text-white mb-1">✉️ Create Player Profile</h3>
+            <p class="text-xs text-slate-400 mb-4">Your email must be invited by a League Admin first.</p>
+            <input id="r-name" type="text" placeholder="Your Full Name" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+            <input id="r-email" type="email" placeholder="Invited Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+            <input id="r-pin" type="password" maxlength="6" inputmode="numeric" placeholder="Create 6-Digit PIN (Numbers)" class="w-full mb-4 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white tracking-widest">
+            <div class="flex justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300">Cancel</button>
+              <button onclick="doRegister()" class="px-5 py-2 rounded-xl text-xs neon-btn">Create Profile</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function doRegister() {
+      const fullName = document.getElementById("r-name").value.trim();
+      const email = document.getElementById("r-email").value.trim();
+      const pin = document.getElementById("r-pin").value.trim();
+      if (pin.length !== 6) return alert("PIN must be exactly 6 digits.");
+      const res = await apiPost({ action: "register", fullName, email, pin });
+      if (res && res.success) {
+        currentUser = res.user;
+        if (res.appData) appData = res.appData;
+        localStorage.setItem("soccer_user", JSON.stringify(currentUser));
+        closeModal();
+        renderAuthBar();
+        renderCurrentTab();
+      } else if (res) {
+        alert(res.error);
+      }
+    }
+
+    function showForgotPinModal() {
+      document.getElementById("modal-root").innerHTML = `
+        <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+          <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
+            <h3 class="text-lg font-extrabold text-white mb-1">🔒 Reset Your 6-Digit PIN</h3>
+            <p class="text-xs text-slate-400 mb-4">We'll email a 6-digit verification code to your registered email address.</p>
+            <input id="f-email" type="email" placeholder="Registered Email" class="w-full mb-4 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+            <div class="flex justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300">Cancel</button>
+              <button onclick="sendPinResetEmail()" class="px-5 py-2 rounded-xl text-xs neon-btn">Send Code</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function sendPinResetEmail() {
+      const email = document.getElementById("f-email").value.trim();
+      const res = await apiPost({ action: "requestPinReset", email });
+      if (res && res.success) {
+        alert(res.message);
+        document.getElementById("modal-root").innerHTML = `
+          <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+            <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
+              <h3 class="text-lg font-extrabold text-white mb-2">Enter Verification Code</h3>
+              <input id="rst-code" type="text" maxlength="6" placeholder="6-Digit Code from Email" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+              <input id="rst-pin" type="password" maxlength="6" placeholder="New 6-Digit PIN" class="w-full mb-4 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+              <div class="flex justify-end gap-2">
+                <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300">Cancel</button>
+                <button onclick="confirmPinReset('${email}')" class="px-5 py-2 rounded-xl text-xs neon-btn">Save New PIN</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (res) alert(res.error);
+    }
+
+    async function confirmPinReset(email) {
+      const code = document.getElementById("rst-code").value.trim();
+      const newPin = document.getElementById("rst-pin").value.trim();
+      const res = await apiPost({ action: "resetPin", email, code, newPin });
+      if (res && res.success) {
+        alert(res.message);
+        showLoginModal();
+      } else if (res) alert(res.error);
+    }
+
+    function openMyProfileModal() {
+      const myHistory = appData.games.filter(g => g.roster.some(r => r.email.toLowerCase() === currentUser.email.toLowerCase()));
+      document.getElementById("modal-root").innerHTML = `
+        <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+          <div class="glass-card rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <h3 class="text-lg font-extrabold text-white">${currentUser.fullName}</h3>
+            <p class="text-xs text-[#00f59b] mb-4">${currentUser.email} • ${currentUser.role || 'Player'}</p>
+            <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">My Match RSVP History (${myHistory.length})</h4>
+            <div class="space-y-2 mb-5">
+              ${myHistory.length ? myHistory.map(g => {
+                const st = g.roster.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase()).status;
+                return `<div class="bg-[#0b130f] p-3 rounded-xl flex justify-between items-center text-xs">
+                  <div><b>${g.Title}</b><br><span class="text-slate-400">${g.Date} @${g.Time}</span></div>
+                  <span class="px-2.5 py-1 rounded font-bold ${st === 'Yes' ? 'bg-emerald-950 text-[#00f59b]' : 'bg-slate-800 text-slate-300'}">${st}</span>
+                </div>`;
+              }).join("") : '<p class="text-xs text-slate-500">No RSVPs recorded yet.</p>'}
+            </div>
+            <div class="flex justify-end">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-white">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function closeModal() {
+      document.getElementById("modal-root").innerHTML = "";
+    }
+
+    function logout() {
+      localStorage.removeItem("soccer_user");
+      currentUser = null;
+      activeTab = "upcoming";
+      renderAuthBar();
+      switchTab("upcoming");
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
