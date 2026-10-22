@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lunchtime Soccer League Hub</title>
+  <title>Pitch Pulse League — Lunchtime Soccer Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -22,7 +22,7 @@
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-xl shadow-inner">⚽</div>
         <div>
-          <h1 class="text-xl font-extrabold tracking-tight text-white">LUNCHTIME SOCCER HUB</h1>
+          <h1 class="text-xl font-extrabold tracking-tight text-white">PITCH PULSE LEAGUE HUB</h1>
           <p class="text-xs text-emerald-400/80">Weekly Match Signups • Live Rosters • Pitch Forecast</p>
         </div>
       </div>
@@ -43,7 +43,7 @@
     </div>
 
     <!-- Alert Banner -->
-    <div id="status-banner" class="hidden mb-6 p-4 rounded-xl text-sm font-medium"></div>
+    <div id="status-banner" class="hidden mb-6 p-4 rounded-xl text-sm font-medium border"></div>
 
     <!-- Dynamic View Container -->
     <main id="view-container">
@@ -68,7 +68,11 @@
     let activeTab = "upcoming";
     let weatherCache = {};
 
-    // Built-in starter data so the site works out-of-the-box before connecting Sheet
+    // Admin Edit State
+    let editingGameId = null;
+    let editingLocationId = null;
+
+    // Built-in starter data for instant demo preview
     let appData = {
       games: [
         {
@@ -85,7 +89,7 @@
           noCount: 1,
           locationDetails: { name: "Central Turf Field", address: "San Marcos, CA", lat: "33.1434", lng: "-117.1661", notes: "Bring a dark and white shirt" },
           roster: [
-            { email: "ralph@soccer.local", fullName: "Ralph H.", status: "Yes" },
+            { email: "pitchpulseleague@gmail.com", fullName: "League Commissioner", status: "Yes" },
             { email: "marco@soccer.local", fullName: "Marco V.", status: "Yes" },
             { email: "david@soccer.local", fullName: "David K.", status: "Maybe" },
             { email: "sam@soccer.local", fullName: "Sam T.", status: "No" }
@@ -96,11 +100,15 @@
         { LocationID: "LOC_1", Name: "Central Turf Field", Address: "San Marcos, CA", Latitude: "33.1434", Longitude: "-117.1661", Notes: "Field #2 near north lot" }
       ],
       profiles: {
-        "ralph@soccer.local": { email: "ralph@soccer.local", fullName: "Ralph H.", joinedDate: "2026-10-01", role: "Admin" },
-        "marco@soccer.local": { email: "marco@soccer.local", fullName: "Marco V.", joinedDate: "2026-10-02", role: "Player" },
-        "david@soccer.local": { email: "david@soccer.local", fullName: "David K.", joinedDate: "2026-10-05", role: "Player" }
+        "pitchpulseleague@gmail.com": { email: "pitchpulseleague@gmail.com", fullName: "League Commissioner", joinedDate: "2026-10-01", role: "Admin", status: "Active" },
+        "marco@soccer.local": { email: "marco@soccer.local", fullName: "Marco V.", joinedDate: "2026-10-02", role: "Player", status: "Active" },
+        "david@soccer.local": { email: "david@soccer.local", fullName: "David K.", joinedDate: "2026-10-05", role: "Player", status: "Active" }
       },
-      invites: []
+      invites: [
+        { Email: "pitchpulseleague@gmail.com", Status: "Registered", InvitedDate: "2026-10-01", FullName: "League Commissioner" },
+        { Email: "marco@soccer.local", Status: "Registered", InvitedDate: "2026-10-02", FullName: "Marco V." },
+        { Email: "newplayer@gmail.com", Status: "Pending", InvitedDate: "2026-10-21", FullName: "" }
+      ]
     };
 
     async function init() {
@@ -113,10 +121,16 @@
       }
     }
 
-    // Use text/plain on POST so Google Apps Script never triggers a CORS preflight block
+    function showBanner(msg, isError = false) {
+      const b = document.getElementById("status-banner");
+      b.className = `mb-6 p-4 rounded-xl text-sm font-semibold border ${isError ? 'bg-rose-950/80 border-rose-700 text-rose-200' : 'bg-emerald-950/80 border-[#00f59b]/50 text-[#00f59b]'}`;
+      b.innerHTML = msg;
+      b.classList.remove("hidden");
+      setTimeout(() => b.classList.add("hidden"), 6000);
+    }
+
     async function apiPost(payload) {
       if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        alert("Demo Mode: Connect your Google Apps Script Web App URL first.");
         return null;
       }
       const res = await fetch(API_URL, {
@@ -138,7 +152,6 @@
           renderCurrentTab();
         }
       } catch (e) {
-        console.warn("Using local demo fallback until backend URL is configured.");
         await fetchWeatherForAllGames();
         renderCurrentTab();
       }
@@ -289,6 +302,11 @@
                 <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${isConfirmed ? 'bg-[#00f59b]/20 text-[#00f59b] border border-[#00f59b]/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
                   ${isConfirmed ? '🟢 CONFIRMED — GAME ON' : `🟡 PENDING (${yesCount}/${game.MinThreshold} Needed)`}
                 </span>
+                ${currentUser?.isAdmin ? `
+                  <button onclick="startEditGame('${game.GameID}')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30">
+                    ✏️ Edit Game
+                  </button>
+                ` : ''}
               </div>
               <p class="text-sm text-slate-300 mt-1">🗓️ <b>${game.Date}</b> at <b>${game.Time}</b> • Capped at <b>${game.MaxCap} Players</b></p>
             </div>
@@ -366,14 +384,13 @@
 
     function renderHistoryAndDirectoryView() {
       const container = document.getElementById("view-container");
-      const profilesList = Object.values(appData.profiles || {});
+      const profilesList = Object.values(appData.profiles || {}).filter(p => String(p.status || 'Active').toLowerCase() !== 'suspended');
 
       container.innerHTML = `
         <div class="space-y-6">
-          <!-- League Member Directory & Attendance Count -->
           <div class="glass-card rounded-2xl p-6">
             <h2 class="text-lg font-extrabold text-white mb-1">👥 League Player Directory & Attendance History</h2>
-            <p class="text-xs text-slate-400 mb-4">Click any player to view their full match attendance log, or use their email to get in touch.</p>
+            <p class="text-xs text-slate-400 mb-4">View player match participation and contact emails.</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               ${profilesList.map(p => {
                 const attended = appData.games.filter(g => g.roster.some(r => r.email.toLowerCase() === p.email.toLowerCase() && r.status === 'Yes')).length;
@@ -390,9 +407,8 @@
             </div>
           </div>
 
-          <!-- Complete Match Archive -->
           <div class="glass-card rounded-2xl p-6">
-            <h2 class="text-lg font-extrabold text-white mb-4">📜 All Games & Who Attended</h2>
+            <h2 class="text-lg font-extrabold text-white mb-4">📜 All Games & Attendance Log</h2>
             <div class="space-y-3">
               ${appData.games.map(g => {
                 const yesNames = g.roster.filter(r => r.status === "Yes").map(r => r.fullName);
@@ -414,103 +430,201 @@
       `;
     }
 
+    // =========================================================================
+    // FULL COMMISSIONER ADMIN VIEW
+    // =========================================================================
     function renderAdminView() {
       const container = document.getElementById("view-container");
       const profilesList = Object.values(appData.profiles || {});
+      const invitesList = appData.invites || [];
+
+      const editingGame = editingGameId ? appData.games.find(g => String(g.GameID) === String(editingGameId)) : null;
+      const editingLoc = editingLocationId ? appData.locations.find(l => String(l.LocationID) === String(editingLocationId)) : null;
 
       container.innerHTML = `
         <div class="space-y-6">
-          <!-- 1. Invite New Player -->
+
+          <!-- 1. INVITE NEW PLAYERS & TRACK INVITATION STATUS -->
           <div class="glass-card rounded-2xl p-6">
-            <h3 class="text-lg font-extrabold text-white mb-1">✉️ 1. Invite New Player (Invite-Only Gate)</h3>
-            <p class="text-xs text-slate-400 mb-4">Players cannot sign up unless their email is invited here first. Sending an invite emails them a direct registration link.</p>
-            <div class="flex flex-col sm:flex-row gap-2 max-w-lg">
+            <h3 class="text-lg font-extrabold text-white mb-1">✉️ 1. Player Invitations & Invite Tracker</h3>
+            <p class="text-xs text-slate-400 mb-4">Send new invitations and see everyone who has been invited, whether they have registered yet, or resend/revoke their invite.</p>
+            <div class="flex flex-col sm:flex-row gap-2 max-w-lg mb-5">
               <input id="inv-email" type="email" placeholder="player@email.com" class="flex-1 bg-[#0b130f] border border-emerald-900 rounded-xl px-3.5 py-2 text-sm text-white">
               <button onclick="adminInvitePlayer()" class="neon-btn px-5 py-2 rounded-xl text-sm">Send Email Invite</button>
             </div>
+
+            <div class="border-t border-emerald-950 pt-4">
+              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Sent Invitations (${invitesList.length})</h4>
+              <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
+                ${invitesList.length === 0 ? '<p class="text-xs text-slate-500">No invitations sent yet.</p>' : ''}
+                ${invitesList.map(inv => {
+                  const isReg = inv.Status === "Registered" || !!appData.profiles[String(inv.Email).toLowerCase()];
+                  return `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-xs">
+                      <div class="flex items-center gap-2.5 flex-wrap">
+                        <span class="font-bold text-white">${inv.Email}</span>${inv.FullName ? `<span class="text-slate-400">(${inv.FullName})</span>` : ''}
+                        <span class="px-2 py-0.5 rounded-full font-bold ${isReg ? 'bg-emerald-950 text-[#00f59b] border border-[#00f59b]/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+                          ${isReg ? '✅ Registered' : '⏳ Pending Signup'}
+                        </span>
+                        ${inv.InvitedDate ? `<span class="text-slate-500">Invited: ${inv.InvitedDate}</span>` : ''}
+                      </div>
+                      <div class="flex items-center gap-2">
+                        ${!isReg ? `
+                          <button onclick="adminResendInvite('${inv.Email}')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 hover:bg-emerald-900 font-semibold">Resend Email</button>
+                          <button onclick="adminRevokeInvite('${inv.Email}')" class="px-2.5 py-1 rounded-lg bg-rose-950 text-rose-300 hover:bg-rose-900 font-semibold">Revoke</button>
+                        ` : '<span class="text-slate-500 italic">Account Active</span>'}
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
           </div>
 
-          <!-- 2. Schedule Game & Set Threshold / Cap -->
-          <div class="glass-card rounded-2xl p-6">
-            <h3 class="text-lg font-extrabold text-white mb-4">📅 2. Schedule a Game & Set Player Caps</h3>
+          <!-- 2. SCHEDULE OR EDIT GAME (With Automatic Re-Confirmation Email Blast) -->
+          <div id="admin-game-form-card" class="glass-card rounded-2xl p-6 ${editingGame ? 'border-2 border-amber-400' : ''}">
+            <div class="flex justify-between items-center mb-1">
+              <h3 class="text-lg font-extrabold text-white">
+                ${editingGame ? `✏️ Editing Game: ${editingGame.Title}` : '📅 2. Schedule a New Game'}
+              </h3>
+              ${editingGame ? `<button onclick="cancelEditGame()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white">Cancel Edit</button>` : ''}
+            </div>
+            <p class="text-xs ${editingGame ? 'text-amber-300 font-semibold' : 'text-slate-400'} mb-4">
+              ${editingGame 
+                ? '🔔 Changing the Date, Time, or Location will automatically email all RSVPed players asking them to re-confirm attendance!' 
+                : 'Set the match time, venue, minimum confirmation threshold, and maximum player cap.'}
+            </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
               <div>
                 <label class="text-xs text-slate-400 block mb-1">Game Title</label>
-                <input id="g-title" type="text" placeholder="Wednesday Lunch Match" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+                <input id="g-title" type="text" value="${editingGame ? editingGame.Title : ''}" placeholder="Wednesday Lunch Match" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
               </div>
               <div>
                 <label class="text-xs text-slate-400 block mb-1">Location</label>
                 <select id="g-loc" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-                  ${appData.locations.map(l => `<option value="${l.Name}">${l.Name}</option>`).join("")}
+                  ${appData.locations.map(l => `<option value="${l.Name}" ${editingGame && editingGame.LocationName === l.Name ? 'selected' : ''}>${l.Name}</option>`).join("")}
                 </select>
               </div>
               <div>
                 <label class="text-xs text-slate-400 block mb-1">Game Date</label>
-                <input id="g-date" type="date" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+                <input id="g-date" type="date" value="${editingGame ? editingGame.Date : ''}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
               </div>
               <div>
                 <label class="text-xs text-slate-400 block mb-1">Kickoff Time</label>
-                <input id="g-time" type="text" value="12:00 PM" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+                <input id="g-time" type="text" value="${editingGame ? editingGame.Time : '12:00 PM'}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
               </div>
               <div>
                 <label class="text-xs text-slate-400 block mb-1">Min Players to Confirm</label>
-                <input id="g-min" type="number" value="10" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+                <input id="g-min" type="number" value="${editingGame ? editingGame.MinThreshold : 10}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
               </div>
               <div>
                 <label class="text-xs text-slate-400 block mb-1">Max Player Cap (Default 18)</label>
-                <input id="g-max" type="number" value="18" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+                <input id="g-max" type="number" value="${editingGame ? editingGame.MaxCap : 18}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
               </div>
             </div>
-            <button onclick="adminCreateGame()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">⚡ Publish Game to Hub</button>
-          </div>
+            <button onclick="adminSaveGameSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">
+              ${editingGame ? '💾 Save Changes & Notify RSVPed Players' : '⚡ Publish Game to Hub'}
+            </button>
 
-          <!-- 3. Add Pitch Location (With GPS for Weather & Google Maps) -->
-          <div class="glass-card rounded-2xl p-6">
-            <h3 class="text-lg font-extrabold text-white mb-1">📍 3. Add Soccer Field Location</h3>
-            <p class="text-xs text-slate-400 mb-4">Adding Latitude & Longitude enables automatic live hourly weather forecasts for that pitch.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-              <input id="loc-name" type="text" placeholder="Field Name (e.g. Bradley Park Field 2)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-              <input id="loc-addr" type="text" placeholder="Full Street Address or City, State" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-              <input id="loc-lat" type="text" placeholder="Latitude (e.g. 33.1434)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-              <input id="loc-lng" type="text" placeholder="Longitude (e.g. -117.1661)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+            <!-- Scheduled Games List with Edit & Delete -->
+            <div class="border-t border-emerald-950 mt-6 pt-4">
+              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Manage Scheduled Games (${appData.games.length})</h4>
+              <div class="space-y-2">
+                ${appData.games.map(g => `
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-xs">
+                    <div>
+                      <b class="text-white text-sm">${g.Title}</b> • <span class="text-emerald-300">${g.Date} @${g.Time}</span>
+                      <div class="text-slate-400">📍 ${g.LocationName} •${g.yesCount}/${g.MaxCap} Yes (Min${g.MinThreshold})</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button onclick="startEditGame('${g.GameID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30">✏️ Edit Game</button>
+                      <button onclick="adminRemoveGame('${g.GameID}')" class="px-3 py-1.5 rounded-lg bg-rose-950 text-rose-300 font-bold hover:bg-rose-900">Delete</button>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
             </div>
-            <button onclick="adminAddLocation()" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-900/60 text-emerald-200 border border-emerald-700 hover:bg-emerald-800">Save Field Location</button>
           </div>
 
-          <!-- 4. Multi-Admin Role Manager -->
+          <!-- 3. ADD OR EDIT FIELD LOCATIONS -->
+          <div id="admin-loc-form-card" class="glass-card rounded-2xl p-6 ${editingLoc ? 'border-2 border-amber-400' : ''}">
+            <div class="flex justify-between items-center mb-1">
+              <h3 class="text-lg font-extrabold text-white">
+                ${editingLoc ? `✏️ Editing Location: ${editingLoc.Name}` : '📍 3. Manage Field Locations'}
+              </h3>
+              ${editingLoc ? `<button onclick="cancelEditLocation()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white">Cancel Edit</button>` : ''}
+            </div>
+            <p class="text-xs text-slate-400 mb-4">Add new soccer fields or edit existing venues, addresses, notes, and GPS coordinates.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              <input id="loc-name" type="text" value="${editingLoc ? editingLoc.Name : ''}" placeholder="Field Name (e.g. Bradley Park Field 2)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              <input id="loc-addr" type="text" value="${editingLoc ? editingLoc.Address : ''}" placeholder="Full Street Address or City, State" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              <input id="loc-lat" type="text" value="${editingLoc ? (editingLoc.Latitude || '') : ''}" placeholder="Latitude (e.g. 33.1434)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              <input id="loc-lng" type="text" value="${editingLoc ? (editingLoc.Longitude || '') : ''}" placeholder="Longitude (e.g. -117.1661)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              <input id="loc-notes" type="text" value="${editingLoc ? (editingLoc.Notes || '') : ''}" placeholder="Field Notes (e.g. Parking lot code, turf rules)" class="sm:col-span-2 bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+            </div>
+            <button onclick="adminSaveLocationSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">
+              ${editingLoc ? '💾 Update Field Location' : '➕ Save New Field Location'}
+            </button>
+
+            <!-- Saved Locations List -->
+            <div class="border-t border-emerald-950 mt-6 pt-4">
+              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Saved Locations (${appData.locations.length})</h4>
+              <div class="space-y-2">
+                ${appData.locations.map(l => `
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-xs">
+                    <div>
+                      <b class="text-white text-sm">📍 ${l.Name}</b> • <span class="text-slate-300">${l.Address}</span>
+                      <div class="text-slate-500">GPS: ${l.Latitude || 'N/A'}, ${l.Longitude \vert{}\vert{} 'N/A'}${l.Notes ? '• ' + l.Notes : ''}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button onclick="startEditLocation('${l.LocationID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30">✏️ Edit</button>
+                      <button onclick="adminRemoveLocation('${l.LocationID}')" class="px-3 py-1.5 rounded-lg bg-rose-950 text-rose-300 font-bold hover:bg-rose-900">Delete</button>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. PLAYER MANAGEMENT, CO-ADMINS & ACCOUNT SUSPENSION -->
           <div class="glass-card rounded-2xl p-6">
-            <h3 class="text-lg font-extrabold text-white mb-1">🛡️ 4. Assign Co-Admins</h3>
-            <p class="text-xs text-slate-400 mb-4">Promote any registered player to Co-Admin so they can schedule games and invite players.</p>
-            <div class="divide-y divide-emerald-950">
+            <h3 class="text-lg font-extrabold text-white mb-1">🛡️ 4. Manage Players, Co-Admins & Account Suspensions</h3>
+            <p class="text-xs text-slate-400 mb-4">Promote trusted players to Co-Admin, suspend accounts (blocks login & RSVPs), or remove players from the league.</p>
+            <div class="space-y-2">
               ${profilesList.map(p => {
                 const isAdmin = p.role === "Admin";
+                const isSuspended = String(p.status || "Active").toLowerCase() === "suspended";
                 return `
-                  <div class="py-3 flex justify-between items-center text-sm">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0b130f] p-3.5 rounded-xl border ${isSuspended ? 'border-rose-800/70 bg-rose-950/20' : 'border-emerald-950'} text-xs">
                     <div>
-                      <span class="font-bold text-white">${p.fullName}</span>
-                      <span class="text-xs text-slate-400 ml-2">${p.email}</span>
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <span class="font-bold text-white text-sm ${isSuspended ? 'line-through text-slate-400' : ''}">${p.fullName}</span>
+                        <span class="text-slate-400">${p.email}</span>
+                        <span class="px-2 py-0.5 rounded font-bold ${isAdmin ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-300'}">
+                          ${isAdmin ? '👑 Admin' : 'Player'}
+                        </span>
+                        <span class="px-2 py-0.5 rounded font-bold ${isSuspended ? 'bg-rose-600 text-white' : 'bg-emerald-950 text-[#00f59b]'}">
+                          ${isSuspended ? '🚫 SUSPENDED' : 'Active'}
+                        </span>
+                      </div>
                     </div>
-                    <button onclick="adminToggleRole('${p.email}', '${isAdmin ? 'Player' : 'Admin'}')" class="px-3 py-1 rounded-lg text-xs font-bold ${isAdmin ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-300 hover:text-white'}">
-                      ${isAdmin ? '👑 Admin (Click to Demote)' : 'Promote to Admin'}
-                    </button>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <button onclick="adminToggleRole('${p.email}', '${isAdmin ? 'Player' : 'Admin'}')" class="px-2.5 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-200 hover:bg-slate-700">
+                        ${isAdmin ? 'Demote to Player' : 'Make Admin'}
+                      </button>
+                      <button onclick="adminToggleSuspend('${p.email}', '${isSuspended ? 'Active' : 'Suspended'}')" class="px-2.5 py-1.5 rounded-lg font-bold ${isSuspended ? 'bg-emerald-700 text-white hover:bg-emerald-600' : 'bg-amber-600/30 text-amber-200 border border-amber-500/40 hover:bg-amber-600/50'}">
+                        ${isSuspended ? '✅ Reactivate' : '⏸️ Suspend'}
+                      </button>
+                      <button onclick="adminRemovePlayer('${p.email}')" class="px-2.5 py-1.5 rounded-lg font-bold bg-rose-950 text-rose-300 hover:bg-rose-900">
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 `;
               }).join("")}
             </div>
           </div>
 
-          <!-- 5. Manage / Remove Games -->
-          <div class="glass-card rounded-2xl p-6">
-            <h3 class="text-lg font-extrabold text-white mb-4">🗑️ 5. Manage Scheduled Games</h3>
-            <div class="space-y-2">
-              ${appData.games.map(g => `
-                <div class="flex justify-between items-center bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-sm">
-                  <div><b>${g.Title}</b> • ${g.Date} @${g.Time} (${g.yesCount}/${g.MaxCap} Yes)</div>
-                  <button onclick="adminRemoveGame('${g.GameID}')" class="px-3 py-1 rounded-lg bg-rose-950 text-rose-300 text-xs font-bold hover:bg-rose-900">Delete</button>
-                </div>
-              `).join("")}
-            </div>
-          </div>
         </div>
       `;
     }
@@ -523,7 +637,10 @@
         showLoginModal();
         return;
       }
-      // Instant optimistic update in Demo mode
+      if (String(currentUser.status || "Active").toLowerCase() === "suspended") {
+        return showBanner("Your account is currently suspended. Please contact the League Admin.", true);
+      }
+
       const game = appData.games.find(g => String(g.GameID) === String(gameId));
       if (game) {
         const existing = game.roster.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
@@ -543,24 +660,71 @@
           appData = res;
           renderCurrentTab();
         } else if (res && res.error) {
-          alert(res.error);
+          showBanner(res.error, true);
           await syncFromBackend();
         }
       }
     }
 
     async function adminInvitePlayer() {
-      const email = document.getElementById("inv-email").value.trim();
+      const email = document.getElementById("inv-email").value.trim().toLowerCase();
       if (!email) return alert("Enter an email address to invite.");
+
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        appData.invites.push({ Email: email, Status: "Pending", InvitedDate: new Date().toISOString().slice(0, 10), FullName: "" });
+        showBanner(`Demo: Invitation logged for ${email}`);
+        renderAdminView();
+        return;
+      }
+
       const res = await apiPost({ action: "adminSendInvite", requesterEmail: currentUser.email, email });
       if (res && res.success) {
         appData = res;
-        alert(`Invitation email sent to ${email}!`);
-        document.getElementById("inv-email").value = "";
+        showBanner(res.message || `Invitation email sent to ${email}!`);
+        renderAdminView();
+      } else if (res) showBanner(res.error, true);
+    }
+
+    async function adminResendInvite(email) {
+      const res = await apiPost({ action: "adminSendInvite", requesterEmail: currentUser.email, email });
+      if (res && res.success) {
+        appData = res;
+        showBanner(`Invitation re-sent to ${email}!`);
+        renderAdminView();
+      } else {
+        showBanner(`Demo: Re-sent invite email to ${email}`);
       }
     }
 
-    async function adminCreateGame() {
+    async function adminRevokeInvite(email) {
+      if (!confirm(`Revoke invitation for ${email}?`)) return;
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        appData.invites = appData.invites.filter(i => i.Email.toLowerCase() !== email.toLowerCase());
+        renderAdminView();
+        return;
+      }
+      const res = await apiPost({ action: "adminDeleteInvite", requesterEmail: currentUser.email, email });
+      if (res && res.success) {
+        appData = res;
+        showBanner(`Invitation revoked for ${email}`);
+        renderAdminView();
+      }
+    }
+
+    function startEditGame(gameId) {
+      editingGameId = gameId;
+      switchTab("admin");
+      setTimeout(() => {
+        document.getElementById("admin-game-form-card")?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
+
+    function cancelEditGame() {
+      editingGameId = null;
+      renderAdminView();
+    }
+
+    async function adminSaveGameSubmit() {
       const title = document.getElementById("g-title").value.trim();
       const locationName = document.getElementById("g-loc").value;
       const date = document.getElementById("g-date").value;
@@ -569,41 +733,122 @@
       const maxCap = Number(document.getElementById("g-max").value || 18);
       if (!title || !date) return alert("Please enter a Game Title and Date.");
 
+      const payload = {
+        action: "adminSaveGame",
+        requesterEmail: currentUser.email,
+        gameId: editingGameId,
+        title, locationName, date, time, minThreshold, maxCap
+      };
+
       if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
-        appData.games.push({
-          GameID: "G_" + Date.now(), Title: title, LocationName: locationName, Date: date, Time: time,
-          MinThreshold: minThreshold, MaxCap: maxCap, Status: "Pending", yesCount: 0, roster: [],
-          locationDetails: appData.locations.find(l => l.Name === locationName) || { address: locationName }
-        });
-        switchTab("upcoming");
+        if (editingGameId) {
+          const g = appData.games.find(x => String(x.GameID) === String(editingGameId));
+          if (g) {
+            g.Title = title; g.LocationName = locationName; g.Date = date; g.Time = time;
+            g.MinThreshold = minThreshold; g.MaxCap = maxCap;
+          }
+          editingGameId = null;
+          showBanner("Game updated! All RSVPed players have been emailed to re-confirm attendance.");
+        } else {
+          appData.games.push({
+            GameID: "G_" + Date.now(), Title: title, LocationName: locationName, Date: date, Time: time,
+            MinThreshold: minThreshold, MaxCap: maxCap, Status: "Pending", yesCount: 0, roster: [],
+            locationDetails: appData.locations.find(l => l.Name === locationName) || { address: locationName }
+          });
+          showBanner("New game published!");
+        }
+        renderAdminView();
         return;
       }
 
-      const res = await apiPost({ action: "adminSaveGame", requesterEmail: currentUser.email, title, locationName, date, time, minThreshold, maxCap });
+      const res = await apiPost(payload);
       if (res && res.success) {
+        editingGameId = null;
         appData = res;
         await fetchWeatherForAllGames();
-        switchTab("upcoming");
+        showBanner(res.message || "Game saved!");
+        renderAdminView();
+      } else if (res) showBanner(res.error, true);
+    }
+
+    async function adminRemoveGame(gameId) {
+      if (!confirm("Delete this scheduled game?")) return;
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        appData.games = appData.games.filter(g => String(g.GameID) !== String(gameId));
+        renderAdminView();
+        return;
+      }
+      const res = await apiPost({ action: "adminDeleteGame", requesterEmail: currentUser.email, gameId });
+      if (res && res.success) {
+        appData = res;
+        renderAdminView();
       }
     }
 
-    async function adminAddLocation() {
+    function startEditLocation(locId) {
+      editingLocationId = locId;
+      renderAdminView();
+      setTimeout(() => {
+        document.getElementById("admin-loc-form-card")?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
+
+    function cancelEditLocation() {
+      editingLocationId = null;
+      renderAdminView();
+    }
+
+    async function adminSaveLocationSubmit() {
       const name = document.getElementById("loc-name").value.trim();
       const address = document.getElementById("loc-addr").value.trim();
       const lat = document.getElementById("loc-lat").value.trim();
       const lng = document.getElementById("loc-lng").value.trim();
+      const notes = document.getElementById("loc-notes").value.trim();
       if (!name || !address) return alert("Enter Location Name and Address.");
 
-      const res = await apiPost({ action: "adminSaveLocation", requesterEmail: currentUser.email, name, address, lat, lng });
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        if (editingLocationId) {
+          const loc = appData.locations.find(l => String(l.LocationID) === String(editingLocationId));
+          if (loc) { loc.Name = name; loc.Address = address; loc.Latitude = lat; loc.Longitude = lng; loc.Notes = notes; }
+          editingLocationId = null;
+        } else {
+          appData.locations.push({ LocationID: "LOC_" + Date.now(), Name: name, Address: address, Latitude: lat, Longitude: lng, Notes: notes });
+        }
+        showBanner("Location saved!");
+        renderAdminView();
+        return;
+      }
+
+      const res = await apiPost({
+        action: "adminSaveLocation",
+        requesterEmail: currentUser.email,
+        locationId: editingLocationId,
+        name, address, lat, lng, notes
+      });
+      if (res && res.success) {
+        editingLocationId = null;
+        appData = res;
+        showBanner(res.message || "Location saved!");
+        renderAdminView();
+      } else if (res) showBanner(res.error, true);
+    }
+
+    async function adminRemoveLocation(locationId) {
+      if (!confirm("Delete this field location?")) return;
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        appData.locations = appData.locations.filter(l => String(l.LocationID) !== String(locationId));
+        renderAdminView();
+        return;
+      }
+      const res = await apiPost({ action: "adminDeleteLocation", requesterEmail: currentUser.email, locationId });
       if (res && res.success) {
         appData = res;
-        alert("Location saved!");
         renderAdminView();
       }
     }
 
     async function adminToggleRole(targetEmail, newRole) {
-      if (!confirm(`Update ${targetEmail} to ${newRole}?`)) return;
+      if (!confirm(`Update ${targetEmail} role to ${newRole}?`)) return;
       if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
         appData.profiles[targetEmail].role = newRole;
         renderAdminView();
@@ -616,17 +861,41 @@
       }
     }
 
-    async function adminRemoveGame(gameId) {
-      if (!confirm("Delete this scheduled game?")) return;
-      const res = await apiPost({ action: "adminDeleteGame", requesterEmail: currentUser.email, gameId });
+    async function adminToggleSuspend(targetEmail, newStatus) {
+      const actionVerb = newStatus === "Suspended" ? "SUSPEND" : "REACTIVATE";
+      if (!confirm(`Are you sure you want to ${actionVerb} ${targetEmail}?`)) return;
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        appData.profiles[targetEmail].status = newStatus;
+        showBanner(`${targetEmail} status set to ${newStatus}`);
+        renderAdminView();
+        return;
+      }
+      const res = await apiPost({ action: "adminToggleSuspendUser", requesterEmail: currentUser.email, targetEmail, newStatus });
       if (res && res.success) {
         appData = res;
+        showBanner(res.message || `${targetEmail} updated.`);
         renderAdminView();
+      } else if (res) showBanner(res.error, true);
+    }
+
+    async function adminRemovePlayer(targetEmail) {
+      if (!confirm(`Permanently remove ${targetEmail} and revoke their invite?`)) return;
+      if (!API_URL || !API_URL.startsWith("https://script.google.com")) {
+        delete appData.profiles[targetEmail];
+        appData.invites = appData.invites.filter(i => i.Email.toLowerCase() !== targetEmail.toLowerCase());
+        renderAdminView();
+        return;
       }
+      const res = await apiPost({ action: "adminDeleteUser", requesterEmail: currentUser.email, targetEmail });
+      if (res && res.success) {
+        appData = res;
+        showBanner(`Removed player ${targetEmail}`);
+        renderAdminView();
+      } else if (res) showBanner(res.error, true);
     }
 
     function enableDemoAdmin() {
-      currentUser = { email: "ralph@soccer.local", fullName: "Ralph (Admin Demo)", role: "Admin", isAdmin: true };
+      currentUser = { email: "pitchpulseleague@gmail.com", fullName: "League Commissioner (Demo)", role: "Admin", status: "Active", isAdmin: true };
       localStorage.setItem("soccer_user", JSON.stringify(currentUser));
       renderAuthBar();
       switchTab("admin");
