@@ -2,23 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>Pitch Pulse League — Lunchtime Soccer Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Leaflet Interactive Maps CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #070b09; color: #f1f5f9; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #070b09;
+      color: #f1f5f9;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
     h1, h2, h3, .font-display { font-family: 'Outfit', sans-serif; }
-    .glass-card { background: rgba(17, 28, 22, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(0, 245, 155, 0.14); }
-    .neon-btn { background: #00f59b; color: #070b09; font-weight: 700; transition: all 0.2s ease; cursor: pointer; }
-    .neon-btn:hover { background: #34f7af; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0, 245, 155, 0.25); }
+    .glass-card {
+      background: rgba(17, 28, 22, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 245, 155, 0.16);
+    }
+    .sub-panel {
+      background-color: #0b130f;
+      border-color: #064e3b;
+    }
+    .neon-btn {
+      background: #00f59b;
+      color: #070b09;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .neon-btn:hover {
+      background: #34f7af;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 245, 155, 0.25);
+    }
+
+    /* ======================================================================
+       LIGHT MODE OVERRIDES (Clean Daylight Outdoor Theme)
+       ====================================================================== */
+    body.light-mode {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+    }
+    body.light-mode header {
+      background-color: rgba(255, 255, 255, 0.95) !important;
+      border-bottom-color: #cbd5e1 !important;
+    }
+    body.light-mode .glass-card {
+      background: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+    }
+    body.light-mode .bg-\[\#0b130f\],
+    body.light-mode .bg-\[\#0b130f\]\/70,
+    body.light-mode .bg-\[\#111c16\] {
+      background-color: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+    body.light-mode .text-white {
+      color: #0f172a !important;
+    }
+    body.light-mode .text-slate-200,
+    body.light-mode .text-slate-300 {
+      color: #334155 !important;
+    }
+    body.light-mode .text-slate-400,
+    body.light-mode .text-slate-500 {
+      color: #64748b !important;
+    }
+    body.light-mode .text-\[\#00f59b\],
+    body.light-mode .text-emerald-300,
+    body.light-mode .text-emerald-400\/80 {
+      color: #059669 !important;
+    }
+    body.light-mode .bg-emerald-950,
+    body.light-mode .bg-emerald-950\/50 {
+      background-color: #ecfdf5 !important;
+      border-color: #a7f3d0 !important;
+      color: #065f46 !important;
+    }
+    body.light-mode .border-emerald-950,
+    body.light-mode .border-emerald-950\/80,
+    body.light-mode .border-emerald-900 {
+      border-color: #cbd5e1 !important;
+    }
+    body.light-mode input,
+    body.light-mode select {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #94a3b8 !important;
+    }
+    body.light-mode .neon-btn {
+      background: #10b981 !important;
+      color: #ffffff !important;
+    }
+    .leaflet-container {
+      font-family: 'Inter', sans-serif;
+      z-index: 10;
+    }
   </style>
+
   <script>
     window.addEventListener("error", function(e) {
       var b = document.getElementById("status-banner");
       if (b) {
         b.className = "mb-6 p-4 rounded-xl text-sm font-semibold border bg-rose-950/90 border-rose-600 text-rose-200";
-        b.innerHTML = "⚠️ Script Error on Line " + e.lineno + ": " + e.message;
+        b.innerHTML = "⚠️ Script Notice (Line " + e.lineno + "): " + e.message;
         b.classList.remove("hidden");
       }
     });
@@ -26,37 +119,53 @@
 </head>
 <body class="min-h-screen pb-16">
 
-  <!-- Top Header -->
+  <!-- Sticky Responsive Header -->
   <header class="border-b border-emerald-950/80 bg-[#0b130f]/90 sticky top-0 z-30 backdrop-blur-md">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-xl shadow-inner">⚽</div>
-        <div>
-          <h1 class="text-xl font-extrabold tracking-tight text-white">PITCH PULSE LEAGUE HUB</h1>
-          <p class="text-xs text-emerald-400/80">Weekly Match Signups • Live Rosters • Pitch Forecast</p>
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 py-3.5 flex flex-col md:flex-row justify-between items-center gap-3">
+      <div class="flex items-center justify-between w-full md:w-auto">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-xl shadow-inner shrink-0">⚽</div>
+          <div>
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-tight">PITCH PULSE LEAGUE</h1>
+            <p id="hdr-subtitle" class="text-[11px] sm:text-xs text-emerald-400/80">Weekly Match Signups • Live Rosters • Pitch Forecast</p>
+          </div>
+        </div>
+
+        <!-- Mobile Quick Theme & Language Toggles -->
+        <div class="flex md:hidden items-center gap-1.5">
+          <button type="button" onclick="toggleLanguage()" id="lang-btn-mob" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 cursor-pointer">🌐 ES</button>
+          <button type="button" onclick="toggleTheme()" id="theme-btn-mob" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-amber-300 cursor-pointer">☀️ Light</button>
         </div>
       </div>
-      <div id="auth-bar" class="flex items-center gap-2">
-        <button type="button" onclick="showLoginModal()" class="px-4 py-2 rounded-xl text-xs font-bold neon-btn">🔑 Login (PIN)</button>
-        <button type="button" onclick="showRegisterModal()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-800/60 text-slate-200 hover:text-white cursor-pointer">
-          ✉️ Register (Invite Only)
-        </button>
+
+      <!-- Right Controls: Language, Theme & Auth -->
+      <div class="flex flex-wrap items-center justify-center md:justify-end gap-2 w-full md:w-auto">
+        <div class="hidden md:flex items-center gap-1.5 mr-1">
+          <button type="button" onclick="toggleLanguage()" id="lang-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 hover:bg-emerald-950 cursor-pointer">🌐 Español</button>
+          <button type="button" onclick="toggleTheme()" id="theme-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-amber-300 hover:bg-emerald-950 cursor-pointer">☀️ Light Mode</button>
+        </div>
+        <div id="auth-bar" class="flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto">
+          <button type="button" onclick="showLoginModal()" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold neon-btn">🔑 Login (PIN)</button>
+          <button type="button" onclick="showRegisterModal()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-800/60 text-slate-200 hover:text-white cursor-pointer">
+            ✉️ Register (Invite Only)
+          </button>
+        </div>
       </div>
     </div>
   </header>
 
   <!-- Main Content Container -->
-  <div class="max-w-5xl mx-auto px-4 mt-6">
+  <div class="max-w-5xl mx-auto px-3 sm:px-4 mt-5">
     <!-- Navigation Tabs -->
-    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-950 pb-4 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-4 mb-6">
       <div class="flex flex-wrap gap-2">
-        <button type="button" onclick="switchTab('upcoming')" id="tab-upcoming" class="px-4 py-2 rounded-xl text-sm font-bold neon-btn">📅 Upcoming Games</button>
-        <button type="button" onclick="switchTab('history')" id="tab-history" class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40 cursor-pointer">📜 Past Games & Directory</button>
-        <button type="button" onclick="switchTab('admin')" id="tab-admin" class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#111c16] text-amber-300 border border-amber-500/30 hidden cursor-pointer">👑 Commissioner Admin</button>
+        <button type="button" onclick="switchTab('upcoming')" id="tab-upcoming" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold neon-btn"></button>
+        <button type="button" onclick="switchTab('history')" id="tab-history" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40 cursor-pointer"></button>
+        <button type="button" onclick="switchTab('admin')" id="tab-admin" class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] text-amber-300 border border-amber-500/30 hidden cursor-pointer"></button>
       </div>
-      <div class="flex items-center gap-3">
-        <span id="sync-indicator" class="text-xs text-emerald-400/80">🔄 Connecting to Google Sheet...</span>
-        <button type="button" onclick="enableDemoAdmin()" id="demo-btn" class="text-xs text-slate-400 hover:text-[#00f59b] underline cursor-pointer">Preview Admin Mode (Demo)</button>
+      <div class="flex items-center justify-between sm:justify-end gap-3">
+        <span id="sync-indicator" class="text-xs text-emerald-400/80">🔄 Connecting...</span>
+        <button type="button" onclick="enableDemoAdmin()" id="demo-btn" class="text-xs text-slate-400 hover:text-[#00f59b] underline cursor-pointer">Demo Admin</button>
       </div>
     </div>
 
@@ -64,25 +173,192 @@
     <div id="status-banner" class="hidden mb-6 p-4 rounded-xl text-sm font-medium border"></div>
 
     <!-- Dynamic View Container -->
-    <main id="view-container">
-      <div class="glass-card rounded-2xl p-10 text-center">
-        <p class="text-lg font-bold text-white mb-2">Welcome to Pitch Pulse League Hub!</p>
-        <p class="text-sm text-slate-400 mb-5">Click <b>Register (Invite Only)</b> or <b>Login (PIN)</b> in the top right corner to access your profile or schedule games.</p>
-      </div>
-    </main>
+    <main id="view-container"></main>
   </div>
 
   <!-- Modal Container -->
   <div id="modal-root"></div>
 
   <script>
+    // =========================================================================
+    // MASTER CONFIGURATION
+    // =========================================================================
     const API_URL = "https://script.google.com/macros/s/AKfycbxD2w-OIQ6k59BqRc0jbccjq09qYsKADavM4id6o02hVTKrqdV90j1bnjLb_Fp6hEc2/exec";
-    const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "pitchepulseleague@gmail.com", "ralph@me.com"];
+    const SYSTEM_ADMIN_EMAIL = "pitchpulseleague@gmail.com";
+    const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "ralph@me.com"];
 
     function isProtectedEmail(em) {
       return PROTECTED_ADMINS.indexOf(String(em || "").toLowerCase().trim()) !== -1;
     }
 
+    function isSystemAdminOnly(em) {
+      return String(em || "").toLowerCase().trim() === SYSTEM_ADMIN_EMAIL;
+    }
+
+    // =========================================================================
+    // BILINGUAL DICTIONARY (ENGLISH DEFAULT + SPANISH)
+    // =========================================================================
+    let currentLang = localStorage.getItem("soccer_lang") || "en";
+    let currentTheme = localStorage.getItem("soccer_theme") || "dark";
+
+    const I18N = {
+      en: {
+        subtitle: "Weekly Match Signups • Live Rosters • Pitch Forecast",
+        tabUpcoming: "📅 Upcoming Games",
+        tabHistory: "📜 Past Games & Directory",
+        tabAdmin: "👑 Commissioner Admin",
+        loginBtn: "🔑 Login (PIN)",
+        registerBtn: "✉️ Register (Invite Only)",
+        logoutBtn: "Logout",
+        noGamesTitle: "No Upcoming Games Scheduled Yet",
+        noGamesSub: "Log in or register your profile in the top right to view or schedule matches.",
+        confirmedBadge: "🟢 CONFIRMED — GAME ON",
+        pendingBadge: "🟡 PENDING",
+        neededWord: "Needed",
+        recurringBadge: "🔁 Recurring Series",
+        editGameBtn: "✏️ Edit Game",
+        cappedAt: "Capped at",
+        playersWord: "Players",
+        pitchLocTitle: "Pitch Location & Interactive Map",
+        openGmaps: "🗺️ Google Maps Turn-by-Turn Directions →",
+        toggleMapBtn: "📍 Show / Hide Interactive Field Map",
+        thresholdTitle: "Confirmation Threshold",
+        spotsFilled: "Spots Filled",
+        minReachedMsg: "Minimum threshold reached! Game is officially locked in.",
+        needMoreMsg: "more 'Yes' RSVP(s) needed to confirm this game.",
+        rsvpPromptTitle: "Are you playing in this game?",
+        rsvpPromptSub: "Your status updates the live roster immediately.",
+        sysAdminNoPlayTitle: "👑 System Administrator Account (pitchpulseleague@gmail.com)",
+        sysAdminNoPlaySub: "This master account manages the league and cannot RSVP as a player. Log in with your personal Co-Admin or Player profile to RSVP.",
+        yesBtn: "✅ YES",
+        maybeBtn: "🤔 MAYBE",
+        noBtn: "❌ NO",
+        playingYesCol: "✅ PLAYING — YES",
+        maybeCol: "🤔 MAYBE",
+        notPlayingCol: "❌ NOT PLAYING",
+        noneYet: "No confirmed players yet",
+        noneWord: "None",
+        dirTitle: "👥 League Player Directory & Attendance History",
+        dirSub: "Players and venues with past match participation are permanently preserved in league history.",
+        gamesPlayedBadge: "Games",
+        allGamesTitle: "📜 All Games & Attendance Log",
+        playedWord: "Played",
+        attendedYes: "Attended (Yes):",
+        absentNo: "Absent (No):",
+        rainChance: "💧 Rain Chance:",
+        weatherPending: "Weather pending GPS pin",
+        weather7Days: "Forecast unlocks 7 days prior",
+        clearSunny: "Clear & Sunny",
+        partlyCloudy: "Partly Cloudy",
+        cloudyWord: "Cloudy",
+        rainLikely: "Rain Likely"
+      },
+      es: {
+        subtitle: "Inscripciones Semanales • Listas en Vivo • Clima en Cancha",
+        tabUpcoming: "📅 Próximos Partidos",
+        tabHistory: "📜 Historial y Directorio",
+        tabAdmin: "👑 Panel de Administración",
+        loginBtn: "🔑 Iniciar Sesión (PIN)",
+        registerBtn: "✉️ Registrarse (Con Invitación)",
+        logoutBtn: "Salir",
+        noGamesTitle: "No Hay Partidos Programados Aún",
+        noGamesSub: "Inicia sesión o regístrate arriba a la derecha para ver o programar partidos.",
+        confirmedBadge: "🟢 CONFIRMADO — ¡HAY PARTIDO!",
+        pendingBadge: "🟡 PENDIENTE",
+        neededWord: "Mínimo",
+        recurringBadge: "🔁 Serie Recurrente",
+        editGameBtn: "✏️ Editar Partido",
+        cappedAt: "Cupo máximo:",
+        playersWord: "Jugadores",
+        pitchLocTitle: "Ubicación de Cancha y Mapa Interactivo",
+        openGmaps: "🗺️ Cómo Llegar en Google Maps →",
+        toggleMapBtn: "📍 Mostrar / Ocultar Mapa en Vivo",
+        thresholdTitle: "Mínimo de Confirmación",
+        spotsFilled: "Cupos Ocupados",
+        minReachedMsg: "¡Mínimo alcanzado! El partido está oficialmente confirmado.",
+        needMoreMsg: "confirmaciones 'Sí' más para confirmar este partido.",
+        rsvpPromptTitle: "¿Juegas en este partido?",
+        rsvpPromptSub: "Tu respuesta actualiza la lista en vivo al instante.",
+        sysAdminNoPlayTitle: "👑 Cuenta de Administrador del Sistema (pitchpulseleague@gmail.com)",
+        sysAdminNoPlaySub: "Esta cuenta maestra administra la liga y no participa como jugador. Inicia sesión con tu cuenta personal para confirmar asistencia.",
+        yesBtn: "✅ SÍ JUEGO",
+        maybeBtn: "🤔 TAL VEZ",
+        noBtn: "❌ NO PUEDO",
+        playingYesCol: "✅ JUEGAN — SÍ",
+        maybeCol: "🤔 TAL VEZ",
+        notPlayingCol: "❌ NO JUEGAN",
+        noneYet: "Sin jugadores confirmados aún",
+        noneWord: "Ninguno",
+        dirTitle: "👥 Directorio de Jugadores e Historial",
+        dirSub: "Los jugadores y canchas con partidos pasados se conservan permanentemente en el historial.",
+        gamesPlayedBadge: "Partidos",
+        allGamesTitle: "📜 Historial Completo de Partidos",
+        playedWord: "Jugaron",
+        attendedYes: "Asistieron (Sí):",
+        absentNo: "Ausentes (No):",
+        rainChance: "💧 Prob. de Lluvia:",
+        weatherPending: "Clima pendiente de ubicación en mapa",
+        weather7Days: "Pronóstico disponible 7 días antes",
+        clearSunny: "Despejado y Soleado",
+        partlyCloudy: "Parcialmente Nublado",
+        cloudyWord: "Nublado",
+        rainLikely: "Probable Lluvia"
+      }
+    };
+
+    function t(key) {
+      return (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key;
+    }
+
+    function applyThemeAndLanguageUI() {
+      if (currentTheme === "light") {
+        document.body.classList.add("light-mode");
+      } else {
+        document.body.classList.remove("light-mode");
+      }
+
+      const themeLabelDesk = currentTheme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode";
+      const themeLabelMob = currentTheme === "light" ? "🌙 Dark" : "☀️ Light";
+      const langLabelDesk = currentLang === "en" ? "🌐 Español" : "🌐 English";
+      const langLabelMob = currentLang === "en" ? "🌐 ES" : "🌐 EN";
+
+      const td = document.getElementById("theme-btn-desk");
+      const tm = document.getElementById("theme-btn-mob");
+      const ld = document.getElementById("lang-btn-desk");
+      const lm = document.getElementById("lang-btn-mob");
+      if (td) td.textContent = themeLabelDesk;
+      if (tm) tm.textContent = themeLabelMob;
+      if (ld) ld.textContent = langLabelDesk;
+      if (lm) lm.textContent = langLabelMob;
+
+      const sub = document.getElementById("hdr-subtitle");
+      if (sub) sub.textContent = t("subtitle");
+
+      const tu = document.getElementById("tab-upcoming");
+      const th = document.getElementById("tab-history");
+      const ta = document.getElementById("tab-admin");
+      if (tu) tu.textContent = t("tabUpcoming");
+      if (th) th.textContent = t("tabHistory");
+      if (ta) ta.textContent = t("tabAdmin");
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === "en" ? "es" : "en";
+      localStorage.setItem("soccer_lang", currentLang);
+      applyThemeAndLanguageUI();
+      renderAuthBar();
+      renderCurrentTab();
+    }
+
+    function toggleTheme() {
+      currentTheme = currentTheme === "dark" ? "light" : "dark";
+      localStorage.setItem("soccer_theme", currentTheme);
+      applyThemeAndLanguageUI();
+    }
+
+    // =========================================================================
+    // STATE & INITIALIZATION
+    // =========================================================================
     let currentUser = null;
     try {
       currentUser = JSON.parse(localStorage.getItem("soccer_user") || "null");
@@ -96,6 +372,11 @@
     let editingSeriesId = null;
     let editingLocationId = null;
 
+    // Leaflet Map Instances
+    let adminPickerMap = null;
+    let adminPickerMarker = null;
+    let gameCardMaps = {};
+
     let appData = {
       games: [],
       locations: [
@@ -108,13 +389,9 @@
 
     function getTodayIso() {
       const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return y + "-" + m + "-" + day;
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     }
 
-    // Helper for Interactive Time Dropdowns (Hour : Minute : AM/PM)
     function parseTimeParts(timeStr) {
       const raw = String(timeStr || "12:00 PM").trim().toUpperCase();
       const ampm = raw.indexOf("AM") !== -1 ? "AM" : "PM";
@@ -154,7 +431,9 @@
     }
 
     function formatDaysBadges(daysCsv) {
-      const names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const names = currentLang === "es"
+        ? ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"]
+        : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       return String(daysCsv || "").split(",").map(function(d) {
         const idx = parseInt(d.trim(), 10);
         return !isNaN(idx) && names[idx] ? names[idx] : "";
@@ -181,7 +460,7 @@
         try {
           return JSON.parse(text);
         } catch (je) {
-          showBanner("⚠️ Google Apps Script returned an error or permission page instead of JSON. Run initialSetup() in Apps Script and deploy a New Version.", true);
+          showBanner("⚠️ Google Apps Script returned an error page instead of JSON. Run initialSetup() in Apps Script and deploy a New Version.", true);
           return null;
         }
       } catch (err) {
@@ -193,28 +472,27 @@
     async function syncFromBackend() {
       const ind = document.getElementById("sync-indicator");
       try {
-        if (ind) ind.textContent = "🔄 Syncing with Google Sheet...";
+        if (ind) ind.textContent = currentLang === "es" ? "🔄 Sincronizando..." : "🔄 Syncing...";
         const res = await fetch(API_URL + "?action=getPublicData", { method: "GET", redirect: "follow" });
         const text = await res.text();
         let data = null;
         try {
           data = JSON.parse(text);
         } catch (je) {
-          if (ind) ind.textContent = "⚠️ Backend Setup Needed";
-          showBanner("⚠️ Run <b>initialSetup</b> in Apps Script and update your deployment.", true);
+          if (ind) ind.textContent = "⚠️ Setup Needed";
           return;
         }
 
         if (data && data.success) {
           appData = data;
           if (!appData.recurring) appData.recurring = [];
-          if (ind) ind.textContent = "✅ Live Database Connected";
+          if (ind) ind.textContent = currentLang === "es" ? "✅ Conectado en Vivo" : "✅ Live Connected";
           await fetchWeatherForAllGames();
           renderAuthBar();
           renderCurrentTab();
         }
       } catch (e) {
-        if (ind) ind.textContent = "⚠️ Offline / Demo Mode";
+        if (ind) ind.textContent = "⚠️ Offline / Demo";
       }
     }
 
@@ -240,26 +518,26 @@
     function renderWeatherBadge(game) {
       const lat = game.locationDetails && game.locationDetails.lat;
       const lng = game.locationDetails && game.locationDetails.lng;
-      if (!lat || !lng) return '<span class="text-xs text-slate-400">Weather pending GPS coordinates</span>';
+      if (!lat || !lng) return '<span class="text-xs text-slate-400">' + t("weatherPending") + '</span>';
       const daily = weatherCache[lat + "," + lng];
-      if (!daily || !daily.time) return '<span class="text-xs text-slate-400">Forecast available 7 days prior</span>';
+      if (!daily || !daily.time) return '<span class="text-xs text-slate-400">' + t("weather7Days") + '</span>';
 
       const idx = daily.time.indexOf(String(game.Date).slice(0, 10));
-      if (idx === -1) return '<span class="text-xs text-slate-400">Forecast unlocks 7 days prior</span>';
+      if (idx === -1) return '<span class="text-xs text-slate-400">' + t("weather7Days") + '</span>';
 
       const hi = Math.round(daily.temperature_2m_max[idx]);
       const lo = Math.round(daily.temperature_2m_min[idx]);
       const rain = daily.precipitation_probability_max[idx] || 0;
       const code = daily.weathercode[idx];
-      let icon = "☀️", label = "Clear & Sunny";
-      if (code > 0 && code < 3) { icon = "⛅"; label = "Partly Cloudy"; }
-      else if (code >= 3 && code < 50) { icon = "☁️"; label = "Cloudy"; }
-      else if (code >= 50) { icon = "🌧️"; label = "Rain Likely"; }
+      let icon = "☀️", label = t("clearSunny");
+      if (code > 0 && code < 3) { icon = "⛅"; label = t("partlyCloudy"); }
+      else if (code >= 3 && code < 50) { icon = "☁️"; label = t("cloudyWord"); }
+      else if (code >= 50) { icon = "🌧️"; label = t("rainLikely"); }
 
       return '<div class="flex items-center gap-2.5 bg-emerald-950/50 border border-emerald-800/40 px-3 py-2 rounded-xl text-xs">' +
         '<span class="text-xl">' + icon + '</span>' +
         '<div><div class="font-bold text-white">' + label + ' • ' + hi + '°F <span class="text-slate-400 font-normal">/ ' + lo + '°F</span></div>' +
-        '<div class="text-emerald-300">💧 Rain Chance: ' + rain + '%</div></div></div>';
+        '<div class="text-emerald-300">' + t("rainChance") + ' ' + rain + '%</div></div></div>';
     }
 
     function renderAuthBar() {
@@ -276,24 +554,24 @@
           demoBtn.classList.remove("hidden");
         }
         bar.innerHTML = '<button type="button" onclick="openMyProfileModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 hover:bg-emerald-950 cursor-pointer">👤 ' + currentUser.fullName + (currentUser.isAdmin ? ' 👑' : '') + '</button>' +
-          '<button type="button" onclick="logout()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-rose-950/60 border border-rose-800/50 text-rose-300 hover:bg-rose-900/60 cursor-pointer">Logout</button>';
+          '<button type="button" onclick="logout()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-rose-950/60 border border-rose-800/50 text-rose-300 hover:bg-rose-900/60 cursor-pointer">' + t("logoutBtn") + '</button>';
       } else {
         adminTab.classList.add("hidden");
         demoBtn.classList.remove("hidden");
-        bar.innerHTML = '<button type="button" onclick="showLoginModal()" class="px-4 py-2 rounded-xl text-xs font-bold neon-btn">🔑 Login (PIN)</button>' +
-          '<button type="button" onclick="showRegisterModal()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-800/60 text-slate-200 hover:text-white cursor-pointer">✉️ Register (Invite Only)</button>';
+        bar.innerHTML = '<button type="button" onclick="showLoginModal()" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold neon-btn">' + t("loginBtn") + '</button>' +
+          '<button type="button" onclick="showRegisterModal()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-800/60 text-slate-200 hover:text-white cursor-pointer">' + t("registerBtn") + '</button>';
       }
     }
 
     function switchTab(tab) {
       activeTab = tab;
-      ["upcoming", "history", "admin"].forEach(function(t) {
-        const el = document.getElementById("tab-" + t);
+      ["upcoming", "history", "admin"].forEach(function(tKey) {
+        const el = document.getElementById("tab-" + tKey);
         if (!el) return;
-        if (t === tab) {
-          el.className = "px-4 py-2 rounded-xl text-sm font-bold neon-btn";
+        if (tKey === tab) {
+          el.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold neon-btn";
         } else {
-          el.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40 cursor-pointer" + (t === "admin" && (!currentUser || !currentUser.isAdmin) ? " hidden" : "");
+          el.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40 cursor-pointer" + (tKey === "admin" && (!currentUser || !currentUser.isAdmin) ? " hidden" : "");
         }
       });
       renderCurrentTab();
@@ -305,18 +583,21 @@
       renderUpcomingGamesView();
     }
 
+    // =========================================================================
+    // UPCOMING GAMES + INTERACTIVE LEAFLET MAP PER GAME CARD
+    // =========================================================================
     function renderUpcomingGamesView() {
       const container = document.getElementById("view-container");
       const today = getTodayIso();
       const upcoming = (appData.games || []).filter(function(g) { return String(g.Date) >= today; });
 
       if (upcoming.length === 0) {
-        container.innerHTML = '<div class="glass-card rounded-2xl p-10 text-center">' +
-          '<p class="text-lg font-bold text-white mb-2">No Upcoming Games Scheduled Yet</p>' +
-          '<p class="text-sm text-slate-400 mb-5">Log in or register your admin profile in the top right to schedule single or recurring lunchtime matches.</p>' +
-          (currentUser && currentUser.isAdmin ? '<button type="button" onclick="switchTab(\'admin\')" class="neon-btn px-5 py-2.5 rounded-xl text-xs">👑 Open Commissioner Admin</button>' :
-          '<div class="flex justify-center gap-3"><button type="button" onclick="showLoginModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold neon-btn">🔑 Login (PIN)</button>' +
-          '<button type="button" onclick="showRegisterModal()" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-700 text-white cursor-pointer">✉️ Register Profile</button></div>') +
+        container.innerHTML = '<div class="glass-card rounded-2xl p-8 sm:p-10 text-center">' +
+          '<p class="text-lg font-bold text-white mb-2">' + t("noGamesTitle") + '</p>' +
+          '<p class="text-sm text-slate-400 mb-5">' + t("noGamesSub") + '</p>' +
+          (currentUser && currentUser.isAdmin ? '<button type="button" onclick="switchTab(\'admin\')" class="neon-btn px-5 py-2.5 rounded-xl text-xs">' + t("tabAdmin") + '</button>' :
+          '<div class="flex flex-wrap justify-center gap-3"><button type="button" onclick="showLoginModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold neon-btn">' + t("loginBtn") + '</button>' +
+          '<button type="button" onclick="showRegisterModal()" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-700 text-white cursor-pointer">' + t("registerBtn") + '</button></div>') +
           '</div>';
         return;
       }
@@ -340,59 +621,118 @@
       }
 
       const addr = (game.locationDetails && game.locationDetails.address) ? game.locationDetails.address : game.LocationName;
+      const lat = (game.locationDetails && game.locationDetails.lat) ? game.locationDetails.lat : "";
+      const lng = (game.locationDetails && game.locationDetails.lng) ? game.locationDetails.lng : "";
       const notes = (game.locationDetails && game.locationDetails.notes) ? " • " + game.locationDetails.notes : "";
-      const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
+      const mapsUrl = (lat && lng)
+        ? "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(lat + "," + lng)
+        : "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr);
 
-      return '<div class="glass-card rounded-2xl p-6 shadow-xl">' +
+      // Check if logged in as pitchpulseleague@gmail.com (System Admin Only - cannot RSVP as player)
+      const isNonPlayerAdmin = currentUser && isSystemAdminOnly(currentUser.email);
+
+      let rsvpSectionHtml = "";
+      if (isNonPlayerAdmin) {
+        rsvpSectionHtml = '<div class="bg-[#0b130f] p-4 rounded-xl border border-amber-500/40 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
+          '<div><div class="text-sm font-bold text-amber-300">' + t("sysAdminNoPlayTitle") + '</div>' +
+          '<div class="text-xs text-slate-400 mt-0.5">' + t("sysAdminNoPlaySub") + '</div></div>' +
+          '<button type="button" onclick="startEditGame(\'' + game.GameID + '\')" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 cursor-pointer shrink-0">' + t("editGameBtn") + '</button>' +
+        '</div>';
+      } else {
+        rsvpSectionHtml = '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-900/40 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
+          '<div><div class="text-sm font-bold text-white">' + t("rsvpPromptTitle") + '</div><div class="text-xs text-slate-400">' + t("rsvpPromptSub") + '</div></div>' +
+          '<div class="flex flex-wrap gap-2 w-full sm:w-auto">' +
+            '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'Yes\')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'Yes' ? 'bg-[#00f59b] text-[#070b09] shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">' + t("yesBtn") + ' (' + yesList.length + ')</button>' +
+            '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'Maybe\')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'Maybe' ? 'bg-amber-400 text-[#070b09] shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">' + t("maybeBtn") + ' (' + maybeList.length + ')</button>' +
+            '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'No\')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'No' ? 'bg-rose-500 text-white shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">' + t("noBtn") + ' (' + noList.length + ')</button>' +
+          '</div>' +
+        '</div>';
+      }
+
+      return '<div class="glass-card rounded-2xl p-4 sm:p-6 shadow-xl">' +
         '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950/80 pb-4 mb-4">' +
-          '<div><div class="flex items-center gap-2.5 flex-wrap">' +
-            '<h2 class="text-xl font-extrabold text-white">' + game.Title + '</h2>' +
-            (game.SeriesID ? '<span class="px-2 py-0.5 rounded bg-emerald-950/90 text-emerald-300 border border-emerald-700/40 text-[11px] font-bold">🔁 Recurring Series</span>' : '') +
+          '<div><div class="flex items-center gap-2 flex-wrap">' +
+            '<h2 class="text-lg sm:text-xl font-extrabold text-white">' + game.Title + '</h2>' +
+            (game.SeriesID ? '<span class="px-2 py-0.5 rounded bg-emerald-950/90 text-emerald-300 border border-emerald-700/40 text-[11px] font-bold">' + t("recurringBadge") + '</span>' : '') +
             '<span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ' + (isConfirmed ? 'bg-[#00f59b]/20 text-[#00f59b] border border-[#00f59b]/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40') + '">' +
-              (isConfirmed ? '🟢 CONFIRMED — GAME ON' : '🟡 PENDING (' + yesCount + '/' + game.MinThreshold + ' Needed)') +
+              (isConfirmed ? t("confirmedBadge") : t("pendingBadge") + ' (' + yesCount + '/' + game.MinThreshold + ' ' + t("neededWord") + ')') +
             '</span>' +
-            (currentUser && currentUser.isAdmin ? '<button type="button" onclick="startEditGame(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit Game</button>' : '') +
-          '</div><p class="text-sm text-slate-300 mt-1">🗓️ <b>' + game.Date + '</b> at <b>' + game.Time + '</b> • Capped at <b>' + game.MaxCap + ' Players</b></p></div>' +
+            (currentUser && currentUser.isAdmin ? '<button type="button" onclick="startEditGame(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 cursor-pointer">' + t("editGameBtn") + '</button>' : '') +
+          '</div><p class="text-xs sm:text-sm text-slate-300 mt-1">🗓️ <b>' + game.Date + '</b> @ <b>' + game.Time + '</b> • ' + t("cappedAt") + ' <b>' + game.MaxCap + ' ' + t("playersWord") + '</b></p></div>' +
           renderWeatherBadge(game) +
         '</div>' +
-        '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">' +
+
+        '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">' +
           '<div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950">' +
-            '<div class="text-xs uppercase font-bold text-slate-400 mb-1">Pitch Location & Directions</div>' +
+            '<div class="text-xs uppercase font-bold text-slate-400 mb-1">' + t("pitchLocTitle") + '</div>' +
             '<div class="text-sm font-bold text-white">📍 ' + game.LocationName + '</div>' +
             '<div class="text-xs text-slate-400">' + addr + notes + '</div>' +
-            '<a href="' + mapsUrl + '" target="_blank" class="inline-block mt-2 text-xs font-bold text-[#00f59b] hover:underline">🗺️ Open Google Maps Turn-by-Turn Directions &rarr;</a>' +
+            '<div class="flex flex-wrap items-center gap-3 mt-2.5">' +
+              '<a href="' + mapsUrl + '" target="_blank" class="text-xs font-bold text-[#00f59b] hover:underline">' + t("openGmaps") + '</a>' +
+              ((lat && lng) ? '<button type="button" onclick="toggleGameCardMap(\'' + game.GameID + '\', \'' + lat + '\', \'' + lng + '\', \'' + game.LocationName.replace(/'/g, "") + '\')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-700/40 text-xs font-semibold hover:bg-emerald-900 cursor-pointer">' + t("toggleMapBtn") + '</button>' : '') +
+            '</div>' +
           '</div>' +
           '<div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 flex flex-col justify-center">' +
             '<div class="flex justify-between text-xs font-bold mb-1.5">' +
-              '<span class="text-slate-300">Confirmation Threshold (' + game.MinThreshold + ' Min)</span>' +
-              '<span class="text-[#00f59b]">' + yesCount + ' / ' + game.MaxCap + ' Spots Filled</span>' +
+              '<span class="text-slate-300">' + t("thresholdTitle") + ' (' + game.MinThreshold + ' Min)</span>' +
+              '<span class="text-[#00f59b]">' + yesCount + ' / ' + game.MaxCap + ' ' + t("spotsFilled") + '</span>' +
             '</div>' +
             '<div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-[#00f59b] transition-all duration-300" style="width: ' + pct + '%"></div></div>' +
-            '<div class="text-[11px] text-slate-400 mt-1.5">' + (isConfirmed ? 'Minimum threshold reached! Game is officially locked in.' : 'Need ' + Math.max(0, game.MinThreshold - yesCount) + ' more "Yes" RSVP(s) to confirm this game.') + '</div>' +
+            '<div class="text-[11px] text-slate-400 mt-1.5">' + (isConfirmed ? t("minReachedMsg") : Math.max(0, game.MinThreshold - yesCount) + ' ' + t("needMoreMsg")) + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-900/40 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
-          '<div><div class="text-sm font-bold text-white">Are you playing in this game?</div><div class="text-xs text-slate-400">Your status updates the live roster immediately.</div></div>' +
-          '<div class="flex flex-wrap gap-2 w-full sm:w-auto">' +
-            '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'Yes\')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'Yes' ? 'bg-[#00f59b] text-[#070b09] shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">✅ YES (' + yesList.length + ')</button>' +
-            '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'Maybe\')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'Maybe' ? 'bg-amber-400 text-[#070b09] shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">🤔 MAYBE (' + maybeList.length + ')</button>' +
-            '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'No\')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'No' ? 'bg-rose-500 text-white shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">❌ NO (' + noList.length + ')</button>' +
-          '</div>' +
+
+        // Collapsible Interactive Leaflet Map Container for this Game Card
+        '<div id="game-map-wrap-' + game.GameID + '" class="hidden mb-4 rounded-xl overflow-hidden border border-emerald-800/50">' +
+          '<div id="game-map-' + game.GameID + '" class="w-full h-56 sm:h-64"></div>' +
         '</div>' +
+
+        rsvpSectionHtml +
+
         '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">' +
-          '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-[#00f59b] mb-2">✅ PLAYING — YES (' + yesList.length + '/' + game.MaxCap + ')</div><div class="space-y-1 text-slate-200">' + (yesList.length ? yesList.map(function(r, i) { return '<div>' + (i + 1) + '. ' + r.fullName + '</div>'; }).join("") : '<span class="text-slate-500">No confirmed players yet</span>') + '</div></div>' +
-          '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-amber-300 mb-2">🤔 MAYBE (' + maybeList.length + ')</div><div class="space-y-1 text-slate-300">' + (maybeList.length ? maybeList.map(function(r) { return '<div>• ' + r.fullName + '</div>'; }).join("") : '<span class="text-slate-500">None</span>') + '</div></div>' +
-          '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-rose-400 mb-2">❌ NOT PLAYING (' + noList.length + ')</div><div class="space-y-1 text-slate-400">' + (noList.length ? noList.map(function(r) { return '<div>• ' + r.fullName + '</div>'; }).join("") : '<span class="text-slate-500">None</span>') + '</div></div>' +
+          '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-[#00f59b] mb-2">' + t("playingYesCol") + ' (' + yesList.length + '/' + game.MaxCap + ')</div><div class="space-y-1 text-slate-200">' + (yesList.length ? yesList.map(function(r, i) { return '<div>' + (i + 1) + '. ' + r.fullName + '</div>'; }).join("") : '<span class="text-slate-500">' + t("noneYet") + '</span>') + '</div></div>' +
+          '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-amber-300 mb-2">' + t("maybeCol") + ' (' + maybeList.length + ')</div><div class="space-y-1 text-slate-300">' + (maybeList.length ? maybeList.map(function(r) { return '<div>• ' + r.fullName + '</div>'; }).join("") : '<span class="text-slate-500">' + t("noneWord") + '</span>') + '</div></div>' +
+          '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-rose-400 mb-2">' + t("notPlayingCol") + ' (' + noList.length + ')</div><div class="space-y-1 text-slate-400">' + (noList.length ? noList.map(function(r) { return '<div>• ' + r.fullName + '</div>'; }).join("") : '<span class="text-slate-500">' + t("noneWord") + '</span>') + '</div></div>' +
         '</div></div>';
     }
 
+    function toggleGameCardMap(gameId, lat, lng, locName) {
+      const wrap = document.getElementById("game-map-wrap-" + gameId);
+      if (!wrap) return;
+      const isHidden = wrap.classList.contains("hidden");
+      if (isHidden) {
+        wrap.classList.remove("hidden");
+        setTimeout(function() {
+          const latNum = parseFloat(lat);
+          const lngNum = parseFloat(lng);
+          if (isNaN(latNum) || isNaN(lngNum)) return;
+          if (gameCardMaps[gameId]) {
+            gameCardMaps[gameId].remove();
+          }
+          const map = L.map("game-map-" + gameId).setView([latNum, lngNum], 15);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap"
+          }).addTo(map);
+          L.marker([latNum, lngNum]).addTo(map).bindPopup("<b>⚽ " + locName + "</b>").openPopup();
+          gameCardMaps[gameId] = map;
+        }, 60);
+      } else {
+        wrap.classList.add("hidden");
+      }
+    }
+
+    // =========================================================================
+    // PAST GAMES & PLAYER DIRECTORY VIEW
+    // =========================================================================
     function renderHistoryAndDirectoryView() {
       const container = document.getElementById("view-container");
-      // Show all players in historical directory (even suspended ones if they have past history, marked clearly)
-      const profilesList = Object.values(appData.profiles || {});
+      // Filter out the non-playing system admin account from player directory stats unless they have games
+      const profilesList = Object.values(appData.profiles || {}).filter(function(p) {
+        return !isSystemAdminOnly(p.email);
+      });
 
       container.innerHTML = '<div class="space-y-6">' +
-        '<div class="glass-card rounded-2xl p-6"><h2 class="text-lg font-extrabold text-white mb-1">👥 League Player Directory & Attendance History</h2><p class="text-xs text-slate-400 mb-4">Players and venues with past match participation are permanently preserved in league history.</p>' +
+        '<div class="glass-card rounded-2xl p-4 sm:p-6"><h2 class="text-lg font-extrabold text-white mb-1">' + t("dirTitle") + '</h2><p class="text-xs text-slate-400 mb-4">' + t("dirSub") + '</p>' +
         '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">' +
         (profilesList.length === 0 ? '<p class="text-xs text-slate-500">No registered players yet.</p>' : '') +
         profilesList.map(function(p) {
@@ -400,21 +740,24 @@
           const isSusp = String(p.status || 'Active').toLowerCase() === 'suspended';
           return '<div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 flex justify-between items-center">' +
             '<div><div class="font-bold text-white text-sm">' + p.fullName + (p.role === 'Admin' ? ' 👑' : '') + (isSusp ? ' <span class="text-[10px] text-rose-400">(Inactive)</span>' : '') + '</div><a href="mailto:' + p.email + '" class="text-xs text-[#00f59b] hover:underline">' + p.email + '</a></div>' +
-            '<span class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 text-xs font-bold">' + attended + ' Games</span></div>';
+            '<span class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 text-xs font-bold">' + attended + ' ' + t("gamesPlayedBadge") + '</span></div>';
         }).join("") + '</div></div>' +
-        '<div class="glass-card rounded-2xl p-6"><h2 class="text-lg font-extrabold text-white mb-4">📜 All Games & Attendance Log</h2><div class="space-y-3">' +
+        '<div class="glass-card rounded-2xl p-4 sm:p-6"><h2 class="text-lg font-extrabold text-white mb-4">' + t("allGamesTitle") + '</h2><div class="space-y-3">' +
         ((appData.games || []).length === 0 ? '<p class="text-xs text-slate-500">No games recorded yet.</p>' : '') +
         (appData.games || []).map(function(g) {
           const yesNames = (g.roster || []).filter(function(r) { return r.status === "Yes"; }).map(function(r) { return r.fullName; });
           const noNames = (g.roster || []).filter(function(r) { return r.status === "No"; }).map(function(r) { return r.fullName; });
-          return '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-950"><div class="flex justify-between items-center mb-2">' +
+          return '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-950"><div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">' +
             '<span class="font-bold text-white text-sm">' + g.Title + ' — ' + g.Date + ' @ ' + g.Time + ' (' + g.LocationName + ')</span>' +
-            '<span class="text-xs font-bold px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300">' + yesNames.length + ' Played</span></div>' +
-            '<div class="text-xs text-slate-300"><b>Attended (Yes):</b> ' + (yesNames.length ? yesNames.join(", ") : "None") + '</div>' +
-            '<div class="text-xs text-slate-500 mt-1"><b>Absent (No):</b> ' + (noNames.length ? noNames.join(", ") : "None") + '</div></div>';
+            '<span class="text-xs font-bold px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 w-fit">' + yesNames.length + ' ' + t("playedWord") + '</span></div>' +
+            '<div class="text-xs text-slate-300"><b>' + t("attendedYes") + '</b> ' + (yesNames.length ? yesNames.join(", ") : t("noneWord")) + '</div>' +
+            '<div class="text-xs text-slate-500 mt-1"><b>' + t("absentNo") + '</b> ' + (noNames.length ? noNames.join(", ") : t("noneWord")) + '</div></div>';
         }).join("") + '</div></div></div>';
     }
 
+    // =========================================================================
+    // COMMISSIONER ADMIN VIEW + INTERACTIVE LEAFLET FIELD PICKER
+    // =========================================================================
     function renderAdminView() {
       const container = document.getElementById("view-container");
       const profilesList = Object.values(appData.profiles || {});
@@ -436,12 +779,12 @@
         <div class="space-y-6">
 
           <!-- 1. INVITE NEW PLAYERS & TRACK INVITATION STATUS -->
-          <div class="glass-card rounded-2xl p-6">
+          <div class="glass-card rounded-2xl p-4 sm:p-6">
             <h3 class="text-lg font-extrabold text-white mb-1">✉️ 1. Player Invitations & Invite Tracker</h3>
             <p class="text-xs text-slate-400 mb-4">Send new invitations and see everyone who has been invited, whether they have registered yet, or resend/revoke their invite.</p>
             <div class="flex flex-col sm:flex-row gap-2 max-w-lg mb-5">
-              <input id="inv-email" type="email" placeholder="player@email.com" class="flex-1 bg-[#0b130f] border border-emerald-900 rounded-xl px-3.5 py-2 text-sm text-white">
-              <button type="button" onclick="adminInvitePlayer()" class="neon-btn px-5 py-2 rounded-xl text-sm">Send Email Invite</button>
+              <input id="inv-email" type="email" placeholder="player@email.com" class="flex-1 bg-[#0b130f] border border-emerald-900 rounded-xl px-3.5 py-2.5 text-sm text-white">
+              <button type="button" onclick="adminInvitePlayer()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">Send Email Invite</button>
             </div>
             <div class="border-t border-emerald-950 pt-4">
               <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Sent Invitations (${invitesList.length})</h4>
@@ -473,8 +816,8 @@
             </div>
           </div>
 
-          <!-- 2. RECURRING GAME SCHEDULE BUILDER & EDITOR (With Effective Date Cutoffs) -->
-          <div id="admin-recurring-form-card" class="glass-card rounded-2xl p-6 ${editingSeries ? 'border-2 border-[#00f59b]' : ''}">
+          <!-- 2. RECURRING GAME SCHEDULE BUILDER & EDITOR -->
+          <div id="admin-recurring-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingSeries ? 'border-2 border-[#00f59b]' : ''}">
             <div class="flex justify-between items-center mb-1">
               <h3 class="text-lg font-extrabold text-white">
                 ${editingSeries ? `🔁 Editing Recurring Schedule: ${editingSeries.Title}` : '🔁 2. Recurring Game Schedule Builder'}
@@ -482,7 +825,7 @@
               ${editingSeries ? `<button type="button" onclick="cancelEditSeries()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Series Edit</button>` : ''}
             </div>
             <p class="text-xs text-slate-400 mb-4">
-              Automatically schedule regular games across a date period. When editing or stopping a recurring schedule, set the <b>Effective Change Date</b> (today or a future date) so games scheduled before that date remain untouched!
+              Schedule regular games across a date period. When editing or stopping a recurring schedule, set the <b>Effective Change Date</b> (today or a future date) so games scheduled before that date remain untouched!
             </p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
@@ -522,7 +865,6 @@
               </div>
             </div>
 
-            <!-- Days of the Week Checkboxes -->
             <div class="mb-4">
               <label class="text-xs text-slate-400 block mb-2">Days of the Week</label>
               <div class="flex flex-wrap gap-2">
@@ -535,11 +877,10 @@
               </div>
             </div>
 
-            <button type="button" onclick="adminSaveRecurringSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">
+            <button type="button" onclick="adminSaveRecurringSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm w-full sm:w-auto">
               ${editingSeries ? '💾 Apply Recurring Changes (On/After Effective Date)' : '🔁 Create Recurring Schedule & Generate Games'}
             </button>
 
-            <!-- Active Recurring Schedules List -->
             <div class="border-t border-emerald-950 mt-6 pt-4">
               <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Active Recurring Schedules (${recurringList.length})</h4>
               <div class="space-y-2">
@@ -560,8 +901,8 @@
             </div>
           </div>
 
-          <!-- 3. SCHEDULE OR EDIT SINGLE GAME (With Interactive Time Selector) -->
-          <div id="admin-game-form-card" class="glass-card rounded-2xl p-6 ${editingGame ? 'border-2 border-amber-400' : ''}">
+          <!-- 3. SCHEDULE OR EDIT SINGLE GAME -->
+          <div id="admin-game-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingGame ? 'border-2 border-amber-400' : ''}">
             <div class="flex justify-between items-center mb-1">
               <h3 class="text-lg font-extrabold text-white">${editingGame ? `✏️ Editing Single Game: ${editingGame.Title}` : '📅 3. Schedule or Edit Single Game'}</h3>
               ${editingGame ? `<button type="button" onclick="cancelEditGame()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Edit</button>` : ''}
@@ -597,7 +938,7 @@
                 <input id="g-max" type="number" value="${editingGame ? editingGame.MaxCap : 18}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
               </div>
             </div>
-            <button type="button" onclick="adminSaveGameSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">
+            <button type="button" onclick="adminSaveGameSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm w-full sm:w-auto">
               ${editingGame ? '💾 Save Changes & Notify RSVPed Players' : '⚡ Publish Single Game to Hub'}
             </button>
 
@@ -620,21 +961,52 @@
             </div>
           </div>
 
-          <!-- 4. FIELD LOCATIONS (History-Protected: Deactivate vs Delete) -->
-          <div id="admin-loc-form-card" class="glass-card rounded-2xl p-6 ${editingLoc ? 'border-2 border-amber-400' : ''}">
+          <!-- 4. INTERACTIVE LEAFLET FIELD PICKER & LOCATION MANAGER -->
+          <div id="admin-loc-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingLoc ? 'border-2 border-amber-400' : ''}">
             <div class="flex justify-between items-center mb-1">
-              <h3 class="text-lg font-extrabold text-white">${editingLoc ? `✏️ Editing Location: ${editingLoc.Name}` : '📍 4. Manage Field Locations (History Protected)'}</h3>
+              <h3 class="text-lg font-extrabold text-white">${editingLoc ? `✏️ Editing Location: ${editingLoc.Name}` : '📍 4. Interactive Map Field Pinpointer & Location Manager'}</h3>
               ${editingLoc ? `<button type="button" onclick="cancelEditLocation()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Edit</button>` : ''}
             </div>
-            <p class="text-xs text-slate-400 mb-4">Fields used in past or existing games are protected and can only be <b>Deactivated</b> (never deleted) so past game history stays accurate.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-              <input id="loc-name" type="text" value="${editingLoc ? editingLoc.Name : ''}" placeholder="Field Name (e.g. Bradley Park Field 2)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-              <input id="loc-addr" type="text" value="${editingLoc ? editingLoc.Address : ''}" placeholder="Full Street Address or City, State" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-              <input id="loc-lat" type="text" value="${editingLoc ? (editingLoc.Latitude || '') : ''}" placeholder="Latitude (e.g. 33.1434)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-              <input id="loc-lng" type="text" value="${editingLoc ? (editingLoc.Longitude || '') : ''}" placeholder="Longitude (e.g. -117.1661)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-              <input id="loc-notes" type="text" value="${editingLoc ? (editingLoc.Notes || '') : ''}" placeholder="Field Notes (e.g. Parking lot code, turf rules)" class="sm:col-span-2 bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+            <p class="text-xs text-slate-400 mb-4">
+              Search any park/address below or <b>click/drag the pin directly on the map</b> to pinpoint the exact soccer pitch—no manual Latitude/Longitude typing needed!
+            </p>
+
+            <!-- Address / Park Auto-Search Bar -->
+            <div class="flex flex-col sm:flex-row gap-2 mb-3">
+              <input id="map-search-query" type="text" placeholder="Search park, soccer complex, or address (e.g. Bradley Park San Marcos CA)..." class="flex-1 bg-[#0b130f] border border-emerald-800 rounded-xl px-3.5 py-2.5 text-sm text-white">
+              <button type="button" onclick="searchFieldOnMap()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-900/80 text-[#00f59b] border border-[#00f59b]/40 hover:bg-emerald-800 cursor-pointer">
+                🔍 Search & Pin on Map
+              </button>
             </div>
-            <button type="button" onclick="adminSaveLocationSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">
+
+            <!-- Interactive Leaflet Map Canvas -->
+            <div class="rounded-xl overflow-hidden border border-emerald-800/60 mb-4">
+              <div id="admin-picker-map" class="w-full h-64 sm:h-72"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Field / Pitch Name</label>
+                <input id="loc-name" type="text" value="${editingLoc ? editingLoc.Name : ''}" placeholder="e.g. Bradley Park Field #3" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Street Address (Auto-filled from map)</label>
+                <input id="loc-addr" type="text" value="${editingLoc ? editingLoc.Address : ''}" placeholder="Address or Google Maps query" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Latitude (Auto-filled by clicking map)</label>
+                <input id="loc-lat" type="text" value="${editingLoc ? (editingLoc.Latitude || '') : '33.1434'}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-emerald-300 font-mono">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Longitude (Auto-filled by clicking map)</label>
+                <input id="loc-lng" type="text" value="${editingLoc ? (editingLoc.Longitude || '') : '-117.1661'}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-emerald-300 font-mono">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="text-xs text-slate-400 block mb-1">Field Notes (Optional)</label>
+                <input id="loc-notes" type="text" value="${editingLoc ? (editingLoc.Notes || '') : ''}" placeholder="e.g. Park near north gate, bring dark & white shirts" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+            </div>
+            <button type="button" onclick="adminSaveLocationSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm w-full sm:w-auto">
               ${editingLoc ? '💾 Update Field Location' : '➕ Save New Field Location'}
             </button>
 
@@ -646,15 +1018,15 @@
                   return `
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border ${isInactive ? 'border-rose-900/50 opacity-75' : 'border-emerald-950'} text-xs">
                       <div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
                           <b class="text-white text-sm">📍 ${l.Name}</b>
                           <span class="px-2 py-0.5 rounded font-bold ${isInactive ? 'bg-rose-950 text-rose-300' : 'bg-emerald-950 text-[#00f59b]'}">${isInactive ? 'Deactivated' : 'Active'}</span>
                           ${l.hasHistory ? '<span class="text-[11px] text-slate-400">🔒 Has Game History</span>' : ''}
                         </div>
                         <div class="text-slate-400 mt-0.5">${l.Address} • GPS: ${l.Latitude || 'N/A'}, ${l.Longitude || 'N/A'}</div>
                       </div>
-                      <div class="flex items-center gap-2">
-                        <button type="button" onclick="startEditLocation('${l.LocationID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit</button>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="startEditLocation('${l.LocationID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit on Map</button>
                         <button type="button" onclick="adminToggleLocation('${l.LocationID}', '${isInactive ? 'Active' : 'Inactive'}')" class="px-3 py-1.5 rounded-lg font-bold cursor-pointer ${isInactive ? 'bg-emerald-800 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
                           ${isInactive ? '✅ Reactivate' : '⏸️ Deactivate'}
                         </button>
@@ -670,15 +1042,16 @@
           </div>
 
           <!-- 5. PLAYER MANAGEMENT, CO-ADMINS & IMMUTABLE SYSTEM ADMIN PROTECTION -->
-          <div class="glass-card rounded-2xl p-6">
+          <div class="glass-card rounded-2xl p-4 sm:p-6">
             <h3 class="text-lg font-extrabold text-white mb-1">🛡️ 5. Manage Players, Co-Admins & Account Suspensions</h3>
             <p class="text-xs text-slate-400 mb-4">
-              Players who have participated in past games can only be <b>Suspended</b> (never deleted) so past rosters remain accurate. Primary System Admins (<b>pitchpulseleague@gmail.com</b> & backup <b>ralph@me.com</b>) are permanently protected.
+              Players who participated in past games can only be <b>Suspended</b> (never deleted) so past rosters stay intact. Primary System Admin (<b>pitchpulseleague@gmail.com</b>) and backup recovery (<b>ralph@me.com</b>) are permanently protected.
             </p>
             <div class="space-y-2">
               ${profilesList.length === 0 ? '<p class="text-xs text-slate-500">No players registered yet.</p>' : ''}
               ${profilesList.map(p => {
                 const isProt = p.isProtected || isProtectedEmail(p.email);
+                const isSysOnly = isSystemAdminOnly(p.email);
                 const isAdmin = p.role === "Admin" || isProt;
                 const isSuspended = !isProt && String(p.status || "Active").toLowerCase() === "suspended";
                 return `
@@ -688,7 +1061,7 @@
                         <span class="font-bold text-white text-sm ${isSuspended ? 'line-through text-slate-400' : ''}">${p.fullName}</span>
                         <span class="text-slate-400">${p.email}</span>
                         <span class="px-2 py-0.5 rounded font-bold ${isAdmin ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-300'}">
-                          ${isProt ? '🛡️ Protected System Admin' : (isAdmin ? '👑 Co-Admin' : 'Player')}
+                          ${isSysOnly ? '🛡️ System Admin (Non-Player)' : (isProt ? '🛡️ Protected Admin' : (isAdmin ? '👑 Co-Admin (Plays)' : 'Player'))}
                         </span>
                         <span class="px-2 py-0.5 rounded font-bold ${isSuspended ? 'bg-rose-600 text-white' : 'bg-emerald-950 text-[#00f59b]'}">
                           ${isSuspended ? '🚫 SUSPENDED' : 'Active'}
@@ -701,7 +1074,7 @@
                         <span class="text-xs text-emerald-400 font-semibold italic">Immutable Master Account</span>
                       ` : `
                         <button type="button" onclick="adminToggleRole('${p.email}', '${isAdmin ? 'Player' : 'Admin'}')" class="px-2.5 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 cursor-pointer">
-                          ${isAdmin ? 'Demote to Player' : 'Make Admin'}
+                          ${isAdmin ? 'Demote to Player' : 'Make Co-Admin'}
                         </button>
                         <button type="button" onclick="adminToggleSuspend('${p.email}', '${isSuspended ? 'Active' : 'Suspended'}')" class="px-2.5 py-1.5 rounded-lg font-bold cursor-pointer ${isSuspended ? 'bg-emerald-700 text-white hover:bg-emerald-600' : 'bg-amber-600/30 text-amber-200 border border-amber-500/40 hover:bg-amber-600/50'}">
                           ${isSuspended ? '✅ Reactivate' : '⏸️ Suspend'}
@@ -720,6 +1093,96 @@
           </div>
         </div>
       `;
+
+      // Initialize the interactive Leaflet Field Picker Map
+      setTimeout(initAdminLocationPickerMap, 80);
+    }
+
+    // =========================================================================
+    // INTERACTIVE LEAFLET ADMIN FIELD PICKER & GEOCODING
+    // =========================================================================
+    function initAdminLocationPickerMap() {
+      const mapEl = document.getElementById("admin-picker-map");
+      if (!mapEl || typeof L === "undefined") return;
+
+      if (adminPickerMap) {
+        adminPickerMap.remove();
+        adminPickerMap = null;
+      }
+
+      const latInput = document.getElementById("loc-lat");
+      const lngInput = document.getElementById("loc-lng");
+      let startLat = parseFloat(latInput && latInput.value ? latInput.value : "33.1434");
+      let startLng = parseFloat(lngInput && lngInput.value ? lngInput.value : "-117.1661");
+      if (isNaN(startLat) || isNaN(startLng)) {
+        startLat = 33.1434;
+        startLng = -117.1661;
+      }
+
+      adminPickerMap = L.map("admin-picker-map").setView([startLat, startLng], 14);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors"
+      }).addTo(adminPickerMap);
+
+      adminPickerMarker = L.marker([startLat, startLng], { draggable: true }).addTo(adminPickerMap);
+      adminPickerMarker.bindPopup("<b>⚽ Drag me or click anywhere on the map to pinpoint the field!</b>").openPopup();
+
+      adminPickerMarker.on("dragend", function(e) {
+        const pos = e.target.getLatLng();
+        updatePickerCoordsAndReverseGeocode(pos.lat, pos.lng);
+      });
+
+      adminPickerMap.on("click", function(e) {
+        adminPickerMarker.setLatLng(e.latlng);
+        updatePickerCoordsAndReverseGeocode(e.latlng.lat, e.latlng.lng);
+      });
+    }
+
+    async function updatePickerCoordsAndReverseGeocode(lat, lng) {
+      const latIn = document.getElementById("loc-lat");
+      const lngIn = document.getElementById("loc-lng");
+      const addrIn = document.getElementById("loc-addr");
+      if (latIn) latIn.value = lat.toFixed(6);
+      if (lngIn) lngIn.value = lng.toFixed(6);
+
+      try {
+        const res = await fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng);
+        const data = await res.json();
+        if (data && data.display_name && addrIn) {
+          addrIn.value = data.display_name;
+        }
+      } catch (e) {}
+    }
+
+    async function searchFieldOnMap() {
+      const q = document.getElementById("map-search-query").value.trim();
+      if (!q) return alert("Enter a park name, city, or street address to search.");
+      try {
+        const res = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(q));
+        const results = await res.json();
+        if (!results || results.length === 0) {
+          return alert("Location not found. Try adding the city or state (e.g., 'Bradley Park San Marcos CA').");
+        }
+        const hit = results[0];
+        const lat = parseFloat(hit.lat);
+        const lng = parseFloat(hit.lon);
+
+        document.getElementById("loc-lat").value = lat.toFixed(6);
+        document.getElementById("loc-lng").value = lng.toFixed(6);
+        document.getElementById("loc-addr").value = hit.display_name;
+        const nameIn = document.getElementById("loc-name");
+        if (nameIn && !nameIn.value.trim()) {
+          nameIn.value = hit.display_name.split(",")[0];
+        }
+
+        if (adminPickerMap && adminPickerMarker) {
+          adminPickerMap.setView([lat, lng], 16);
+          adminPickerMarker.setLatLng([lat, lng]);
+          adminPickerMarker.bindPopup("<b>📍 " + hit.display_name.split(",")[0] + "</b>").openPopup();
+        }
+      } catch (e) {
+        alert("Map search error: " + e.message);
+      }
     }
 
     // =========================================================================
@@ -729,6 +1192,9 @@
       if (!currentUser) {
         showLoginModal();
         return;
+      }
+      if (isSystemAdminOnly(currentUser.email)) {
+        return showBanner("pitchpulseleague@gmail.com is the System Admin account and cannot RSVP as a player.", true);
       }
       if (!isProtectedEmail(currentUser.email) && String(currentUser.status || "Active").toLowerCase() === "suspended") {
         return showBanner("Your account is currently suspended. Please contact the League Admin.", true);
@@ -772,7 +1238,6 @@
       } else if (res) showBanner(res.error, true);
     }
 
-    // Recurring Schedule Handlers
     function startEditSeries(seriesId) {
       editingSeriesId = seriesId;
       renderAdminView();
@@ -843,7 +1308,6 @@
       } else if (res) showBanner(res.error, true);
     }
 
-    // Single Game Handlers
     function startEditGame(gameId) {
       editingGameId = gameId;
       switchTab("admin");
@@ -896,7 +1360,6 @@
       }
     }
 
-    // Location Handlers
     function startEditLocation(locId) {
       editingLocationId = locId;
       renderAdminView();
@@ -961,7 +1424,6 @@
       } else if (res) showBanner(res.error, true);
     }
 
-    // Player & Role Handlers
     async function adminToggleRole(targetEmail, newRole) {
       if (isProtectedEmail(targetEmail)) return alert("Protected System Admin accounts cannot be demoted.");
       if (!confirm("Update " + targetEmail + " role to " + newRole + "?")) return;
@@ -996,7 +1458,7 @@
     }
 
     function enableDemoAdmin() {
-      currentUser = { email: "pitchpulseleague@gmail.com", fullName: "League Commissioner (Demo)", role: "Admin", status: "Active", isAdmin: true, isProtected: true };
+      currentUser = { email: "pitchpulseleague@gmail.com", fullName: "System Admin (Demo)", role: "Admin", status: "Active", isAdmin: true, isProtected: true, isSystemAdminOnly: true };
       localStorage.setItem("soccer_user", JSON.stringify(currentUser));
       renderAuthBar();
       switchTab("admin");
@@ -1009,7 +1471,7 @@
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
           <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
-            <h3 class="text-lg font-extrabold text-white mb-1">🔑 Player & Admin Login</h3>
+            <h3 class="text-lg font-extrabold text-white mb-1">${t("loginBtn")}</h3>
             <p class="text-xs text-slate-400 mb-4">Enter your email and 6-digit PIN code.</p>
             <input id="l-email" type="email" placeholder="Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
             <input id="l-pin" type="password" maxlength="6" inputmode="numeric" placeholder="6-Digit PIN" class="w-full mb-2 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white tracking-widest">
@@ -1044,7 +1506,7 @@
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
           <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
-            <h3 class="text-lg font-extrabold text-white mb-1">✉️ Create Player Profile</h3>
+            <h3 class="text-lg font-extrabold text-white mb-1">${t("registerBtn")}</h3>
             <p class="text-xs text-slate-400 mb-4">Your email must be invited by a League Admin first.</p>
             <input id="r-name" type="text" placeholder="Your Full Name" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
             <input id="r-email" type="email" placeholder="Invited Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
@@ -1086,7 +1548,7 @@
             
             <label class="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl text-xs text-amber-200 mb-4 cursor-pointer">
               <input id="f-backup" type="checkbox" class="mt-0.5 accent-[#00f59b]">
-              <span><b>Emergency System Admin Recovery:</b> Send the reset code for the main admin account to backup address <b>ralph@me.com</b></span>
+              <span><b>Emergency System Admin Recovery:</b> Send the reset code for <b>pitchpulseleague@gmail.com</b> to backup address <b>ralph@me.com</b></span>
             </label>
 
             <div class="flex justify-end gap-2">
@@ -1140,7 +1602,7 @@
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
           <div class="glass-card rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
             <h3 class="text-lg font-extrabold text-white">${currentUser.fullName}</h3>
-            <p class="text-xs text-[#00f59b] mb-4">${currentUser.email} • ${currentUser.role || 'Player'}</p>
+            <p class="text-xs text-[#00f59b] mb-4">${currentUser.email} • ${isSystemAdminOnly(currentUser.email) ? 'System Administrator (Non-Player)' : (currentUser.role || 'Player')}</p>
             <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">My Match RSVP History (${myHistory.length})</h4>
             <div class="space-y-2 mb-5">
               ${myHistory.length ? myHistory.map(g => {
@@ -1171,6 +1633,8 @@
       switchTab("upcoming");
     }
 
+    // Boot Application
+    applyThemeAndLanguageUI();
     renderAuthBar();
     renderCurrentTab();
     syncFromBackend();
