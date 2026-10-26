@@ -37,7 +37,7 @@
     }
 
     /* ======================================================================
-       HIGH-CONTRAST LIGHT MODE OVERRIDES (Fixes all Amber/Yellow legibility)
+       HIGH-CONTRAST LIGHT MODE OVERRIDES
        ====================================================================== */
     body.light-mode {
       background-color: #f1f5f9 !important;
@@ -100,7 +100,6 @@
     body.light-mode .bg-amber-500\/20:hover {
       background-color: #fde68a !important;
     }
-    /* High-contrast Rose/Red for Delete & Revoke in Light Mode */
     body.light-mode .bg-rose-950,
     body.light-mode .bg-rose-950\/60 {
       background-color: #ffe4e6 !important;
@@ -184,28 +183,22 @@
           <button type="button" onclick="toggleLanguage()" id="lang-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 hover:bg-emerald-950 cursor-pointer">🌐 Español</button>
           <button type="button" onclick="toggleTheme()" id="theme-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-amber-500/40 text-amber-300 hover:bg-emerald-950 cursor-pointer">☀️ Light Mode</button>
         </div>
-        <div id="auth-bar" class="flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto">
-          <button type="button" onclick="showLoginModal()" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold neon-btn">🔑 Login (PIN)</button>
-          <button type="button" onclick="showRegisterModal()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-800/60 text-slate-200 hover:text-white cursor-pointer">
-            ✉️ Register (Invite Only)
-          </button>
-        </div>
+        <div id="auth-bar" class="flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto"></div>
       </div>
     </div>
   </header>
 
   <!-- Main Content Container -->
   <div class="max-w-5xl mx-auto px-3 sm:px-4 mt-5">
-    <!-- Navigation Tabs -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-4 mb-6">
+    <!-- Navigation Tabs (Hidden until authenticated!) -->
+    <div id="nav-tabs-bar" class="hidden flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-4 mb-6">
       <div class="flex flex-wrap gap-2">
         <button type="button" onclick="switchTab('upcoming')" id="tab-upcoming" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold neon-btn"></button>
         <button type="button" onclick="switchTab('history')" id="tab-history" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40 cursor-pointer"></button>
         <button type="button" onclick="switchTab('admin')" id="tab-admin" class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] text-amber-300 border border-amber-500/40 hidden cursor-pointer"></button>
       </div>
-      <div class="flex items-center justify-between sm:justify-end gap-3">
-        <span id="sync-indicator" class="text-xs text-emerald-400/80">🔄 Connecting...</span>
-        <button type="button" onclick="enableDemoAdmin()" id="demo-btn" class="text-xs text-slate-400 hover:text-[#00f59b] underline cursor-pointer">Demo Admin</button>
+      <div class="flex items-center justify-end gap-3">
+        <span id="sync-indicator" class="text-xs text-emerald-400/80"></span>
       </div>
     </div>
 
@@ -250,8 +243,10 @@
         loginBtn: "🔑 Login (PIN)",
         registerBtn: "✉️ Register (Invite Only)",
         logoutBtn: "Logout",
+        lockedTitle: "🔒 Private League Portal — Login Required",
+        lockedSub: "All match schedules, field locations, and player rosters are private to invited Pitch Pulse League members. Please log in with your 6-digit PIN or register your invited email address.",
         noGamesTitle: "No Upcoming Games Scheduled Yet",
-        noGamesSub: "Log in or register your profile in the top right to view or schedule matches.",
+        noGamesSub: "Check back soon or open the Commissioner Admin tab to schedule matches.",
         confirmedBadge: "🟢 CONFIRMED — GAME ON",
         pendingBadge: "🟡 PENDING",
         neededWord: "Needed",
@@ -306,8 +301,10 @@
         loginBtn: "🔑 Iniciar Sesión (PIN)",
         registerBtn: "✉️ Registrarse (Con Invitación)",
         logoutBtn: "Salir",
+        lockedTitle: "🔒 Portal Privado de la Liga — Inicia Sesión",
+        lockedSub: "Todos los horarios, ubicaciones de canchas y listas de jugadores son privados para miembros invitados. Inicia sesión con tu PIN de 6 dígitos o regístrate con tu correo invitado.",
         noGamesTitle: "No Hay Partidos Programados Aún",
-        noGamesSub: "Inicia sesión o regístrate arriba a la derecha para ver o programar partidos.",
+        noGamesSub: "Vuelve pronto o abre el Panel de Administración para programar partidos.",
         confirmedBadge: "🟢 CONFIRMADO — ¡HAY PARTIDO!",
         pendingBadge: "🟡 PENDIENTE",
         neededWord: "Mínimo",
@@ -407,11 +404,17 @@
     }
 
     // =========================================================================
-    // STATE & INITIALIZATION
+    // STATE & STRICT SESSION INITIALIZATION (Purges any old Demo Admin state!)
     // =========================================================================
     let currentUser = null;
     try {
-      currentUser = JSON.parse(localStorage.getItem("soccer_user") || "null");
+      const saved = JSON.parse(localStorage.getItem("soccer_user") || "null");
+      // Require a real PIN in session; purge any old Demo Admin session that lacks a real PIN
+      if (saved && saved.email && saved.pin && String(saved.fullName || "").indexOf("(Demo)") === -1) {
+        currentUser = saved;
+      } else {
+        localStorage.removeItem("soccer_user");
+      }
     } catch (e) {
       localStorage.removeItem("soccer_user");
     }
@@ -426,11 +429,10 @@
     let adminPickerMarker = null;
     let gameCardMaps = {};
 
+    // Empty until authenticated
     let appData = {
       games: [],
-      locations: [
-        { LocationID: "LOC_1", Name: "Central Turf Field", Address: "San Marcos, CA", Latitude: "33.1434", Longitude: "-117.1661", Notes: "Bring dark and white shirts", LocationStatus: "Active", hasHistory: false }
-      ],
+      locations: [],
       profiles: {},
       invites: [],
       recurring: []
@@ -497,8 +499,13 @@
       b.classList.remove("hidden");
     }
 
+    // Automatically attaches authenticated user's email & PIN to every backend request
     async function apiPost(payload) {
       try {
+        if (currentUser) {
+          if (!payload.requesterEmail) payload.requesterEmail = currentUser.email;
+          if (!payload.requesterPin) payload.requesterPin = currentUser.pin;
+        }
         const res = await fetch(API_URL, {
           method: "POST",
           redirect: "follow",
@@ -509,7 +516,7 @@
         try {
           return JSON.parse(text);
         } catch (je) {
-          showBanner("⚠️ Google Apps Script returned an error page instead of JSON. Run initialSetup() in Apps Script and deploy a New Version.", true);
+          showBanner("⚠️ Google Apps Script returned an error page instead of JSON. Make sure you deployed the latest Code.gs as a New Version.", true);
           return null;
         }
       } catch (err) {
@@ -519,29 +526,35 @@
     }
 
     async function syncFromBackend() {
-      const ind = document.getElementById("sync-indicator");
-      try {
-        if (ind) ind.textContent = currentLang === "es" ? "🔄 Sincronizando..." : "🔄 Syncing...";
-        const res = await fetch(API_URL + "?action=getPublicData", { method: "GET", redirect: "follow" });
-        const text = await res.text();
-        let data = null;
-        try {
-          data = JSON.parse(text);
-        } catch (je) {
-          if (ind) ind.textContent = "⚠️ Setup Needed";
-          return;
-        }
+      if (!currentUser || !currentUser.email || !currentUser.pin) {
+        renderAuthBar();
+        renderCurrentTab();
+        return;
+      }
 
-        if (data && data.success) {
-          appData = data;
-          if (!appData.recurring) appData.recurring = [];
-          if (ind) ind.textContent = currentLang === "es" ? "✅ Conectado en Vivo" : "✅ Live Connected";
-          await fetchWeatherForAllGames();
-          renderAuthBar();
-          renderCurrentTab();
+      const ind = document.getElementById("sync-indicator");
+      if (ind) ind.textContent = currentLang === "es" ? "🔄 Sincronizando..." : "🔄 Syncing...";
+
+      const data = await apiPost({
+        action: "getLeagueData",
+        requesterEmail: currentUser.email,
+        requesterPin: currentUser.pin
+      });
+
+      if (data && data.success) {
+        appData = data;
+        if (!appData.recurring) appData.recurring = [];
+        if (data.user) {
+          currentUser = data.user;
+          localStorage.setItem("soccer_user", JSON.stringify(currentUser));
         }
-      } catch (e) {
-        if (ind) ind.textContent = "⚠️ Offline / Demo";
+        if (ind) ind.textContent = currentLang === "es" ? "✅ Conectado en Vivo" : "✅ Live Connected";
+        await fetchWeatherForAllGames();
+        renderAuthBar();
+        renderCurrentTab();
+      } else if (data && data.authError) {
+        logout();
+        showBanner(data.error || "Please log in with your 6-digit PIN.", true);
       }
     }
 
@@ -591,28 +604,33 @@
 
     function renderAuthBar() {
       const bar = document.getElementById("auth-bar");
+      const navTabsBar = document.getElementById("nav-tabs-bar");
       const adminTab = document.getElementById("tab-admin");
-      const demoBtn = document.getElementById("demo-btn");
 
       if (currentUser) {
+        navTabsBar.classList.remove("hidden");
+        navTabsBar.classList.add("flex");
         if (currentUser.isAdmin) {
           adminTab.classList.remove("hidden");
-          demoBtn.classList.add("hidden");
         } else {
           adminTab.classList.add("hidden");
-          demoBtn.classList.remove("hidden");
         }
         bar.innerHTML = '<button type="button" onclick="openMyProfileModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 hover:bg-emerald-950 cursor-pointer">👤 ' + currentUser.fullName + (currentUser.isAdmin ? ' 👑' : '') + '</button>' +
           '<button type="button" onclick="logout()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-rose-950/60 border border-rose-800/50 text-rose-300 hover:bg-rose-900/60 cursor-pointer">' + t("logoutBtn") + '</button>';
       } else {
+        navTabsBar.classList.add("hidden");
+        navTabsBar.classList.remove("flex");
         adminTab.classList.add("hidden");
-        demoBtn.classList.remove("hidden");
         bar.innerHTML = '<button type="button" onclick="showLoginModal()" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold neon-btn">' + t("loginBtn") + '</button>' +
           '<button type="button" onclick="showRegisterModal()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-800/60 text-slate-200 hover:text-white cursor-pointer">' + t("registerBtn") + '</button>';
       }
     }
 
     function switchTab(tab) {
+      if (!currentUser) {
+        renderLockedGateView();
+        return;
+      }
       activeTab = tab;
       ["upcoming", "history", "admin"].forEach(function(tKey) {
         const el = document.getElementById("tab-" + tKey);
@@ -626,8 +644,27 @@
       renderCurrentTab();
     }
 
+    function renderLockedGateView() {
+      const container = document.getElementById("view-container");
+      container.innerHTML = `
+        <div class="glass-card rounded-2xl p-8 sm:p-12 text-center max-w-xl mx-auto mt-6 shadow-2xl">
+          <div class="w-16 h-16 rounded-2xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-3xl mx-auto mb-4">🔒</div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-white mb-2">${t("lockedTitle")}</h2>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6">${t("lockedSub")}</p>
+          <div class="flex flex-col sm:flex-row justify-center gap-3">
+            <button type="button" onclick="showLoginModal()" class="px-6 py-3 rounded-xl text-xs sm:text-sm font-bold neon-btn">${t("loginBtn")}</button>
+            <button type="button" onclick="showRegisterModal()" class="px-6 py-3 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] border border-emerald-800/60 text-white hover:bg-emerald-950 cursor-pointer">${t("registerBtn")}</button>
+          </div>
+        </div>
+      `;
+    }
+
     function renderCurrentTab() {
-      if (activeTab === "admin" && currentUser && currentUser.isAdmin) return renderAdminView();
+      if (!currentUser) {
+        renderLockedGateView();
+        return;
+      }
+      if (activeTab === "admin" && currentUser.isAdmin) return renderAdminView();
       if (activeTab === "history") return renderHistoryAndDirectoryView();
       renderUpcomingGamesView();
     }
@@ -644,9 +681,7 @@
         container.innerHTML = '<div class="glass-card rounded-2xl p-8 sm:p-10 text-center">' +
           '<p class="text-lg font-bold text-white mb-2">' + t("noGamesTitle") + '</p>' +
           '<p class="text-sm text-slate-400 mb-5">' + t("noGamesSub") + '</p>' +
-          (currentUser && currentUser.isAdmin ? '<button type="button" onclick="switchTab(\'admin\')" class="neon-btn px-5 py-2.5 rounded-xl text-xs">' + t("tabAdmin") + '</button>' :
-          '<div class="flex flex-wrap justify-center gap-3"><button type="button" onclick="showLoginModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold neon-btn">' + t("loginBtn") + '</button>' +
-          '<button type="button" onclick="showRegisterModal()" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-700 text-white cursor-pointer">' + t("registerBtn") + '</button></div>') +
+          (currentUser && currentUser.isAdmin ? '<button type="button" onclick="switchTab(\'admin\')" class="neon-btn px-5 py-2.5 rounded-xl text-xs">' + t("tabAdmin") + '</button>' : '') +
           '</div>';
         return;
       }
@@ -680,7 +715,6 @@
       const isAdminUser = !!(currentUser && currentUser.isAdmin);
       const isNonPlayerAdmin = currentUser && isSystemAdminOnly(currentUser.email);
 
-      // Filter Blasts: Regular players only see non-hidden blasts; Admins see all blasts (including hidden ones)
       const allBlasts = game.blasts || [];
       const visibleBlasts = allBlasts.filter(function(b) {
         return isAdminUser ? true : !b.hidden;
@@ -834,7 +868,6 @@
 
       const res = await apiPost({
         action: "adminSendGameBlast",
-        requesterEmail: currentUser.email,
         senderName: currentUser.fullName || "League Admin",
         gameId: gameId,
         message: msg
@@ -853,7 +886,6 @@
     async function toggleBlastVisibility(blastId, hideFlag) {
       const res = await apiPost({
         action: "adminToggleBlastVisibility",
-        requesterEmail: currentUser.email,
         blastId: blastId,
         hidden: hideFlag
       });
@@ -1353,7 +1385,7 @@
     async function adminInvitePlayer() {
       const email = document.getElementById("inv-email").value.trim().toLowerCase();
       if (!email) return alert("Enter an email address to invite.");
-      const res = await apiPost({ action: "adminSendInvite", requesterEmail: currentUser.email, email: email });
+      const res = await apiPost({ action: "adminSendInvite", email: email });
       if (res && res.success) {
         appData = res;
         showBanner(res.message || "Invitation email sent to " + email + "!");
@@ -1362,7 +1394,7 @@
     }
 
     async function adminResendInvite(email) {
-      const res = await apiPost({ action: "adminSendInvite", requesterEmail: currentUser.email, email: email });
+      const res = await apiPost({ action: "adminSendInvite", email: email });
       if (res && res.success) {
         appData = res;
         showBanner("Invitation re-sent to " + email + "!");
@@ -1372,7 +1404,7 @@
 
     async function adminRevokeInvite(email) {
       if (!confirm("Revoke invitation for " + email + "?")) return;
-      const res = await apiPost({ action: "adminDeleteInvite", requesterEmail: currentUser.email, email: email });
+      const res = await apiPost({ action: "adminDeleteInvite", email: email });
       if (res && res.success) {
         appData = res;
         showBanner("Invitation revoked for " + email);
@@ -1410,7 +1442,6 @@
 
       const res = await apiPost({
         action: "adminSaveRecurringSeries",
-        requesterEmail: currentUser.email,
         seriesId: editingSeriesId,
         title: title,
         locationName: locationName,
@@ -1439,7 +1470,6 @@
 
       const res = await apiPost({
         action: "adminStopRecurringSeries",
-        requesterEmail: currentUser.email,
         seriesId: seriesId,
         effectiveDate: effectiveDate.trim()
       });
@@ -1475,7 +1505,6 @@
 
       const res = await apiPost({
         action: "adminSaveGame",
-        requesterEmail: currentUser.email,
         gameId: editingGameId,
         title: title,
         locationName: locationName,
@@ -1495,7 +1524,7 @@
 
     async function adminRemoveGame(gameId) {
       if (!confirm("Delete/Cancel this scheduled game? (Any players who RSVPed Yes/Maybe will automatically receive a cancellation email).")) return;
-      const res = await apiPost({ action: "adminDeleteGame", requesterEmail: currentUser.email, gameId: gameId });
+      const res = await apiPost({ action: "adminDeleteGame", gameId: gameId });
       if (res && res.success) {
         appData = res;
         if (res.message) showBanner(res.message);
@@ -1527,7 +1556,6 @@
 
       const res = await apiPost({
         action: "adminSaveLocation",
-        requesterEmail: currentUser.email,
         locationId: editingLocationId,
         name: name,
         address: address,
@@ -1546,7 +1574,6 @@
     async function adminToggleLocation(locationId, newStatus) {
       const res = await apiPost({
         action: "adminToggleLocationStatus",
-        requesterEmail: currentUser.email,
         locationId: locationId,
         newStatus: newStatus
       });
@@ -1559,7 +1586,7 @@
 
     async function adminRemoveLocation(locationId) {
       if (!confirm("Remove this field location? (If it was used in past games, it will be Deactivated instead to preserve history).")) return;
-      const res = await apiPost({ action: "adminDeleteLocation", requesterEmail: currentUser.email, locationId: locationId });
+      const res = await apiPost({ action: "adminDeleteLocation", locationId: locationId });
       if (res && res.success) {
         appData = res;
         if (res.message) showBanner(res.message);
@@ -1570,7 +1597,7 @@
     async function adminToggleRole(targetEmail, newRole) {
       if (isProtectedEmail(targetEmail)) return alert("Protected System Admin accounts cannot be demoted.");
       if (!confirm("Update " + targetEmail + " role to " + newRole + "?")) return;
-      const res = await apiPost({ action: "adminUpdateUserRole", requesterEmail: currentUser.email, targetEmail: targetEmail, newRole: newRole });
+      const res = await apiPost({ action: "adminUpdateUserRole", targetEmail: targetEmail, newRole: newRole });
       if (res && res.success) {
         appData = res;
         renderAdminView();
@@ -1581,7 +1608,7 @@
       if (isProtectedEmail(targetEmail)) return alert("Protected System Admin accounts cannot be suspended.");
       const actionVerb = newStatus === "Suspended" ? "SUSPEND" : "REACTIVATE";
       if (!confirm("Are you sure you want to " + actionVerb + " " + targetEmail + "?")) return;
-      const res = await apiPost({ action: "adminToggleSuspendUser", requesterEmail: currentUser.email, targetEmail: targetEmail, newStatus: newStatus });
+      const res = await apiPost({ action: "adminToggleSuspendUser", targetEmail: targetEmail, newStatus: newStatus });
       if (res && res.success) {
         appData = res;
         showBanner(res.message || targetEmail + " updated.");
@@ -1592,19 +1619,12 @@
     async function adminRemovePlayer(targetEmail) {
       if (isProtectedEmail(targetEmail)) return alert("Protected System Admin accounts cannot be removed.");
       if (!confirm("Remove " + targetEmail + "? (If they participated in past games, they will be Suspended instead so historical rosters stay intact).")) return;
-      const res = await apiPost({ action: "adminDeleteUser", requesterEmail: currentUser.email, targetEmail: targetEmail });
+      const res = await apiPost({ action: "adminDeleteUser", targetEmail: targetEmail });
       if (res && res.success) {
         appData = res;
         showBanner(res.message || ("Removed player " + targetEmail));
         renderAdminView();
       } else if (res) showBanner(res.error, true);
-    }
-
-    function enableDemoAdmin() {
-      currentUser = { email: "pitchpulseleague@gmail.com", fullName: "System Admin (Demo)", role: "Admin", status: "Active", isAdmin: true, isProtected: true, isSystemAdminOnly: true };
-      localStorage.setItem("soccer_user", JSON.stringify(currentUser));
-      renderAuthBar();
-      switchTab("admin");
     }
 
     // =========================================================================
@@ -1636,10 +1656,13 @@
       const res = await apiPost({ action: "login", email: email, pin: pin });
       if (res && res.success) {
         currentUser = res.user;
+        currentUser.pin = pin;
+        if (res.appData) appData = res.appData;
         localStorage.setItem("soccer_user", JSON.stringify(currentUser));
         closeModal();
+        await fetchWeatherForAllGames();
         renderAuthBar();
-        renderCurrentTab();
+        switchTab("upcoming");
       } else if (res) {
         alert(res.error);
       }
@@ -1671,11 +1694,13 @@
       const res = await apiPost({ action: "register", fullName: fullName, email: email, pin: pin });
       if (res && res.success) {
         currentUser = res.user;
+        currentUser.pin = pin;
         if (res.appData) appData = res.appData;
         localStorage.setItem("soccer_user", JSON.stringify(currentUser));
         closeModal();
+        await fetchWeatherForAllGames();
         renderAuthBar();
-        renderCurrentTab();
+        switchTab("upcoming");
       } else if (res) {
         alert(res.error);
       }
@@ -1771,16 +1796,19 @@
     function logout() {
       localStorage.removeItem("soccer_user");
       currentUser = null;
+      appData = { games: [], locations: [], profiles: {}, invites: [], recurring: [] };
       activeTab = "upcoming";
       renderAuthBar();
-      switchTab("upcoming");
+      renderCurrentTab();
     }
 
     // Boot Application
     applyThemeAndLanguageUI();
     renderAuthBar();
     renderCurrentTab();
-    syncFromBackend();
+    if (currentUser) {
+      syncFromBackend();
+    }
   </script>
 </body>
 </html>
