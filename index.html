@@ -13,7 +13,6 @@
     .neon-btn { background: #00f59b; color: #070b09; font-weight: 700; transition: all 0.2s ease; cursor: pointer; }
     .neon-btn:hover { background: #34f7af; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0, 245, 155, 0.25); }
   </style>
-  <!-- Isolated Error Catcher so nothing fails silently -->
   <script>
     window.addEventListener("error", function(e) {
       var b = document.getElementById("status-banner");
@@ -64,15 +63,11 @@
     <!-- Alert Banner -->
     <div id="status-banner" class="hidden mb-6 p-4 rounded-xl text-sm font-medium border"></div>
 
-    <!-- Dynamic View Container (Pre-loaded with interactive UI so it never blocks) -->
+    <!-- Dynamic View Container -->
     <main id="view-container">
       <div class="glass-card rounded-2xl p-10 text-center">
         <p class="text-lg font-bold text-white mb-2">Welcome to Pitch Pulse League Hub!</p>
         <p class="text-sm text-slate-400 mb-5">Click <b>Register (Invite Only)</b> or <b>Login (PIN)</b> in the top right corner to access your profile or schedule games.</p>
-        <div class="flex justify-center gap-3">
-          <button type="button" onclick="showLoginModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold neon-btn">🔑 Login with PIN</button>
-          <button type="button" onclick="showRegisterModal()" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-700 text-white">✉️ Register Profile</button>
-        </div>
       </div>
     </main>
   </div>
@@ -82,7 +77,11 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxD2w-OIQ6k59BqRc0jbccjq09qYsKADavM4id6o02hVTKrqdV90j1bnjLb_Fp6hEc2/exec";
-    localStorage.removeItem("soccer_api_url");
+    const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "pitchepulseleague@gmail.com", "ralph@me.com"];
+
+    function isProtectedEmail(em) {
+      return PROTECTED_ADMINS.indexOf(String(em || "").toLowerCase().trim()) !== -1;
+    }
 
     let currentUser = null;
     try {
@@ -94,16 +93,73 @@
     let activeTab = "upcoming";
     let weatherCache = {};
     let editingGameId = null;
+    let editingSeriesId = null;
     let editingLocationId = null;
 
     let appData = {
       games: [],
       locations: [
-        { LocationID: "LOC_1", Name: "Central Turf Field", Address: "San Marcos, CA", Latitude: "33.1434", Longitude: "-117.1661", Notes: "Bring dark and white shirts" }
+        { LocationID: "LOC_1", Name: "Central Turf Field", Address: "San Marcos, CA", Latitude: "33.1434", Longitude: "-117.1661", Notes: "Bring dark and white shirts", LocationStatus: "Active", hasHistory: false }
       ],
       profiles: {},
-      invites: []
+      invites: [],
+      recurring: []
     };
+
+    function getTodayIso() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+
+    // Helper for Interactive Time Dropdowns (Hour : Minute : AM/PM)
+    function parseTimeParts(timeStr) {
+      const raw = String(timeStr || "12:00 PM").trim().toUpperCase();
+      const ampm = raw.indexOf("AM") !== -1 ? "AM" : "PM";
+      const clean = raw.replace(/[^0-9:]/g, "");
+      const parts = clean.split(":");
+      let hr = parts[0] ? String(parseInt(parts[0], 10)) : "12";
+      if (!hr || hr === "0" || isNaN(hr)) hr = "12";
+      let min = parts[1] ? parts[1].padStart(2, "0") : "00";
+      if (["00", "15", "30", "45"].indexOf(min) === -1) min = "00";
+      return { hr: hr, min: min, ampm: ampm };
+    }
+
+    function renderTimeSelectorHtml(prefix, defaultTimeStr) {
+      const p = parseTimeParts(defaultTimeStr);
+      const hours = ["1","2","3","4","5","6","7","8","9","10","11","12"];
+      const mins = ["00","15","30","45"];
+      return '<div class="flex items-center gap-1.5">' +
+        '<select id="' + prefix + '-hr" class="flex-1 bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white font-semibold cursor-pointer">' +
+          hours.map(function(h) { return '<option value="' + h + '" ' + (p.hr === h ? 'selected' : '') + '>' + h + '</option>'; }).join("") +
+        '</select>' +
+        '<span class="text-slate-400 font-bold">:</span>' +
+        '<select id="' + prefix + '-min" class="flex-1 bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white font-semibold cursor-pointer">' +
+          mins.map(function(m) { return '<option value="' + m + '" ' + (p.min === m ? 'selected' : '') + '>' + m + '</option>'; }).join("") +
+        '</select>' +
+        '<select id="' + prefix + '-ampm" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-[#00f59b] font-bold cursor-pointer">' +
+          '<option value="AM" ' + (p.ampm === "AM" ? "selected" : "") + '>AM</option>' +
+          '<option value="PM" ' + (p.ampm === "PM" ? "selected" : "") + '>PM</option>' +
+        '</select>' +
+      '</div>';
+    }
+
+    function readTimeSelectorValue(prefix) {
+      const hr = document.getElementById(prefix + "-hr").value;
+      const min = document.getElementById(prefix + "-min").value;
+      const ampm = document.getElementById(prefix + "-ampm").value;
+      return hr + ":" + min + " " + ampm;
+    }
+
+    function formatDaysBadges(daysCsv) {
+      const names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      return String(daysCsv || "").split(",").map(function(d) {
+        const idx = parseInt(d.trim(), 10);
+        return !isNaN(idx) && names[idx] ? names[idx] : "";
+      }).filter(Boolean).join(", ");
+    }
 
     function showBanner(msg, isError) {
       const b = document.getElementById("status-banner");
@@ -125,7 +181,7 @@
         try {
           return JSON.parse(text);
         } catch (je) {
-          showBanner("⚠️ Google Apps Script returned an error or permission page instead of JSON. Make sure you ran initialSetup() in Apps Script and set 'Who has access' to 'Anyone'.", true);
+          showBanner("⚠️ Google Apps Script returned an error or permission page instead of JSON. Run initialSetup() in Apps Script and deploy a New Version.", true);
           return null;
         }
       } catch (err) {
@@ -145,23 +201,20 @@
           data = JSON.parse(text);
         } catch (je) {
           if (ind) ind.textContent = "⚠️ Backend Setup Needed";
-          showBanner("⚠️ Your Google Apps Script URL returned an HTML page instead of data. Open your Google Sheet -> Extensions -> Apps Script, select <b>initialSetup</b> at the top and click <b>Run</b>, then click <b>Deploy -> Manage deployments -> Edit -> New version -> Deploy</b> (with Who has access: Anyone).", true);
+          showBanner("⚠️ Run <b>initialSetup</b> in Apps Script and update your deployment.", true);
           return;
         }
 
         if (data && data.success) {
           appData = data;
+          if (!appData.recurring) appData.recurring = [];
           if (ind) ind.textContent = "✅ Live Database Connected";
           await fetchWeatherForAllGames();
           renderAuthBar();
           renderCurrentTab();
-        } else {
-          if (ind) ind.textContent = "⚠️ Sync Warning";
-          showBanner("⚠️ Backend message: " + (data ? data.error : "Unknown error"), true);
         }
       } catch (e) {
-        if (ind) ind.textContent = "⚠️ Offline / Setup Needed";
-        showBanner("⚠️ Could not reach Google Apps Script (" + e.message + "). Verify that 'Who has access' is set to 'Anyone' in your Apps Script deployment.", true);
+        if (ind) ind.textContent = "⚠️ Offline / Demo Mode";
       }
     }
 
@@ -254,13 +307,13 @@
 
     function renderUpcomingGamesView() {
       const container = document.getElementById("view-container");
-      const today = new Date().toISOString().slice(0, 10);
+      const today = getTodayIso();
       const upcoming = (appData.games || []).filter(function(g) { return String(g.Date) >= today; });
 
       if (upcoming.length === 0) {
         container.innerHTML = '<div class="glass-card rounded-2xl p-10 text-center">' +
           '<p class="text-lg font-bold text-white mb-2">No Upcoming Games Scheduled Yet</p>' +
-          '<p class="text-sm text-slate-400 mb-5">Log in or register your admin profile in the top right to schedule your first lunchtime match.</p>' +
+          '<p class="text-sm text-slate-400 mb-5">Log in or register your admin profile in the top right to schedule single or recurring lunchtime matches.</p>' +
           (currentUser && currentUser.isAdmin ? '<button type="button" onclick="switchTab(\'admin\')" class="neon-btn px-5 py-2.5 rounded-xl text-xs">👑 Open Commissioner Admin</button>' :
           '<div class="flex justify-center gap-3"><button type="button" onclick="showLoginModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold neon-btn">🔑 Login (PIN)</button>' +
           '<button type="button" onclick="showRegisterModal()" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-700 text-white cursor-pointer">✉️ Register Profile</button></div>') +
@@ -294,6 +347,7 @@
         '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950/80 pb-4 mb-4">' +
           '<div><div class="flex items-center gap-2.5 flex-wrap">' +
             '<h2 class="text-xl font-extrabold text-white">' + game.Title + '</h2>' +
+            (game.SeriesID ? '<span class="px-2 py-0.5 rounded bg-emerald-950/90 text-emerald-300 border border-emerald-700/40 text-[11px] font-bold">🔁 Recurring Series</span>' : '') +
             '<span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ' + (isConfirmed ? 'bg-[#00f59b]/20 text-[#00f59b] border border-[#00f59b]/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40') + '">' +
               (isConfirmed ? '🟢 CONFIRMED — GAME ON' : '🟡 PENDING (' + yesCount + '/' + game.MinThreshold + ' Needed)') +
             '</span>' +
@@ -334,16 +388,18 @@
 
     function renderHistoryAndDirectoryView() {
       const container = document.getElementById("view-container");
-      const profilesList = Object.values(appData.profiles || {}).filter(function(p) { return String(p.status || 'Active').toLowerCase() !== 'suspended'; });
+      // Show all players in historical directory (even suspended ones if they have past history, marked clearly)
+      const profilesList = Object.values(appData.profiles || {});
 
       container.innerHTML = '<div class="space-y-6">' +
-        '<div class="glass-card rounded-2xl p-6"><h2 class="text-lg font-extrabold text-white mb-1">👥 League Player Directory & Attendance History</h2><p class="text-xs text-slate-400 mb-4">View player match participation and contact emails.</p>' +
+        '<div class="glass-card rounded-2xl p-6"><h2 class="text-lg font-extrabold text-white mb-1">👥 League Player Directory & Attendance History</h2><p class="text-xs text-slate-400 mb-4">Players and venues with past match participation are permanently preserved in league history.</p>' +
         '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">' +
         (profilesList.length === 0 ? '<p class="text-xs text-slate-500">No registered players yet.</p>' : '') +
         profilesList.map(function(p) {
           const attended = (appData.games || []).filter(function(g) { return (g.roster || []).some(function(r) { return r.email.toLowerCase() === p.email.toLowerCase() && r.status === 'Yes'; }); }).length;
+          const isSusp = String(p.status || 'Active').toLowerCase() === 'suspended';
           return '<div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 flex justify-between items-center">' +
-            '<div><div class="font-bold text-white text-sm">' + p.fullName + (p.role === 'Admin' ? ' 👑' : '') + '</div><a href="mailto:' + p.email + '" class="text-xs text-[#00f59b] hover:underline">' + p.email + '</a></div>' +
+            '<div><div class="font-bold text-white text-sm">' + p.fullName + (p.role === 'Admin' ? ' 👑' : '') + (isSusp ? ' <span class="text-[10px] text-rose-400">(Inactive)</span>' : '') + '</div><a href="mailto:' + p.email + '" class="text-xs text-[#00f59b] hover:underline">' + p.email + '</a></div>' +
             '<span class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 text-xs font-bold">' + attended + ' Games</span></div>';
         }).join("") + '</div></div>' +
         '<div class="glass-card rounded-2xl p-6"><h2 class="text-lg font-extrabold text-white mb-4">📜 All Games & Attendance Log</h2><div class="space-y-3">' +
@@ -363,11 +419,23 @@
       const container = document.getElementById("view-container");
       const profilesList = Object.values(appData.profiles || {});
       const invitesList = appData.invites || [];
+      const recurringList = appData.recurring || [];
+      const activeLocations = (appData.locations || []).filter(function(l) { return String(l.LocationStatus || "Active").toLowerCase() !== "inactive"; });
+
       const editingGame = editingGameId ? (appData.games || []).find(function(g) { return String(g.GameID) === String(editingGameId); }) : null;
+      const editingSeries = editingSeriesId ? recurringList.find(function(s) { return String(s.SeriesID) === String(editingSeriesId); }) : null;
       const editingLoc = editingLocationId ? (appData.locations || []).find(function(l) { return String(l.LocationID) === String(editingLocationId); }) : null;
+
+      const selectedDays = editingSeries ? String(editingSeries.DaysOfWeek || "").split(",").map(function(x) { return x.trim(); }) : ["2", "4"];
+      const dayLabels = [
+        { d: "1", name: "Mon" }, { d: "2", name: "Tue" }, { d: "3", name: "Wed" },
+        { d: "4", name: "Thu" }, { d: "5", name: "Fri" }, { d: "6", name: "Sat" }, { d: "0", name: "Sun" }
+      ];
 
       container.innerHTML = `
         <div class="space-y-6">
+
+          <!-- 1. INVITE NEW PLAYERS & TRACK INVITATION STATUS -->
           <div class="glass-card rounded-2xl p-6">
             <h3 class="text-lg font-extrabold text-white mb-1">✉️ 1. Player Invitations & Invite Tracker</h3>
             <p class="text-xs text-slate-400 mb-4">Send new invitations and see everyone who has been invited, whether they have registered yet, or resend/revoke their invite.</p>
@@ -377,10 +445,11 @@
             </div>
             <div class="border-t border-emerald-950 pt-4">
               <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Sent Invitations (${invitesList.length})</h4>
-              <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
+              <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
                 ${invitesList.length === 0 ? '<p class="text-xs text-slate-500">No invitations sent yet.</p>' : ''}
                 ${invitesList.map(inv => {
                   const isReg = inv.Status === "Registered" || !!(appData.profiles && appData.profiles[String(inv.Email).toLowerCase()]);
+                  const isProt = isProtectedEmail(inv.Email);
                   return `
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-xs">
                       <div class="flex items-center gap-2.5 flex-wrap">
@@ -394,7 +463,7 @@
                       <div class="flex items-center gap-2">
                         ${!isReg ? `
                           <button type="button" onclick="adminResendInvite('${inv.Email}')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 hover:bg-emerald-900 font-semibold cursor-pointer">Resend Email</button>
-                          <button type="button" onclick="adminRevokeInvite('${inv.Email}')" class="px-2.5 py-1 rounded-lg bg-rose-950 text-rose-300 hover:bg-rose-900 font-semibold cursor-pointer">Revoke</button>
+                          ${!isProt ? `<button type="button" onclick="adminRevokeInvite('${inv.Email}')" class="px-2.5 py-1 rounded-lg bg-rose-950 text-rose-300 hover:bg-rose-900 font-semibold cursor-pointer">Revoke</button>` : ''}
                         ` : '<span class="text-slate-500 italic">Account Active</span>'}
                       </div>
                     </div>
@@ -404,13 +473,101 @@
             </div>
           </div>
 
+          <!-- 2. RECURRING GAME SCHEDULE BUILDER & EDITOR (With Effective Date Cutoffs) -->
+          <div id="admin-recurring-form-card" class="glass-card rounded-2xl p-6 ${editingSeries ? 'border-2 border-[#00f59b]' : ''}">
+            <div class="flex justify-between items-center mb-1">
+              <h3 class="text-lg font-extrabold text-white">
+                ${editingSeries ? `🔁 Editing Recurring Schedule: ${editingSeries.Title}` : '🔁 2. Recurring Game Schedule Builder'}
+              </h3>
+              ${editingSeries ? `<button type="button" onclick="cancelEditSeries()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Series Edit</button>` : ''}
+            </div>
+            <p class="text-xs text-slate-400 mb-4">
+              Automatically schedule regular games across a date period. When editing or stopping a recurring schedule, set the <b>Effective Change Date</b> (today or a future date) so games scheduled before that date remain untouched!
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Series Title</label>
+                <input id="rec-title" type="text" value="${editingSeries ? editingSeries.Title : ''}" placeholder="Lunchtime League Match" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Location</label>
+                <select id="rec-loc" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+                  ${activeLocations.map(l => `<option value="${l.Name}" ${editingSeries && editingSeries.LocationName === l.Name ? 'selected' : ''}>${l.Name}</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Kickoff Time (Dropdown)</label>
+                ${renderTimeSelectorHtml("rec-time", editingSeries ? editingSeries.Time : "12:00 PM")}
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Series Start Date</label>
+                <input id="rec-start" type="date" value="${editingSeries ? editingSeries.StartDate : getTodayIso()}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Series End Date</label>
+                <input id="rec-end" type="date" value="${editingSeries ? editingSeries.EndDate : ''}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-amber-300 font-bold block mb-1">Effective Change Date (Cutoff)</label>
+                <input id="rec-effective" type="date" value="${getTodayIso()}" class="w-full bg-[#0b130f] border border-amber-500/60 rounded-xl p-2.5 text-sm text-amber-200">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Min Players to Confirm</label>
+                <input id="rec-min" type="number" value="${editingSeries ? editingSeries.MinThreshold : 10}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Max Player Cap (Default 18)</label>
+                <input id="rec-max" type="number" value="${editingSeries ? editingSeries.MaxCap : 18}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+              </div>
+            </div>
+
+            <!-- Days of the Week Checkboxes -->
+            <div class="mb-4">
+              <label class="text-xs text-slate-400 block mb-2">Days of the Week</label>
+              <div class="flex flex-wrap gap-2">
+                ${dayLabels.map(day => `
+                  <label class="flex items-center gap-2 bg-[#0b130f] border border-emerald-900 px-3.5 py-2 rounded-xl text-xs font-bold text-white cursor-pointer hover:border-[#00f59b]">
+                    <input type="checkbox" name="rec-day" value="${day.d}" ${selectedDays.indexOf(day.d) !== -1 ? 'checked' : ''} class="accent-[#00f59b]">
+                    ${day.name}
+                  </label>
+                `).join("")}
+              </div>
+            </div>
+
+            <button type="button" onclick="adminSaveRecurringSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">
+              ${editingSeries ? '💾 Apply Recurring Changes (On/After Effective Date)' : '🔁 Create Recurring Schedule & Generate Games'}
+            </button>
+
+            <!-- Active Recurring Schedules List -->
+            <div class="border-t border-emerald-950 mt-6 pt-4">
+              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Active Recurring Schedules (${recurringList.length})</h4>
+              <div class="space-y-2">
+                ${recurringList.length === 0 ? '<p class="text-xs text-slate-500">No recurring schedules created yet.</p>' : ''}
+                ${recurringList.map(sr => `
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 text-xs">
+                    <div>
+                      <b class="text-white text-sm">🔁 ${sr.Title}</b> • <span class="text-[#00f59b] font-bold">${formatDaysBadges(sr.DaysOfWeek)} @ ${sr.Time}</span>
+                      <div class="text-slate-400 mt-0.5">📍 ${sr.LocationName} • Period: ${sr.StartDate} to ${sr.EndDate} • Cap: ${sr.MaxCap} (Min ${sr.MinThreshold})</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button type="button" onclick="startEditSeries('${sr.SeriesID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit Series</button>
+                      <button type="button" onclick="adminStopSeries('${sr.SeriesID}')" class="px-3 py-1.5 rounded-lg bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">Stop / Remove Future</button>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. SCHEDULE OR EDIT SINGLE GAME (With Interactive Time Selector) -->
           <div id="admin-game-form-card" class="glass-card rounded-2xl p-6 ${editingGame ? 'border-2 border-amber-400' : ''}">
             <div class="flex justify-between items-center mb-1">
-              <h3 class="text-lg font-extrabold text-white">${editingGame ? `✏️ Editing Game: ${editingGame.Title}` : '📅 2. Schedule a New Game'}</h3>
+              <h3 class="text-lg font-extrabold text-white">${editingGame ? `✏️ Editing Single Game: ${editingGame.Title}` : '📅 3. Schedule or Edit Single Game'}</h3>
               ${editingGame ? `<button type="button" onclick="cancelEditGame()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Edit</button>` : ''}
             </div>
             <p class="text-xs ${editingGame ? 'text-amber-300 font-semibold' : 'text-slate-400'} mb-4">
-              ${editingGame ? '🔔 Changing the Date, Time, or Location will automatically email all RSVPed players asking them to re-confirm attendance!' : 'Set the match time, venue, minimum confirmation threshold, and maximum player cap.'}
+              ${editingGame ? '🔔 Changing the Date, Time, or Location will automatically email all RSVPed players asking them to re-confirm attendance!' : 'Schedule a one-off game or edit any individual game date/time.'}
             </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
               <div>
@@ -420,7 +577,7 @@
               <div>
                 <label class="text-xs text-slate-400 block mb-1">Location</label>
                 <select id="g-loc" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
-                  ${(appData.locations || []).map(l => `<option value="${l.Name}" ${editingGame && editingGame.LocationName === l.Name ? 'selected' : ''}>${l.Name}</option>`).join("")}
+                  ${(appData.locations || []).filter(l => String(l.LocationStatus || 'Active').toLowerCase() !== 'inactive' || (editingGame && editingGame.LocationName === l.Name)).map(l => `<option value="${l.Name}" ${editingGame && editingGame.LocationName === l.Name ? 'selected' : ''}>${l.Name}</option>`).join("")}
                 </select>
               </div>
               <div>
@@ -428,8 +585,8 @@
                 <input id="g-date" type="date" value="${editingGame ? editingGame.Date : ''}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
               </div>
               <div>
-                <label class="text-xs text-slate-400 block mb-1">Kickoff Time</label>
-                <input id="g-time" type="text" value="${editingGame ? editingGame.Time : '12:00 PM'}" class="w-full bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
+                <label class="text-xs text-slate-400 block mb-1">Kickoff Time (Dropdown)</label>
+                ${renderTimeSelectorHtml("g-time", editingGame ? editingGame.Time : "12:00 PM")}
               </div>
               <div>
                 <label class="text-xs text-slate-400 block mb-1">Min Players to Confirm</label>
@@ -441,20 +598,20 @@
               </div>
             </div>
             <button type="button" onclick="adminSaveGameSubmit()" class="neon-btn px-5 py-2.5 rounded-xl text-sm">
-              ${editingGame ? '💾 Save Changes & Notify RSVPed Players' : '⚡ Publish Game to Hub'}
+              ${editingGame ? '💾 Save Changes & Notify RSVPed Players' : '⚡ Publish Single Game to Hub'}
             </button>
 
             <div class="border-t border-emerald-950 mt-6 pt-4">
-              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Manage Scheduled Games (${(appData.games || []).length})</h4>
-              <div class="space-y-2">
+              <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Manage All Scheduled Games (${(appData.games || []).length})</h4>
+              <div class="space-y-2 max-h-80 overflow-y-auto pr-1">
                 ${(appData.games || []).map(g => `
                   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-xs">
                     <div>
-                      <b class="text-white text-sm">${g.Title}</b> • <span class="text-emerald-300">${g.Date} @ ${g.Time}</span>
+                      <b class="text-white text-sm">${g.Title}</b> ${g.SeriesID ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300">🔁 Series</span>' : ''} • <span class="text-emerald-300">${g.Date} @ ${g.Time}</span>
                       <div class="text-slate-400">📍 ${g.LocationName} • ${g.yesCount || 0}/${g.MaxCap} Yes (Min ${g.MinThreshold})</div>
                     </div>
                     <div class="flex items-center gap-2">
-                      <button type="button" onclick="startEditGame('${g.GameID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit Game</button>
+                      <button type="button" onclick="startEditGame('${g.GameID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit</button>
                       <button type="button" onclick="adminRemoveGame('${g.GameID}')" class="px-3 py-1.5 rounded-lg bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">Delete</button>
                     </div>
                   </div>
@@ -463,12 +620,13 @@
             </div>
           </div>
 
+          <!-- 4. FIELD LOCATIONS (History-Protected: Deactivate vs Delete) -->
           <div id="admin-loc-form-card" class="glass-card rounded-2xl p-6 ${editingLoc ? 'border-2 border-amber-400' : ''}">
             <div class="flex justify-between items-center mb-1">
-              <h3 class="text-lg font-extrabold text-white">${editingLoc ? `✏️ Editing Location: ${editingLoc.Name}` : '📍 3. Manage Field Locations'}</h3>
+              <h3 class="text-lg font-extrabold text-white">${editingLoc ? `✏️ Editing Location: ${editingLoc.Name}` : '📍 4. Manage Field Locations (History Protected)'}</h3>
               ${editingLoc ? `<button type="button" onclick="cancelEditLocation()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Edit</button>` : ''}
             </div>
-            <p class="text-xs text-slate-400 mb-4">Add new soccer fields or edit existing venues, addresses, notes, and GPS coordinates.</p>
+            <p class="text-xs text-slate-400 mb-4">Fields used in past or existing games are protected and can only be <b>Deactivated</b> (never deleted) so past game history stays accurate.</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <input id="loc-name" type="text" value="${editingLoc ? editingLoc.Name : ''}" placeholder="Field Name (e.g. Bradley Park Field 2)" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
               <input id="loc-addr" type="text" value="${editingLoc ? editingLoc.Address : ''}" placeholder="Full Street Address or City, State" class="bg-[#0b130f] border border-emerald-900 rounded-xl p-2.5 text-sm text-white">
@@ -483,30 +641,46 @@
             <div class="border-t border-emerald-950 mt-6 pt-4">
               <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Saved Locations (${(appData.locations || []).length})</h4>
               <div class="space-y-2">
-                ${(appData.locations || []).map(l => `
-                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border border-emerald-950 text-xs">
-                    <div>
-                      <b class="text-white text-sm">📍 ${l.Name}</b> • <span class="text-slate-300">${l.Address}</span>
-                      <div class="text-slate-500">GPS: ${l.Latitude || 'N/A'}, ${l.Longitude || 'N/A'} ${l.Notes ? '• ' + l.Notes : ''}</div>
+                ${(appData.locations || []).map(l => {
+                  const isInactive = String(l.LocationStatus || "Active").toLowerCase() === "inactive";
+                  return `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#0b130f] p-3 rounded-xl border ${isInactive ? 'border-rose-900/50 opacity-75' : 'border-emerald-950'} text-xs">
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <b class="text-white text-sm">📍 ${l.Name}</b>
+                          <span class="px-2 py-0.5 rounded font-bold ${isInactive ? 'bg-rose-950 text-rose-300' : 'bg-emerald-950 text-[#00f59b]'}">${isInactive ? 'Deactivated' : 'Active'}</span>
+                          ${l.hasHistory ? '<span class="text-[11px] text-slate-400">🔒 Has Game History</span>' : ''}
+                        </div>
+                        <div class="text-slate-400 mt-0.5">${l.Address} • GPS: ${l.Latitude || 'N/A'}, ${l.Longitude || 'N/A'}</div>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <button type="button" onclick="startEditLocation('${l.LocationID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit</button>
+                        <button type="button" onclick="adminToggleLocation('${l.LocationID}', '${isInactive ? 'Active' : 'Inactive'}')" class="px-3 py-1.5 rounded-lg font-bold cursor-pointer ${isInactive ? 'bg-emerald-800 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
+                          ${isInactive ? '✅ Reactivate' : '⏸️ Deactivate'}
+                        </button>
+                        ${!l.hasHistory ? `
+                          <button type="button" onclick="adminRemoveLocation('${l.LocationID}')" class="px-3 py-1.5 rounded-lg bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">Delete</button>
+                        ` : ''}
+                      </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                      <button type="button" onclick="startEditLocation('${l.LocationID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit</button>
-                      <button type="button" onclick="adminRemoveLocation('${l.LocationID}')" class="px-3 py-1.5 rounded-lg bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">Delete</button>
-                    </div>
-                  </div>
-                `).join("")}
+                  `;
+                }).join("")}
               </div>
             </div>
           </div>
 
+          <!-- 5. PLAYER MANAGEMENT, CO-ADMINS & IMMUTABLE SYSTEM ADMIN PROTECTION -->
           <div class="glass-card rounded-2xl p-6">
-            <h3 class="text-lg font-extrabold text-white mb-1">🛡️ 4. Manage Players, Co-Admins & Account Suspensions</h3>
-            <p class="text-xs text-slate-400 mb-4">Promote trusted players to Co-Admin, suspend accounts (blocks login & RSVPs), or remove players from the league.</p>
+            <h3 class="text-lg font-extrabold text-white mb-1">🛡️ 5. Manage Players, Co-Admins & Account Suspensions</h3>
+            <p class="text-xs text-slate-400 mb-4">
+              Players who have participated in past games can only be <b>Suspended</b> (never deleted) so past rosters remain accurate. Primary System Admins (<b>pitchpulseleague@gmail.com</b> & backup <b>ralph@me.com</b>) are permanently protected.
+            </p>
             <div class="space-y-2">
               ${profilesList.length === 0 ? '<p class="text-xs text-slate-500">No players registered yet.</p>' : ''}
               ${profilesList.map(p => {
-                const isAdmin = p.role === "Admin";
-                const isSuspended = String(p.status || "Active").toLowerCase() === "suspended";
+                const isProt = p.isProtected || isProtectedEmail(p.email);
+                const isAdmin = p.role === "Admin" || isProt;
+                const isSuspended = !isProt && String(p.status || "Active").toLowerCase() === "suspended";
                 return `
                   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0b130f] p-3.5 rounded-xl border ${isSuspended ? 'border-rose-800/70 bg-rose-950/20' : 'border-emerald-950'} text-xs">
                     <div>
@@ -514,23 +688,30 @@
                         <span class="font-bold text-white text-sm ${isSuspended ? 'line-through text-slate-400' : ''}">${p.fullName}</span>
                         <span class="text-slate-400">${p.email}</span>
                         <span class="px-2 py-0.5 rounded font-bold ${isAdmin ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-300'}">
-                          ${isAdmin ? '👑 Admin' : 'Player'}
+                          ${isProt ? '🛡️ Protected System Admin' : (isAdmin ? '👑 Co-Admin' : 'Player')}
                         </span>
                         <span class="px-2 py-0.5 rounded font-bold ${isSuspended ? 'bg-rose-600 text-white' : 'bg-emerald-950 text-[#00f59b]'}">
                           ${isSuspended ? '🚫 SUSPENDED' : 'Active'}
                         </span>
+                        ${p.hasHistory ? '<span class="text-[11px] text-slate-400">🔒 Has Match History</span>' : ''}
                       </div>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                      <button type="button" onclick="adminToggleRole('${p.email}', '${isAdmin ? 'Player' : 'Admin'}')" class="px-2.5 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 cursor-pointer">
-                        ${isAdmin ? 'Demote to Player' : 'Make Admin'}
-                      </button>
-                      <button type="button" onclick="adminToggleSuspend('${p.email}', '${isSuspended ? 'Active' : 'Suspended'}')" class="px-2.5 py-1.5 rounded-lg font-bold cursor-pointer ${isSuspended ? 'bg-emerald-700 text-white hover:bg-emerald-600' : 'bg-amber-600/30 text-amber-200 border border-amber-500/40 hover:bg-amber-600/50'}">
-                        ${isSuspended ? '✅ Reactivate' : '⏸️ Suspend'}
-                      </button>
-                      <button type="button" onclick="adminRemovePlayer('${p.email}')" class="px-2.5 py-1.5 rounded-lg font-bold bg-rose-950 text-rose-300 hover:bg-rose-900 cursor-pointer">
-                        Remove
-                      </button>
+                      ${isProt ? `
+                        <span class="text-xs text-emerald-400 font-semibold italic">Immutable Master Account</span>
+                      ` : `
+                        <button type="button" onclick="adminToggleRole('${p.email}', '${isAdmin ? 'Player' : 'Admin'}')" class="px-2.5 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 cursor-pointer">
+                          ${isAdmin ? 'Demote to Player' : 'Make Admin'}
+                        </button>
+                        <button type="button" onclick="adminToggleSuspend('${p.email}', '${isSuspended ? 'Active' : 'Suspended'}')" class="px-2.5 py-1.5 rounded-lg font-bold cursor-pointer ${isSuspended ? 'bg-emerald-700 text-white hover:bg-emerald-600' : 'bg-amber-600/30 text-amber-200 border border-amber-500/40 hover:bg-amber-600/50'}">
+                          ${isSuspended ? '✅ Reactivate' : '⏸️ Suspend'}
+                        </button>
+                        ${!p.hasHistory ? `
+                          <button type="button" onclick="adminRemovePlayer('${p.email}')" class="px-2.5 py-1.5 rounded-lg font-bold bg-rose-950 text-rose-300 hover:bg-rose-900 cursor-pointer">
+                            Delete
+                          </button>
+                        ` : ''}
+                      `}
                     </div>
                   </div>
                 `;
@@ -541,12 +722,15 @@
       `;
     }
 
+    // =========================================================================
+    // ACTION HANDLERS
+    // =========================================================================
     async function submitRsvp(gameId, status) {
       if (!currentUser) {
         showLoginModal();
         return;
       }
-      if (String(currentUser.status || "Active").toLowerCase() === "suspended") {
+      if (!isProtectedEmail(currentUser.email) && String(currentUser.status || "Active").toLowerCase() === "suspended") {
         return showBanner("Your account is currently suspended. Please contact the League Admin.", true);
       }
       const res = await apiPost({ action: "updateSignup", gameId: gameId, email: currentUser.email, status: status });
@@ -585,9 +769,81 @@
         appData = res;
         showBanner("Invitation revoked for " + email);
         renderAdminView();
-      }
+      } else if (res) showBanner(res.error, true);
     }
 
+    // Recurring Schedule Handlers
+    function startEditSeries(seriesId) {
+      editingSeriesId = seriesId;
+      renderAdminView();
+      setTimeout(function() {
+        const el = document.getElementById("admin-recurring-form-card");
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
+
+    function cancelEditSeries() {
+      editingSeriesId = null;
+      renderAdminView();
+    }
+
+    async function adminSaveRecurringSubmit() {
+      const title = document.getElementById("rec-title").value.trim();
+      const locationName = document.getElementById("rec-loc").value;
+      const time = readTimeSelectorValue("rec-time");
+      const startDate = document.getElementById("rec-start").value;
+      const endDate = document.getElementById("rec-end").value;
+      const effectiveDate = document.getElementById("rec-effective").value || getTodayIso();
+      const minThreshold = Number(document.getElementById("rec-min").value || 10);
+      const maxCap = Number(document.getElementById("rec-max").value || 18);
+
+      const checkedDays = Array.from(document.querySelectorAll('input[name="rec-day"]:checked')).map(function(cb) { return cb.value; });
+      if (!title || !startDate || !endDate) return alert("Please enter a Series Title, Start Date, and End Date.");
+      if (checkedDays.length === 0) return alert("Please check at least one Day of the Week.");
+
+      const res = await apiPost({
+        action: "adminSaveRecurringSeries",
+        requesterEmail: currentUser.email,
+        seriesId: editingSeriesId,
+        title: title,
+        locationName: locationName,
+        daysOfWeek: checkedDays.join(","),
+        time: time,
+        startDate: startDate,
+        endDate: endDate,
+        effectiveDate: effectiveDate,
+        minThreshold: minThreshold,
+        maxCap: maxCap
+      });
+
+      if (res && res.success) {
+        editingSeriesId = null;
+        appData = res;
+        await fetchWeatherForAllGames();
+        showBanner(res.message || "Recurring schedule saved!");
+        renderAdminView();
+      } else if (res) showBanner(res.error, true);
+    }
+
+    async function adminStopSeries(seriesId) {
+      const defaultEff = document.getElementById("rec-effective") ? document.getElementById("rec-effective").value : getTodayIso();
+      const effectiveDate = prompt("Enter the Effective Date (YYYY-MM-DD) to stop this recurring series.\n\nGames scheduled BEFORE this date will remain untouched; games ON or AFTER this date will be removed:", defaultEff || getTodayIso());
+      if (!effectiveDate) return;
+
+      const res = await apiPost({
+        action: "adminStopRecurringSeries",
+        requesterEmail: currentUser.email,
+        seriesId: seriesId,
+        effectiveDate: effectiveDate.trim()
+      });
+      if (res && res.success) {
+        appData = res;
+        showBanner(res.message || "Recurring series stopped.");
+        renderAdminView();
+      } else if (res) showBanner(res.error, true);
+    }
+
+    // Single Game Handlers
     function startEditGame(gameId) {
       editingGameId = gameId;
       switchTab("admin");
@@ -606,7 +862,7 @@
       const title = document.getElementById("g-title").value.trim();
       const locationName = document.getElementById("g-loc").value;
       const date = document.getElementById("g-date").value;
-      const time = document.getElementById("g-time").value.trim();
+      const time = readTimeSelectorValue("g-time");
       const minThreshold = Number(document.getElementById("g-min").value || 10);
       const maxCap = Number(document.getElementById("g-max").value || 18);
       if (!title || !date) return alert("Please enter a Game Title and Date.");
@@ -640,6 +896,7 @@
       }
     }
 
+    // Location Handlers
     function startEditLocation(locId) {
       editingLocationId = locId;
       renderAdminView();
@@ -680,25 +937,43 @@
       } else if (res) showBanner(res.error, true);
     }
 
+    async function adminToggleLocation(locationId, newStatus) {
+      const res = await apiPost({
+        action: "adminToggleLocationStatus",
+        requesterEmail: currentUser.email,
+        locationId: locationId,
+        newStatus: newStatus
+      });
+      if (res && res.success) {
+        appData = res;
+        showBanner(res.message || "Location status updated.");
+        renderAdminView();
+      } else if (res) showBanner(res.error, true);
+    }
+
     async function adminRemoveLocation(locationId) {
-      if (!confirm("Delete this field location?")) return;
+      if (!confirm("Remove this field location? (If it was used in past games, it will be Deactivated instead to preserve history).")) return;
       const res = await apiPost({ action: "adminDeleteLocation", requesterEmail: currentUser.email, locationId: locationId });
       if (res && res.success) {
         appData = res;
+        if (res.message) showBanner(res.message);
         renderAdminView();
-      }
+      } else if (res) showBanner(res.error, true);
     }
 
+    // Player & Role Handlers
     async function adminToggleRole(targetEmail, newRole) {
+      if (isProtectedEmail(targetEmail)) return alert("Protected System Admin accounts cannot be demoted.");
       if (!confirm("Update " + targetEmail + " role to " + newRole + "?")) return;
       const res = await apiPost({ action: "adminUpdateUserRole", requesterEmail: currentUser.email, targetEmail: targetEmail, newRole: newRole });
       if (res && res.success) {
         appData = res;
         renderAdminView();
-      }
+      } else if (res) showBanner(res.error, true);
     }
 
     async function adminToggleSuspend(targetEmail, newStatus) {
+      if (isProtectedEmail(targetEmail)) return alert("Protected System Admin accounts cannot be suspended.");
       const actionVerb = newStatus === "Suspended" ? "SUSPEND" : "REACTIVATE";
       if (!confirm("Are you sure you want to " + actionVerb + " " + targetEmail + "?")) return;
       const res = await apiPost({ action: "adminToggleSuspendUser", requesterEmail: currentUser.email, targetEmail: targetEmail, newStatus: newStatus });
@@ -710,32 +985,36 @@
     }
 
     async function adminRemovePlayer(targetEmail) {
-      if (!confirm("Permanently remove " + targetEmail + " and revoke their invite?")) return;
+      if (isProtectedEmail(targetEmail)) return alert("Protected System Admin accounts cannot be removed.");
+      if (!confirm("Remove " + targetEmail + "? (If they participated in past games, they will be Suspended instead so historical rosters stay intact).")) return;
       const res = await apiPost({ action: "adminDeleteUser", requesterEmail: currentUser.email, targetEmail: targetEmail });
       if (res && res.success) {
         appData = res;
-        showBanner("Removed player " + targetEmail);
+        showBanner(res.message || ("Removed player " + targetEmail));
         renderAdminView();
       } else if (res) showBanner(res.error, true);
     }
 
     function enableDemoAdmin() {
-      currentUser = { email: "pitchpulseleague@gmail.com", fullName: "League Commissioner (Demo)", role: "Admin", status: "Active", isAdmin: true };
+      currentUser = { email: "pitchpulseleague@gmail.com", fullName: "League Commissioner (Demo)", role: "Admin", status: "Active", isAdmin: true, isProtected: true };
       localStorage.setItem("soccer_user", JSON.stringify(currentUser));
       renderAuthBar();
       switchTab("admin");
     }
 
+    // =========================================================================
+    // LOGIN, REGISTRATION & BACKUP ADMIN RECOVERY MODALS
+    // =========================================================================
     function showLoginModal() {
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
           <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
-            <h3 class="text-lg font-extrabold text-white mb-1">🔑 Player Login</h3>
+            <h3 class="text-lg font-extrabold text-white mb-1">🔑 Player & Admin Login</h3>
             <p class="text-xs text-slate-400 mb-4">Enter your email and 6-digit PIN code.</p>
             <input id="l-email" type="email" placeholder="Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
             <input id="l-pin" type="password" maxlength="6" inputmode="numeric" placeholder="6-Digit PIN" class="w-full mb-2 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white tracking-widest">
             <div class="text-right mb-4">
-              <button type="button" onclick="showForgotPinModal()" class="text-xs text-[#00f59b] hover:underline cursor-pointer">Forgot 6-Digit PIN?</button>
+              <button type="button" onclick="showForgotPinModal()" class="text-xs text-[#00f59b] hover:underline cursor-pointer">Forgot 6-Digit PIN / Backup Admin Recovery?</button>
             </div>
             <div class="flex justify-end gap-2">
               <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300 cursor-pointer">Cancel</button>
@@ -766,7 +1045,7 @@
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
           <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
             <h3 class="text-lg font-extrabold text-white mb-1">✉️ Create Player Profile</h3>
-            <p class="text-xs text-slate-400 mb-4">Your email must be invited by a League Admin first (or use pitchpulseleague@gmail.com for primary admin).</p>
+            <p class="text-xs text-slate-400 mb-4">Your email must be invited by a League Admin first.</p>
             <input id="r-name" type="text" placeholder="Your Full Name" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
             <input id="r-email" type="email" placeholder="Invited Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
             <input id="r-pin" type="password" maxlength="6" inputmode="numeric" placeholder="Create 6-Digit PIN (Numbers)" class="w-full mb-4 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white tracking-widest">
@@ -802,8 +1081,14 @@
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
           <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
             <h3 class="text-lg font-extrabold text-white mb-1">🔒 Reset Your 6-Digit PIN</h3>
-            <p class="text-xs text-slate-400 mb-4">We'll email a 6-digit verification code to your registered email address.</p>
-            <input id="f-email" type="email" placeholder="Registered Email" class="w-full mb-4 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+            <p class="text-xs text-slate-400 mb-4">Enter your registered email to receive a 6-digit verification code.</p>
+            <input id="f-email" type="email" placeholder="Registered Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+            
+            <label class="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl text-xs text-amber-200 mb-4 cursor-pointer">
+              <input id="f-backup" type="checkbox" class="mt-0.5 accent-[#00f59b]">
+              <span><b>Emergency System Admin Recovery:</b> Send the reset code for the main admin account to backup address <b>ralph@me.com</b></span>
+            </label>
+
             <div class="flex justify-end gap-2">
               <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300 cursor-pointer">Cancel</button>
               <button type="button" onclick="sendPinResetEmail()" class="px-5 py-2 rounded-xl text-xs neon-btn">Send Code</button>
@@ -815,18 +1100,23 @@
 
     async function sendPinResetEmail() {
       const email = document.getElementById("f-email").value.trim();
-      const res = await apiPost({ action: "requestPinReset", email: email });
+      const useBackup = document.getElementById("f-backup").checked;
+      if (!email) return alert("Please enter the email address.");
+
+      const res = await apiPost({ action: "requestPinReset", email: email, useBackupRecovery: useBackup });
       if (res && res.success) {
+        const targetEmail = res.targetEmail || email;
         alert(res.message);
         document.getElementById("modal-root").innerHTML = `
           <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
             <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
-              <h3 class="text-lg font-extrabold text-white mb-2">Enter Verification Code</h3>
+              <h3 class="text-lg font-extrabold text-white mb-1">Enter Verification Code</h3>
+              <p class="text-xs text-slate-400 mb-3">Resetting PIN for: <b class="text-white">${targetEmail}</b></p>
               <input id="rst-code" type="text" maxlength="6" placeholder="6-Digit Code from Email" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
-              <input id="rst-pin" type="password" maxlength="6" placeholder="New 6-Digit PIN" class="w-full mb-4 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+              <input id="rst-pin" type="password" maxlength="6" inputmode="numeric" placeholder="New 6-Digit PIN" class="w-full mb-4 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white tracking-widest">
               <div class="flex justify-end gap-2">
                 <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300 cursor-pointer">Cancel</button>
-                <button type="button" onclick="confirmPinReset('${email}')" class="px-5 py-2 rounded-xl text-xs neon-btn">Save New PIN</button>
+                <button type="button" onclick="confirmPinReset('${targetEmail}')" class="px-5 py-2 rounded-xl text-xs neon-btn">Save New PIN</button>
               </div>
             </div>
           </div>
@@ -881,7 +1171,6 @@
       switchTab("upcoming");
     }
 
-    // Render UI immediately (never block on network)
     renderAuthBar();
     renderCurrentTab();
     syncFromBackend();
