@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f8fafc">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>Pitch Pulse League — Lunchtime Soccer Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
@@ -16,11 +19,12 @@
       background-color: #070b09;
       color: #f1f5f9;
       transition: background-color 0.25s ease, color 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
     }
     h1, h2, h3, .font-display { font-family: 'Outfit', sans-serif; }
     .glass-card {
-      background: rgba(17, 28, 22, 0.9);
-      backdrop-filter: blur(12px);
+      background: rgba(17, 28, 22, 0.92);
+      backdrop-filter: blur(14px);
       border: 1px solid rgba(0, 245, 155, 0.16);
     }
     .neon-btn {
@@ -35,22 +39,69 @@
       transform: translateY(-1px);
       box-shadow: 0 6px 20px rgba(0, 245, 155, 0.25);
     }
+    .pin-box {
+      width: 44px;
+      height: 54px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      border-radius: 12px;
+      background: #0b130f;
+      border: 2px solid #065f46;
+      color: #00f59b;
+      outline: none;
+      transition: all 0.18s ease;
+    }
+    .pin-box:focus {
+      border-color: #00f59b;
+      box-shadow: 0 0 0 3px rgba(0, 245, 155, 0.25);
+      transform: translateY(-1px);
+    }
+    /* Tactical 2D Pitch Graphic */
+    .soccer-pitch-bg {
+      background: radial-gradient(circle at center, #065f46 0%, #064e3b 70%, #022c22 100%);
+      border: 2px solid rgba(255,255,255,0.28);
+      position: relative;
+    }
+    .soccer-pitch-bg::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1.5px;
+      background: rgba(255,255,255,0.25);
+    }
+    .soccer-pitch-bg::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 72px;
+      height: 72px;
+      margin-top: -36px;
+      margin-left: -36px;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      border-radius: 9999px;
+      pointer-events: none;
+    }
 
     /* ======================================================================
-       HIGH-CONTRAST LIGHT MODE OVERRIDES
+       DEFAULT DAYLIGHT / HIGH-CONTRAST LIGHT MODE OVERRIDES
        ====================================================================== */
     body.light-mode {
       background-color: #f1f5f9 !important;
       color: #0f172a !important;
     }
-    body.light-mode header {
+    body.light-mode header,
+    body.light-mode #mobile-bottom-dock {
       background-color: rgba(255, 255, 255, 0.96) !important;
-      border-bottom-color: #cbd5e1 !important;
+      border-color: #cbd5e1 !important;
     }
     body.light-mode .glass-card {
       background: #ffffff !important;
       border: 1px solid #cbd5e1 !important;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06) !important;
     }
     body.light-mode .bg-\[\#0b130f\],
     body.light-mode .bg-\[\#0b130f\]\/70,
@@ -83,6 +134,17 @@
       background-color: #d1fae5 !important;
       border-color: #34d399 !important;
       color: #065f46 !important;
+    }
+    /* High-contrast Sky Blue for Waitlist in Light Mode */
+    body.light-mode .bg-sky-950,
+    body.light-mode .bg-sky-500\/20 {
+      background-color: #e0f2fe !important;
+      border-color: #38bdf8 !important;
+      color: #075985 !important;
+    }
+    body.light-mode .text-sky-300,
+    body.light-mode .text-sky-400 {
+      color: #0369a1 !important;
     }
     /* High-contrast Deep Amber for Pending Signup, Edit Buttons, Cutoff Date & System Admin */
     body.light-mode .text-amber-200,
@@ -126,6 +188,16 @@
       color: #0f172a !important;
       border-color: #94a3b8 !important;
     }
+    body.light-mode .pin-box {
+      background-color: #f8fafc !important;
+      border-color: #64748b !important;
+      color: #047857 !important;
+    }
+    body.light-mode .pin-box:focus {
+      background-color: #ffffff !important;
+      border-color: #059669 !important;
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2) !important;
+    }
     body.light-mode #rec-effective {
       background-color: #fffbeb !important;
       border-color: #d97706 !important;
@@ -139,9 +211,17 @@
     body.light-mode .neon-btn:hover {
       background: #047857 !important;
     }
+    /* Keep text inside the green 2D soccer pitch white even in light mode */
+    body.light-mode .soccer-pitch-bg,
+    body.light-mode .soccer-pitch-bg .pitch-player-label {
+      color: #ffffff !important;
+    }
     .leaflet-container {
       font-family: 'Inter', sans-serif;
       z-index: 10;
+    }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 12px);
     }
   </style>
 
@@ -156,24 +236,24 @@
     });
   </script>
 </head>
-<body class="min-h-screen pb-16">
+<body class="light-mode min-h-screen pb-28 md:pb-16">
 
   <!-- Sticky Responsive Header -->
   <header class="border-b border-emerald-950/80 bg-[#0b130f]/90 sticky top-0 z-30 backdrop-blur-md">
-    <div class="max-w-5xl mx-auto px-3 sm:px-4 py-3.5 flex flex-col md:flex-row justify-between items-center gap-3">
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-2.5">
       <div class="flex items-center justify-between w-full md:w-auto">
         <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-xl shadow-inner shrink-0">⚽</div>
+          <div class="w-10 h-10 rounded-2xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-xl shadow-sm shrink-0">⚽</div>
           <div>
             <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-tight">PITCH PULSE LEAGUE</h1>
-            <p id="hdr-subtitle" class="text-[11px] sm:text-xs text-emerald-400/80">Weekly Match Signups • Live Rosters • Pitch Forecast</p>
+            <p id="hdr-subtitle" class="text-[11px] sm:text-xs text-emerald-400/80 font-medium">Weekly Match Signups • Live Rosters • Pitch Forecast</p>
           </div>
         </div>
 
         <!-- Mobile Quick Theme & Language Toggles -->
         <div class="flex md:hidden items-center gap-1.5">
-          <button type="button" onclick="toggleLanguage()" id="lang-btn-mob" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 cursor-pointer">🌐 ES</button>
-          <button type="button" onclick="toggleTheme()" id="theme-btn-mob" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[#111c16] border border-amber-500/40 text-amber-300 cursor-pointer">☀️ Light</button>
+          <button type="button" onclick="toggleLanguage()" id="lang-btn-mob" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 cursor-pointer">🌐 ES</button>
+          <button type="button" onclick="toggleTheme()" id="theme-btn-mob" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[#111c16] border border-amber-500/40 text-amber-300 cursor-pointer">🌙 Dark</button>
         </div>
       </div>
 
@@ -181,7 +261,7 @@
       <div class="flex flex-wrap items-center justify-center md:justify-end gap-2 w-full md:w-auto">
         <div class="hidden md:flex items-center gap-1.5 mr-1">
           <button type="button" onclick="toggleLanguage()" id="lang-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 hover:bg-emerald-950 cursor-pointer">🌐 Español</button>
-          <button type="button" onclick="toggleTheme()" id="theme-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-amber-500/40 text-amber-300 hover:bg-emerald-950 cursor-pointer">☀️ Light Mode</button>
+          <button type="button" onclick="toggleTheme()" id="theme-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-amber-500/40 text-amber-300 hover:bg-emerald-950 cursor-pointer">🌙 Dark Mode</button>
         </div>
         <div id="auth-bar" class="flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto"></div>
       </div>
@@ -189,25 +269,48 @@
   </header>
 
   <!-- Main Content Container -->
-  <div class="max-w-5xl mx-auto px-3 sm:px-4 mt-5">
-    <!-- Navigation Tabs (Hidden until authenticated!) -->
-    <div id="nav-tabs-bar" class="hidden flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-4 mb-6">
-      <div class="flex flex-wrap gap-2">
-        <button type="button" onclick="switchTab('upcoming')" id="tab-upcoming" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold neon-btn"></button>
-        <button type="button" onclick="switchTab('history')" id="tab-history" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40 cursor-pointer"></button>
-        <button type="button" onclick="switchTab('admin')" id="tab-admin" class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] text-amber-300 border border-amber-500/40 hidden cursor-pointer"></button>
+  <div class="max-w-5xl mx-auto px-3 sm:px-4 mt-4 sm:mt-5">
+    <!-- Top Desktop/Tablet Navigation Tabs (Hidden until authenticated!) -->
+    <div id="nav-tabs-bar" class="hidden flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950 pb-3.5 mb-5">
+      <div class="hidden md:flex flex-wrap gap-2">
+        <button type="button" onclick="switchTab('upcoming')" id="tab-upcoming" class="px-4 py-2.5 rounded-xl text-sm font-bold neon-btn"></button>
+        <button type="button" onclick="switchTab('history')" id="tab-history" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40 cursor-pointer"></button>
+        <button type="button" onclick="switchTab('admin')" id="tab-admin" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#111c16] text-amber-300 border border-amber-500/40 hidden cursor-pointer"></button>
       </div>
-      <div class="flex items-center justify-end gap-3">
-        <span id="sync-indicator" class="text-xs text-emerald-400/80"></span>
+      <div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-3">
+        <span id="mobile-active-view-title" class="md:hidden text-xs font-extrabold uppercase tracking-wider text-slate-400">📅 UPCOMING MATCHES</span>
+        <span id="sync-indicator" class="text-xs font-semibold text-emerald-400/80"></span>
       </div>
     </div>
 
     <!-- Alert Banner -->
-    <div id="status-banner" class="hidden mb-6 p-4 rounded-xl text-sm font-medium border"></div>
+    <div id="status-banner" class="hidden mb-5 p-4 rounded-2xl text-sm font-medium border shadow-sm"></div>
 
     <!-- Dynamic View Container -->
     <main id="view-container"></main>
   </div>
+
+  <!-- Smartphone Bottom App Navigation Bar (Thumb-Friendly Native Feel) -->
+  <nav id="mobile-bottom-dock" class="hidden md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0b130f]/95 border-t border-emerald-950 backdrop-blur-lg pb-safe">
+    <div class="grid grid-cols-4 gap-1 px-2 py-1.5 max-w-md mx-auto">
+      <button type="button" onclick="switchTab('upcoming')" id="mob-nav-upcoming" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs font-bold text-[#00f59b]">
+        <span class="text-lg leading-none mb-0.5">📅</span>
+        <span id="mob-lbl-upcoming" class="text-[10px]">Games</span>
+      </button>
+      <button type="button" onclick="switchTab('history')" id="mob-nav-history" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs font-semibold text-slate-400">
+        <span class="text-lg leading-none mb-0.5">📜</span>
+        <span id="mob-lbl-history" class="text-[10px]">Directory</span>
+      </button>
+      <button type="button" onclick="openMyProfileModal()" id="mob-nav-profile" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs font-semibold text-slate-400">
+        <span class="text-lg leading-none mb-0.5">👤</span>
+        <span id="mob-lbl-profile" class="text-[10px]">My Profile</span>
+      </button>
+      <button type="button" onclick="switchTab('admin')" id="mob-nav-admin" class="hidden flex-col items-center justify-center py-1.5 rounded-xl text-xs font-semibold text-amber-300">
+        <span class="text-lg leading-none mb-0.5">👑</span>
+        <span id="mob-lbl-admin" class="text-[10px]">Admin</span>
+      </button>
+    </div>
+  </nav>
 
   <!-- Modal Container -->
   <div id="modal-root"></div>
@@ -229,10 +332,11 @@
     }
 
     // =========================================================================
-    // BILINGUAL DICTIONARY (ENGLISH DEFAULT + SPANISH)
+    // BILINGUAL DICTIONARY & LIGHT-MODE DEFAULT
     // =========================================================================
     let currentLang = localStorage.getItem("soccer_lang") || "en";
-    let currentTheme = localStorage.getItem("soccer_theme") || "dark";
+    // Light mode is the default!
+    let currentTheme = localStorage.getItem("soccer_theme") || "light";
 
     const I18N = {
       en: {
@@ -240,6 +344,10 @@
         tabUpcoming: "📅 Upcoming Games",
         tabHistory: "📜 Past Games & Directory",
         tabAdmin: "👑 Commissioner Admin",
+        mobGames: "Games",
+        mobDir: "Directory",
+        mobProfile: "Profile",
+        mobAdmin: "Admin",
         loginBtn: "🔑 Login (PIN)",
         registerBtn: "✉️ Register (Invite Only)",
         logoutBtn: "Logout",
@@ -249,10 +357,16 @@
         noGamesSub: "Check back soon or open the Commissioner Admin tab to schedule matches.",
         confirmedBadge: "🟢 CONFIRMED — GAME ON",
         pendingBadge: "🟡 PENDING",
+        waitlistBadge: "⏳ WAITLIST OPEN",
         neededWord: "Needed",
         recurringBadge: "🔁 Recurring Series",
-        editGameBtn: "✏️ Edit Game",
-        blastBtn: "📢 Blast Message",
+        editGameBtn: "✏️ Edit",
+        blastBtn: "📢 Blast",
+        balanceTeamsBtn: "👕 Balance Teams",
+        recordScoreBtn: "🏆 Score",
+        pitchViewBtn: "🏟️ 2D Pitch View",
+        addCalBtn: "📆 Calendar",
+        shareBtn: "📲 Copy Share Text",
         announcementsTitle: "📢 Match Updates & Admin Announcements",
         hideBlastBtn: "🙈 Hide from Players",
         unhideBlastBtn: "👁️ Show to Players",
@@ -260,31 +374,47 @@
         cappedAt: "Capped at",
         playersWord: "Players",
         pitchLocTitle: "Pitch Location & Interactive Map",
-        openGmaps: "🗺️ Google Maps Turn-by-Turn Directions →",
-        toggleMapBtn: "📍 Show / Hide Interactive Field Map",
-        thresholdTitle: "Confirmation Threshold",
+        openGmaps: "🗺️ Google Maps Turn-by-Turn →",
+        toggleMapBtn: "📍 Live Field Map",
+        thresholdTitle: "Confirmation Progress",
         spotsFilled: "Spots Filled",
         minReachedMsg: "Minimum threshold reached! Game is officially locked in.",
         needMoreMsg: "more 'Yes' RSVP(s) needed to confirm this game.",
         rsvpPromptTitle: "Are you playing in this game?",
-        rsvpPromptSub: "Your status updates the live roster immediately.",
+        rsvpPromptSub: "Tap your status below — updates the live roster immediately.",
         sysAdminNoPlayTitle: "👑 System Administrator Account (pitchpulseleague@gmail.com)",
         sysAdminNoPlaySub: "This master account manages the league and cannot RSVP as a player. Log in with your personal Co-Admin or Player profile to RSVP.",
         yesBtn: "✅ YES",
+        joinWaitlistBtn: "⏳ JOIN WAITLIST",
+        onWaitlistBtn: "⏳ ON WAITLIST",
         maybeBtn: "🤔 MAYBE",
         noBtn: "❌ NO",
+        gearPrompt: "Matchday Gear & Named Guests (Max 3):",
+        bringBallLbl: "⚽ Bringing Ball",
+        bringPinniesLbl: "🦺 Bringing Pinnies",
+        playGkLbl: "🧤 Playing GK",
+        manageGuestsBtn: "👥 Manage Guests",
+        guestsDisabledNote: "🚫 Guest privileges disabled by Admin",
+        gearBarTitle: "⚽ Matchday Equipment & Goalie Check:",
+        lineupsTitle: "👕 Balanced Lineups (White vs. Dark)",
+        teamWhiteLbl: "⚪ TEAM WHITE",
+        teamDarkLbl: "⚫ TEAM DARK",
         playingYesCol: "✅ PLAYING — YES",
+        waitlistCol: "⏳ WAITLIST",
         maybeCol: "🤔 MAYBE",
         notPlayingCol: "❌ NOT PLAYING",
         noneYet: "No confirmed players yet",
         noneWord: "None",
-        dirTitle: "👥 League Player Directory & Attendance History",
+        dirTitle: "👥 League Player Directory, Reliability & Awards",
         dirSub: "Players and venues with past match participation are permanently preserved in league history.",
         gamesPlayedBadge: "Games",
-        allGamesTitle: "📜 All Games & Attendance Log",
+        reliabilityWord: "Reliability",
+        allGamesTitle: "📜 Past & Scheduled Matches, Scores & Man of the Match",
         playedWord: "Played",
         attendedYes: "Attended (Yes):",
         absentNo: "Absent (No):",
+        voteMotmPrompt: "⭐ Vote Man of the Match:",
+        motmWinnerLbl: "🏆 Man of the Match:",
         rainChance: "💧 Rain Chance:",
         weatherPending: "Weather pending GPS pin",
         weather7Days: "Forecast unlocks 7 days prior",
@@ -297,7 +427,11 @@
         subtitle: "Inscripciones Semanales • Listas en Vivo • Clima en Cancha",
         tabUpcoming: "📅 Próximos Partidos",
         tabHistory: "📜 Historial y Directorio",
-        tabAdmin: "👑 Panel de Administración",
+        tabAdmin: "👑 Administración",
+        mobGames: "Partidos",
+        mobDir: "Directorio",
+        mobProfile: "Perfil",
+        mobAdmin: "Admin",
         loginBtn: "🔑 Iniciar Sesión (PIN)",
         registerBtn: "✉️ Registrarse (Con Invitación)",
         logoutBtn: "Salir",
@@ -307,10 +441,16 @@
         noGamesSub: "Vuelve pronto o abre el Panel de Administración para programar partidos.",
         confirmedBadge: "🟢 CONFIRMADO — ¡HAY PARTIDO!",
         pendingBadge: "🟡 PENDIENTE",
+        waitlistBadge: "⏳ LISTA DE ESPERA",
         neededWord: "Mínimo",
         recurringBadge: "🔁 Serie Recurrente",
-        editGameBtn: "✏️ Editar Partido",
-        blastBtn: "📢 Enviar Aviso",
+        editGameBtn: "✏️ Editar",
+        blastBtn: "📢 Aviso",
+        balanceTeamsBtn: "👕 Equipos",
+        recordScoreBtn: "🏆 Marcador",
+        pitchViewBtn: "🏟️ Cancha 2D",
+        addCalBtn: "📆 Calendario",
+        shareBtn: "📲 Copiar Resumen",
         announcementsTitle: "📢 Avisos y Actualizaciones del Partido",
         hideBlastBtn: "🙈 Ocultar a Jugadores",
         unhideBlastBtn: "👁️ Mostrar a Jugadores",
@@ -319,30 +459,46 @@
         playersWord: "Jugadores",
         pitchLocTitle: "Ubicación de Cancha y Mapa Interactivo",
         openGmaps: "🗺️ Cómo Llegar en Google Maps →",
-        toggleMapBtn: "📍 Mostrar / Ocultar Mapa en Vivo",
-        thresholdTitle: "Mínimo de Confirmación",
+        toggleMapBtn: "📍 Mapa en Vivo",
+        thresholdTitle: "Progreso de Confirmación",
         spotsFilled: "Cupos Ocupados",
         minReachedMsg: "¡Mínimo alcanzado! El partido está oficialmente confirmado.",
         needMoreMsg: "confirmaciones 'Sí' más para confirmar este partido.",
         rsvpPromptTitle: "¿Juegas en este partido?",
-        rsvpPromptSub: "Tu respuesta actualiza la lista en vivo al instante.",
+        rsvpPromptSub: "Toca tu respuesta abajo — actualiza la lista al instante.",
         sysAdminNoPlayTitle: "👑 Cuenta de Administrador del Sistema (pitchpulseleague@gmail.com)",
         sysAdminNoPlaySub: "Esta cuenta maestra administra la liga y no participa como jugador. Inicia sesión con tu cuenta personal para confirmar asistencia.",
         yesBtn: "✅ SÍ JUEGO",
+        joinWaitlistBtn: "⏳ UNIRSE A ESPERA",
+        onWaitlistBtn: "⏳ EN ESPERA",
         maybeBtn: "🤔 TAL VEZ",
         noBtn: "❌ NO PUEDO",
+        gearPrompt: "Equipo e Invitados con Nombre (Máx 3):",
+        bringBallLbl: "⚽ Llevo Balón",
+        bringPinniesLbl: "🦺 Llevo Casacas",
+        playGkLbl: "🧤 Juego de Portero",
+        manageGuestsBtn: "👥 Invitados",
+        guestsDisabledNote: "🚫 Invitados deshabilitados por Admin",
+        gearBarTitle: "⚽ Revisión de Equipo y Porteros:",
+        lineupsTitle: "👕 Equipos Equilibrados (Blanco vs. Oscuro)",
+        teamWhiteLbl: "⚪ EQUIPO BLANCO",
+        teamDarkLbl: "⚫ EQUIPO OSCURO",
         playingYesCol: "✅ JUEGAN — SÍ",
+        waitlistCol: "⏳ LISTA DE ESPERA",
         maybeCol: "🤔 TAL VEZ",
         notPlayingCol: "❌ NO JUEGAN",
         noneYet: "Sin jugadores confirmados aún",
         noneWord: "Ninguno",
-        dirTitle: "👥 Directorio de Jugadores e Historial",
+        dirTitle: "👥 Directorio de Jugadores, Confiabilidad y Premios",
         dirSub: "Los jugadores y canchas con partidos pasados se conservan permanentemente en el historial.",
         gamesPlayedBadge: "Partidos",
-        allGamesTitle: "📜 Historial Completo de Partidos",
+        reliabilityWord: "Confiabilidad",
+        allGamesTitle: "📜 Historial de Partidos, Marcadores y Figura (MOTM)",
         playedWord: "Jugaron",
         attendedYes: "Asistieron (Sí):",
         absentNo: "Ausentes (No):",
+        voteMotmPrompt: "⭐ Votar Figura del Partido (MOTM):",
+        motmWinnerLbl: "🏆 Figura del Partido:",
         rainChance: "💧 Prob. de Lluvia:",
         weatherPending: "Clima pendiente de ubicación en mapa",
         weather7Days: "Pronóstico disponible 7 días antes",
@@ -387,6 +543,15 @@
       if (tu) tu.textContent = t("tabUpcoming");
       if (th) th.textContent = t("tabHistory");
       if (ta) ta.textContent = t("tabAdmin");
+
+      const mu = document.getElementById("mob-lbl-upcoming");
+      const mh = document.getElementById("mob-lbl-history");
+      const mp = document.getElementById("mob-lbl-profile");
+      const ma = document.getElementById("mob-lbl-admin");
+      if (mu) mu.textContent = t("mobGames");
+      if (mh) mh.textContent = t("mobDir");
+      if (mp) mp.textContent = t("mobProfile");
+      if (ma) ma.textContent = t("mobAdmin");
     }
 
     function toggleLanguage() {
@@ -404,12 +569,11 @@
     }
 
     // =========================================================================
-    // STATE & STRICT SESSION INITIALIZATION (Purges any old Demo Admin state!)
+    // STATE & STRICT SESSION INITIALIZATION
     // =========================================================================
     let currentUser = null;
     try {
       const saved = JSON.parse(localStorage.getItem("soccer_user") || "null");
-      // Require a real PIN in session; purge any old Demo Admin session that lacks a real PIN
       if (saved && saved.email && saved.pin && String(saved.fullName || "").indexOf("(Demo)") === -1) {
         currentUser = saved;
       } else {
@@ -420,17 +584,19 @@
     }
 
     let activeTab = "upcoming";
+    let adminSubTab = "all";
     let weatherCache = {};
     let editingGameId = null;
     let editingSeriesId = null;
     let editingLocationId = null;
+    let openPitchGraphicByGame = {};
 
     let adminPickerMap = null;
     let adminPickerMarker = null;
     let gameCardMaps = {};
 
-    // Empty until authenticated
     let appData = {
+      requirePinnies: true,
       games: [],
       locations: [],
       profiles: {},
@@ -491,15 +657,82 @@
       }).filter(Boolean).join(", ");
     }
 
+    function getKickoffCountdownBadge(gameDate, gameTime) {
+      const today = getTodayIso();
+      if (gameDate === today) {
+        return '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">🔥 TODAY @ ' + gameTime + '</span>';
+      }
+      const tom = new Date();
+      tom.setDate(tom.getDate() + 1);
+      const tomIso = tom.getFullYear() + "-" + String(tom.getMonth() + 1).padStart(2, "0") + "-" + String(tom.getDate()).padStart(2, "0");
+      if (gameDate === tomIso) {
+        return '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/40">⏳ TOMORROW</span>';
+      }
+      return '';
+    }
+
+    function buildGoogleCalendarUrl(game) {
+      try {
+        const dParts = String(game.Date).split("-");
+        const tParts = parseTimeParts(game.Time);
+        let hr = parseInt(tParts.hr, 10);
+        if (tParts.ampm === "PM" && hr < 12) hr += 12;
+        if (tParts.ampm === "AM" && hr === 12) hr = 0;
+        const min = parseInt(tParts.min, 10);
+        const startDt = new Date(Number(dParts[0]), Number(dParts[1]) - 1, Number(dParts[2]), hr, min, 0);
+        const endDt = new Date(startDt.getTime() + 75 * 60000);
+        function fmtCal(d) {
+          return d.getFullYear() +
+            String(d.getMonth() + 1).padStart(2, "0") +
+            String(d.getDate()).padStart(2, "0") + "T" +
+            String(d.getHours()).padStart(2, "0") +
+            String(d.getMinutes()).padStart(2, "0") + "00";
+        }
+        const addr = (game.locationDetails && game.locationDetails.address) ? game.locationDetails.address : game.LocationName;
+        return "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+          "&text=" + encodeURIComponent("⚽ " + game.Title) +
+          "&dates=" + fmtCal(startDt) + "/" + fmtCal(endDt) +
+          "&location=" + encodeURIComponent(game.LocationName + " - " + addr) +
+          "&details=" + encodeURIComponent("Pitch Pulse Lunchtime Soccer League Match. Live roster & weather: https://pitchpulseleague.github.io/soccer/");
+      } catch (e) {
+        return "#";
+      }
+    }
+
+    // 1-Tap WhatsApp / SMS Match Summary Copy
+    function copyMatchShareSummary(gameId) {
+      const game = (appData.games || []).find(function(g) { return String(g.GameID) === String(gameId); });
+      if (!game) return;
+      const yesList = (game.roster || []).filter(function(r) { return r.status === "Yes"; });
+      const spotsLeft = Math.max(0, Number(game.MaxCap || 18) - Number(game.yesCount || 0));
+      const namesStr = yesList.map(function(r) {
+        return r.fullName + (r.guestNames && r.guestNames.length ? " (+" + r.guestNames.length + ": " + r.guestNames.join(", ") + ")" : "");
+      }).join(", ") || "None yet";
+
+      const text = "⚽ *" + game.Title + "*\n" +
+        "🗓️ " + game.Date + " @ " + game.Time + "\n" +
+        "📍 " + game.LocationName + "\n" +
+        "📊 Status: " + (game.yesCount >= game.MinThreshold ? "🟢 CONFIRMED" : "🟡 NEEDS PLAYERS") + " (" + game.yesCount + "/" + game.MaxCap + " Spots — " + spotsLeft + " Left)\n" +
+        "✅ Roster: " + namesStr + "\n" +
+        "👉 RSVP: https://pitchpulseleague.github.io/soccer/";
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          showBanner("📲 Match summary copied to clipboard! Ready to paste into WhatsApp or SMS.");
+        });
+      } else {
+        prompt("Copy match summary:", text);
+      }
+    }
+
     function showBanner(msg, isError) {
       const b = document.getElementById("status-banner");
       if (!b) return;
-      b.className = "mb-6 p-4 rounded-xl text-sm font-semibold border " + (isError ? "bg-rose-950/80 border-rose-700 text-rose-200" : "bg-emerald-950/80 border-[#00f59b]/50 text-[#00f59b]");
+      b.className = "mb-5 p-4 rounded-2xl text-sm font-semibold border " + (isError ? "bg-rose-950/80 border-rose-700 text-rose-200" : "bg-emerald-950/80 border-[#00f59b]/50 text-[#00f59b]");
       b.innerHTML = msg;
       b.classList.remove("hidden");
     }
 
-    // Automatically attaches authenticated user's email & PIN to every backend request
     async function apiPost(payload) {
       try {
         if (currentUser) {
@@ -544,6 +777,7 @@
       if (data && data.success) {
         appData = data;
         if (!appData.recurring) appData.recurring = [];
+        if (appData.requirePinnies === undefined) appData.requirePinnies = true;
         if (data.user) {
           currentUser = data.user;
           localStorage.setItem("soccer_user", JSON.stringify(currentUser));
@@ -596,7 +830,7 @@
       else if (code >= 3 && code < 50) { icon = "☁️"; label = t("cloudyWord"); }
       else if (code >= 50) { icon = "🌧️"; label = t("rainLikely"); }
 
-      return '<div class="flex items-center gap-2.5 bg-emerald-950/50 border border-emerald-800/40 px-3 py-2 rounded-xl text-xs">' +
+      return '<div class="flex items-center gap-2.5 bg-emerald-950/50 border border-emerald-800/40 px-3 py-2 rounded-xl text-xs shrink-0">' +
         '<span class="text-xl">' + icon + '</span>' +
         '<div><div class="font-bold text-white">' + label + ' • ' + hi + '°F <span class="text-slate-400 font-normal">/ ' + lo + '°F</span></div>' +
         '<div class="text-emerald-300">' + t("rainChance") + ' ' + rain + '%</div></div></div>';
@@ -606,20 +840,33 @@
       const bar = document.getElementById("auth-bar");
       const navTabsBar = document.getElementById("nav-tabs-bar");
       const adminTab = document.getElementById("tab-admin");
+      const mobDock = document.getElementById("mobile-bottom-dock");
+      const mobAdminBtn = document.getElementById("mob-nav-admin");
 
       if (currentUser) {
         navTabsBar.classList.remove("hidden");
         navTabsBar.classList.add("flex");
+        if (mobDock) mobDock.classList.remove("hidden");
         if (currentUser.isAdmin) {
           adminTab.classList.remove("hidden");
+          if (mobAdminBtn) {
+            mobAdminBtn.classList.remove("hidden");
+            mobAdminBtn.classList.add("flex");
+          }
         } else {
           adminTab.classList.add("hidden");
+          if (mobAdminBtn) {
+            mobAdminBtn.classList.add("hidden");
+            mobAdminBtn.classList.remove("flex");
+          }
         }
-        bar.innerHTML = '<button type="button" onclick="openMyProfileModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 hover:bg-emerald-950 cursor-pointer">👤 ' + currentUser.fullName + (currentUser.isAdmin ? ' 👑' : '') + '</button>' +
+        const posTag = (!isSystemAdminOnly(currentUser.email) && currentUser.position) ? ' [' + currentUser.position + ']' : '';
+        bar.innerHTML = '<button type="button" onclick="openMyProfileModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 hover:bg-emerald-950 cursor-pointer">👤 ' + currentUser.fullName + posTag + (currentUser.isAdmin ? ' 👑' : '') + '</button>' +
           '<button type="button" onclick="logout()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-rose-950/60 border border-rose-800/50 text-rose-300 hover:bg-rose-900/60 cursor-pointer">' + t("logoutBtn") + '</button>';
       } else {
         navTabsBar.classList.add("hidden");
         navTabsBar.classList.remove("flex");
+        if (mobDock) mobDock.classList.add("hidden");
         adminTab.classList.add("hidden");
         bar.innerHTML = '<button type="button" onclick="showLoginModal()" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold neon-btn">' + t("loginBtn") + '</button>' +
           '<button type="button" onclick="showRegisterModal()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#111c16] border border-emerald-800/60 text-slate-200 hover:text-white cursor-pointer">' + t("registerBtn") + '</button>';
@@ -634,26 +881,40 @@
       activeTab = tab;
       ["upcoming", "history", "admin"].forEach(function(tKey) {
         const el = document.getElementById("tab-" + tKey);
-        if (!el) return;
-        if (tKey === tab) {
-          el.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold neon-btn";
-        } else {
-          el.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40 cursor-pointer" + (tKey === "admin" && (!currentUser || !currentUser.isAdmin) ? " hidden" : "");
+        if (el) {
+          if (tKey === tab) {
+            el.className = "px-4 py-2.5 rounded-xl text-sm font-bold neon-btn";
+          } else {
+            el.className = "px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#111c16] text-slate-300 hover:text-white border border-emerald-900/40 cursor-pointer" + (tKey === "admin" && (!currentUser || !currentUser.isAdmin) ? " hidden" : "");
+          }
+        }
+        const mobEl = document.getElementById("mob-nav-" + tKey);
+        if (mobEl) {
+          if (tKey === tab) {
+            mobEl.className = "flex flex-col items-center justify-center py-1.5 rounded-xl text-xs font-extrabold text-[#00f59b] bg-emerald-950/60";
+          } else {
+            mobEl.className = (tKey === "admin" && (!currentUser || !currentUser.isAdmin) ? "hidden" : "flex") + " flex-col items-center justify-center py-1.5 rounded-xl text-xs font-semibold " + (tKey === "admin" ? "text-amber-300" : "text-slate-400");
+          }
         }
       });
+
+      const mobTitle = document.getElementById("mobile-active-view-title");
+      if (mobTitle) {
+        mobTitle.textContent = tab === "admin" ? t("tabAdmin") : (tab === "history" ? t("tabHistory") : t("tabUpcoming"));
+      }
       renderCurrentTab();
     }
 
     function renderLockedGateView() {
       const container = document.getElementById("view-container");
       container.innerHTML = `
-        <div class="glass-card rounded-2xl p-8 sm:p-12 text-center max-w-xl mx-auto mt-6 shadow-2xl">
+        <div class="glass-card rounded-3xl p-8 sm:p-12 text-center max-w-xl mx-auto mt-6 shadow-2xl">
           <div class="w-16 h-16 rounded-2xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-3xl mx-auto mb-4">🔒</div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-white mb-2">${t("lockedTitle")}</h2>
           <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6">${t("lockedSub")}</p>
           <div class="flex flex-col sm:flex-row justify-center gap-3">
-            <button type="button" onclick="showLoginModal()" class="px-6 py-3 rounded-xl text-xs sm:text-sm font-bold neon-btn">${t("loginBtn")}</button>
-            <button type="button" onclick="showRegisterModal()" class="px-6 py-3 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] border border-emerald-800/60 text-white hover:bg-emerald-950 cursor-pointer">${t("registerBtn")}</button>
+            <button type="button" onclick="showLoginModal()" class="px-6 py-3.5 rounded-xl text-xs sm:text-sm font-bold neon-btn">${t("loginBtn")}</button>
+            <button type="button" onclick="showRegisterModal()" class="px-6 py-3.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#111c16] border border-emerald-800/60 text-white hover:bg-emerald-950 cursor-pointer">${t("registerBtn")}</button>
           </div>
         </div>
       `;
@@ -670,7 +931,57 @@
     }
 
     // =========================================================================
-    // UPCOMING GAMES + LEAFLET MAP + ON-CARD BLAST FEED
+    // 2D VISUAL SOCCER PITCH GRAPHIC BUILDER (Includes Named Guests)
+    // =========================================================================
+    function render2dSoccerPitchHtml(game) {
+      const yesPlayers = (game.roster || []).filter(function(r) { return r.status === "Yes"; });
+      const gks = yesPlayers.filter(function(p) { return p.playGK || p.position === "GK"; });
+      const defs = yesPlayers.filter(function(p) { return !p.playGK && p.position === "DEF"; });
+      const mids = yesPlayers.filter(function(p) { return !p.playGK && (!p.position || p.position === "MID"); });
+      const fwds = yesPlayers.filter(function(p) { return !p.playGK && p.position === "FWD"; });
+
+      // Include named guests in Midfield zone on 2D Pitch
+      const guestPills = [];
+      yesPlayers.forEach(function(p) {
+        if (p.guestNames && p.guestNames.length) {
+          p.guestNames.forEach(function(gn) {
+            guestPills.push({ fullName: gn + " (Guest)", position: "MID", isGuest: true });
+          });
+        }
+      });
+
+      function renderZonePills(list, roleTag) {
+        if (!list.length) return '<span class="text-[11px] text-emerald-200/60 italic">Open ' + roleTag + ' zone</span>';
+        return list.map(function(p) {
+          return '<div class="pitch-player-label inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/55 border border-white/30 text-white text-xs font-bold shadow">' +
+            '<span class="w-2 h-2 rounded-full ' + (p.isGuest ? 'bg-amber-400' : 'bg-[#00f59b]') + '"></span>' +
+            '<span>' + p.fullName + '</span>' +
+            '<span class="text-[10px] text-emerald-300 font-mono">[' + (p.playGK ? 'GK' : (p.position || 'MID')) + ']</span>' +
+          '</div>';
+        }).join("");
+      }
+
+      return '<div class="soccer-pitch-bg rounded-2xl p-4 sm:p-5 mb-5 shadow-inner text-white">' +
+        '<div class="flex justify-between items-center text-[11px] font-extrabold uppercase tracking-wider text-emerald-200/90 mb-3">' +
+          '<span>⚽ 2D Tactical Field Formation (' + game.yesCount + ' Players)</span>' +
+          '<span>GK • DEF • MID • FWD</span>' +
+        '</div>' +
+        '<div class="space-y-4 relative z-10">' +
+          '<div class="text-center"><div class="text-[10px] uppercase tracking-widest text-emerald-200/75 mb-1">Forwards (FWD)</div><div class="flex flex-wrap justify-center gap-2">' + renderZonePills(fwds, "FWD") + '</div></div>' +
+          '<div class="text-center"><div class="text-[10px] uppercase tracking-widest text-emerald-200/75 mb-1">Midfielders & Guests (MID)</div><div class="flex flex-wrap justify-center gap-2">' + renderZonePills(mids.concat(guestPills), "MID") + '</div></div>' +
+          '<div class="text-center"><div class="text-[10px] uppercase tracking-widest text-emerald-200/75 mb-1">Defenders (DEF)</div><div class="flex flex-wrap justify-center gap-2">' + renderZonePills(defs, "DEF") + '</div></div>' +
+          '<div class="text-center"><div class="text-[10px] uppercase tracking-widest text-emerald-200/75 mb-1">Goalkeepers (GK)</div><div class="flex flex-wrap justify-center gap-2">' + renderZonePills(gks, "GK") + '</div></div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function togglePitchGraphic(gameId) {
+      openPitchGraphicByGame[gameId] = !openPitchGraphicByGame[gameId];
+      renderCurrentTab();
+    }
+
+    // =========================================================================
+    // UPCOMING GAMES + NAMED GUESTS (0-3) + PINNIES SETTING + BALANCED TEAMS
     // =========================================================================
     function renderUpcomingGamesView() {
       const container = document.getElementById("view-container");
@@ -692,17 +1003,27 @@
     function renderGameCard(game) {
       const roster = game.roster || [];
       const yesList = roster.filter(function(r) { return r.status === "Yes"; });
+      const waitlistList = roster.filter(function(r) { return r.status === "Waitlist"; });
       const maybeList = roster.filter(function(r) { return r.status === "Maybe"; });
       const noList = roster.filter(function(r) { return r.status === "No"; });
-      const yesCount = yesList.length;
-      const isConfirmed = yesCount >= Number(game.MinThreshold);
-      const pct = Math.min(100, Math.round((yesCount / Number(game.MinThreshold || 10)) * 100));
 
+      const yesCount = Number(game.yesCount !== undefined ? game.yesCount : yesList.length);
+      const maxCap = Number(game.MaxCap || 18);
+      const minThreshold = Number(game.MinThreshold || 10);
+      const isConfirmed = yesCount >= minThreshold;
+      const isFull = yesCount >= maxCap;
+      const pct = Math.min(100, Math.round((yesCount / minThreshold) * 100));
+      const requirePinnies = appData.requirePinnies !== false;
+
+      let myEntry = null;
       let myStatus = "";
       if (currentUser) {
-        const found = roster.find(function(r) { return r.email.toLowerCase() === currentUser.email.toLowerCase(); });
-        if (found) myStatus = found.status;
+        myEntry = roster.find(function(r) { return r.email.toLowerCase() === currentUser.email.toLowerCase(); });
+        if (myEntry) myStatus = myEntry.status;
       }
+
+      const myProf = (currentUser && appData.profiles && appData.profiles[currentUser.email.toLowerCase()]) || {};
+      const userCanBringGuests = !(currentUser && (currentUser.canBringGuests === false || myProf.canBringGuests === false));
 
       const addr = (game.locationDetails && game.locationDetails.address) ? game.locationDetails.address : game.LocationName;
       const lat = (game.locationDetails && game.locationDetails.lat) ? game.locationDetails.lat : "";
@@ -715,6 +1036,10 @@
       const isAdminUser = !!(currentUser && currentUser.isAdmin);
       const isNonPlayerAdmin = currentUser && isSystemAdminOnly(currentUser.email);
 
+      const ballBringers = yesList.filter(function(p) { return p.bringBall; }).map(function(p) { return p.fullName; });
+      const pinnieBringers = yesList.filter(function(p) { return p.bringPinnies; }).map(function(p) { return p.fullName; });
+      const gkPlayers = yesList.filter(function(p) { return p.playGK || p.position === "GK"; }).map(function(p) { return p.fullName; });
+
       const allBlasts = game.blasts || [];
       const visibleBlasts = allBlasts.filter(function(b) {
         return isAdminUser ? true : !b.hidden;
@@ -722,7 +1047,7 @@
 
       let blastsSectionHtml = "";
       if (visibleBlasts.length > 0) {
-        blastsSectionHtml = '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-800/60 mb-5">' +
+        blastsSectionHtml = '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-800/60 mb-4">' +
           '<div class="text-xs font-extrabold uppercase tracking-wider text-[#00f59b] mb-2.5">' + t("announcementsTitle") + ' (' + visibleBlasts.length + ')</div>' +
           '<div class="space-y-2.5">' +
             visibleBlasts.map(function(b) {
@@ -742,38 +1067,113 @@
         '</div>';
       }
 
-      let rsvpSectionHtml = "";
-      if (isNonPlayerAdmin) {
-        rsvpSectionHtml = '<div class="bg-amber-500/10 p-4 rounded-xl border border-amber-500/40 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
-          '<div><div class="text-sm font-bold text-amber-300">' + t("sysAdminNoPlayTitle") + '</div>' +
-          '<div class="text-xs text-slate-300 mt-0.5">' + t("sysAdminNoPlaySub") + '</div></div>' +
-          '<div class="flex flex-wrap gap-2 shrink-0">' +
-            '<button type="button" onclick="openBlastModal(\'' + game.GameID + '\')" class="px-3.5 py-2 rounded-xl text-xs font-bold neon-btn">' + t("blastBtn") + '</button>' +
-            '<button type="button" onclick="startEditGame(\'' + game.GameID + '\')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 cursor-pointer">' + t("editGameBtn") + '</button>' +
+      let teamsSectionHtml = "";
+      if (game.teams && game.teams.white && game.teams.dark) {
+        teamsSectionHtml = '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-800/60 mb-4">' +
+          '<div class="flex flex-wrap justify-between items-center gap-2 mb-3">' +
+            '<span class="text-xs font-extrabold uppercase tracking-wider text-[#00f59b]">' + t("lineupsTitle") + '</span>' +
+            (game.ScoreWhite !== "" && game.ScoreDark !== "" ? '<span class="px-3 py-1 rounded-full bg-emerald-950 text-[#00f59b] border border-emerald-500/40 text-xs font-extrabold">🏆 Final: White ' + game.ScoreWhite + ' - ' + game.ScoreDark + ' Dark</span>' : '<span class="text-[11px] text-slate-400">Positional Snake Draft (Includes Named Guests)</span>') +
           '</div>' +
-        '</div>';
-      } else {
-        rsvpSectionHtml = '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-900/40 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
-          '<div><div class="text-sm font-bold text-white">' + t("rsvpPromptTitle") + '</div><div class="text-xs text-slate-400">' + t("rsvpPromptSub") + '</div></div>' +
-          '<div class="flex flex-wrap gap-2 w-full sm:w-auto">' +
-            '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'Yes\')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'Yes' ? 'bg-[#00f59b] text-[#070b09] shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">' + t("yesBtn") + ' (' + yesList.length + ')</button>' +
-            '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'Maybe\')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'Maybe' ? 'bg-amber-400 text-[#070b09] shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">' + t("maybeBtn") + ' (' + maybeList.length + ')</button>' +
-            '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'No\')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'No' ? 'bg-rose-500 text-white shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">' + t("noBtn") + ' (' + noList.length + ')</button>' +
+          '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">' +
+            '<div class="bg-[#111c16] p-3.5 rounded-xl border border-emerald-950">' +
+              '<div class="font-extrabold text-white mb-2">' + t("teamWhiteLbl") + ' (' + game.teams.white.length + ')</div>' +
+              '<div class="space-y-1 text-slate-200">' +
+                game.teams.white.map(function(p, idx) { return '<div>' + (idx + 1) + '. <b>' + p.fullName + '</b> <span class="text-slate-400 font-mono">[' + p.position + ']</span></div>'; }).join("") +
+              '</div>' +
+            '</div>' +
+            '<div class="bg-[#111c16] p-3.5 rounded-xl border border-emerald-950">' +
+              '<div class="font-extrabold text-white mb-2">' + t("teamDarkLbl") + ' (' + game.teams.dark.length + ')</div>' +
+              '<div class="space-y-1 text-slate-200">' +
+                game.teams.dark.map(function(p, idx) { return '<div>' + (idx + 1) + '. <b>' + p.fullName + '</b> <span class="text-slate-400 font-mono">[' + p.position + ']</span></div>'; }).join("") +
+              '</div>' +
+            '</div>' +
           '</div>' +
         '</div>';
       }
 
-      return '<div class="glass-card rounded-2xl p-4 sm:p-6 shadow-xl">' +
+      let rsvpSectionHtml = "";
+      if (isNonPlayerAdmin) {
+        rsvpSectionHtml = '<div class="bg-amber-500/10 p-4 rounded-xl border border-amber-500/40 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
+          '<div><div class="text-sm font-bold text-amber-300">' + t("sysAdminNoPlayTitle") + '</div>' +
+          '<div class="text-xs text-slate-300 mt-0.5">' + t("sysAdminNoPlaySub") + '</div></div>' +
+          '<div class="flex flex-wrap gap-2 shrink-0">' +
+            '<button type="button" onclick="openBlastModal(\'' + game.GameID + '\')" class="px-3 py-2 rounded-xl text-xs font-bold neon-btn">' + t("blastBtn") + '</button>' +
+            '<button type="button" onclick="generateTeams(\'' + game.GameID + '\')" class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 cursor-pointer">' + t("balanceTeamsBtn") + '</button>' +
+            '<button type="button" onclick="startEditGame(\'' + game.GameID + '\')" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 cursor-pointer">' + t("editGameBtn") + '</button>' +
+          '</div>' +
+        '</div>';
+      } else {
+        const yesBtnLabel = (isFull && myStatus !== "Yes")
+          ? (myStatus === "Waitlist" ? t("onWaitlistBtn") : t("joinWaitlistBtn"))
+          : t("yesBtn") + ' (' + yesCount + ')';
+        const yesBtnStyle = myStatus === "Yes"
+          ? 'bg-[#00f59b] text-[#070b09] shadow-lg'
+          : (myStatus === "Waitlist" ? 'bg-sky-500 text-white shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700');
+
+        const myGuestList = (myEntry && myEntry.guestNames) ? myEntry.guestNames : [];
+
+        rsvpSectionHtml = '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-900/40 mb-4">' +
+          '<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
+            '<div><div class="text-sm font-bold text-white">' + t("rsvpPromptTitle") + '</div><div class="text-xs text-slate-400">' + t("rsvpPromptSub") + '</div></div>' +
+            '<div class="flex flex-wrap gap-2 w-full sm:w-auto">' +
+              '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'Yes\')" class="flex-1 sm:flex-initial px-4 py-3 sm:py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + yesBtnStyle + '">' + yesBtnLabel + '</button>' +
+              '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'Maybe\')" class="flex-1 sm:flex-initial px-4 py-3 sm:py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'Maybe' ? 'bg-amber-400 text-[#070b09] shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">' + t("maybeBtn") + ' (' + maybeList.length + ')</button>' +
+              '<button type="button" onclick="submitRsvp(\'' + game.GameID + '\', \'No\')" class="flex-1 sm:flex-initial px-4 py-3 sm:py-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer ' + (myStatus === 'No' ? 'bg-rose-500 text-white shadow-lg' : 'bg-slate-800 text-slate-200 hover:bg-slate-700') + '">' + t("noBtn") + ' (' + noList.length + ')</button>' +
+            '</div>' +
+          '</div>' +
+          (myStatus === "Yes" && myEntry ? (
+            '<div class="mt-3.5 pt-3.5 border-t border-emerald-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">' +
+              '<div>' +
+                '<span class="font-bold text-slate-300 block">' + t("gearPrompt") + '</span>' +
+                (myGuestList.length > 0 ? '<span class="text-[11px] text-[#00f59b] font-semibold">👥 Your Guests (' + myGuestList.length + '/3): ' + myGuestList.join(", ") + '</span>' : '') +
+              '</div>' +
+              '<div class="flex flex-wrap items-center gap-2">' +
+                '<label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-900 bg-[#111c16] cursor-pointer font-semibold">' +
+                  '<input type="checkbox" onchange="toggleSignupExtra(\'' + game.GameID + '\', \'bringBall\', this.checked)" ' + (myEntry.bringBall ? 'checked' : '') + ' class="accent-[#00f59b]">' +
+                  '<span>' + t("bringBallLbl") + '</span>' +
+                '</label>' +
+                (requirePinnies ? (
+                  '<label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-900 bg-[#111c16] cursor-pointer font-semibold">' +
+                    '<input type="checkbox" onchange="toggleSignupExtra(\'' + game.GameID + '\', \'bringPinnies\', this.checked)" ' + (myEntry.bringPinnies ? 'checked' : '') + ' class="accent-[#00f59b]">' +
+                    '<span>' + t("bringPinniesLbl") + '</span>' +
+                  '</label>'
+                ) : '') +
+                '<label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-900 bg-[#111c16] cursor-pointer font-semibold">' +
+                  '<input type="checkbox" onchange="toggleSignupExtra(\'' + game.GameID + '\', \'playGK\', this.checked)" ' + (myEntry.playGK ? 'checked' : '') + ' class="accent-[#00f59b]">' +
+                  '<span>' + t("playGkLbl") + '</span>' +
+                '</label>' +
+                (userCanBringGuests ? (
+                  '<button type="button" onclick="openGuestManagerModal(\'' + game.GameID + '\')" class="px-3 py-1.5 rounded-xl bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 font-bold hover:bg-emerald-900 cursor-pointer">' +
+                    t("manageGuestsBtn") + ' (' + myGuestList.length + '/3)' +
+                  '</button>'
+                ) : '<span class="text-[11px] text-slate-400 italic">' + t("guestsDisabledNote") + '</span>') +
+              '</div>' +
+            '</div>'
+          ) : '') +
+        '</div>';
+      }
+
+      return '<div class="glass-card rounded-3xl p-4 sm:p-6 shadow-xl">' +
         '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950/80 pb-4 mb-4">' +
           '<div><div class="flex items-center gap-2 flex-wrap">' +
             '<h2 class="text-lg sm:text-xl font-extrabold text-white">' + game.Title + '</h2>' +
+            getKickoffCountdownBadge(game.Date, game.Time) +
             (game.SeriesID ? '<span class="px-2 py-0.5 rounded bg-emerald-950/90 text-emerald-300 border border-emerald-700/40 text-[11px] font-bold">' + t("recurringBadge") + '</span>' : '') +
             '<span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ' + (isConfirmed ? 'bg-[#00f59b]/20 text-[#00f59b] border border-[#00f59b]/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40') + '">' +
-              (isConfirmed ? t("confirmedBadge") : t("pendingBadge") + ' (' + yesCount + '/' + game.MinThreshold + ' ' + t("neededWord") + ')') +
+              (isConfirmed ? t("confirmedBadge") : t("pendingBadge") + ' (' + yesCount + '/' + minThreshold + ' ' + t("neededWord") + ')') +
             '</span>' +
-            (isAdminUser ? '<button type="button" onclick="openBlastModal(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 text-xs font-bold hover:bg-emerald-900 cursor-pointer">' + t("blastBtn") + '</button>' : '') +
-            (isAdminUser ? '<button type="button" onclick="startEditGame(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 cursor-pointer">' + t("editGameBtn") + '</button>' : '') +
-          '</div><p class="text-xs sm:text-sm text-slate-300 mt-1">🗓️ <b>' + game.Date + '</b> @ <b>' + game.Time + '</b> • ' + t("cappedAt") + ' <b>' + game.MaxCap + ' ' + t("playersWord") + '</b></p></div>' +
+            (isFull ? '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-950 text-sky-300 border border-sky-500/40">' + t("waitlistBadge") + ' (' + waitlistList.length + ')</span>' : '') +
+          '</div>' +
+          '<p class="text-xs sm:text-sm text-slate-300 mt-1">🗓️ <b>' + game.Date + '</b> @ <b>' + game.Time + '</b> • ' + t("cappedAt") + ' <b>' + maxCap + ' ' + t("playersWord") + '</b></p>' +
+          (isAdminUser ? (
+            '<div class="flex flex-wrap items-center gap-1.5 mt-2.5">' +
+              '<button type="button" onclick="openBlastModal(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 text-xs font-bold hover:bg-emerald-900 cursor-pointer">' + t("blastBtn") + '</button>' +
+              '<button type="button" onclick="generateTeams(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 text-xs font-bold hover:bg-emerald-900 cursor-pointer">' + t("balanceTeamsBtn") + '</button>' +
+              '<button type="button" onclick="openScoreModal(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 cursor-pointer">' + t("recordScoreBtn") + '</button>' +
+              '<button type="button" onclick="startEditGame(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 cursor-pointer">' + t("editGameBtn") + '</button>' +
+            '</div>'
+          ) : '') +
+          '</div>' +
           renderWeatherBadge(game) +
         '</div>' +
 
@@ -782,18 +1182,31 @@
             '<div class="text-xs uppercase font-bold text-slate-400 mb-1">' + t("pitchLocTitle") + '</div>' +
             '<div class="text-sm font-bold text-white">📍 ' + game.LocationName + '</div>' +
             '<div class="text-xs text-slate-400">' + addr + notes + '</div>' +
-            '<div class="flex flex-wrap items-center gap-3 mt-2.5">' +
+            '<div class="flex flex-wrap items-center gap-2 mt-2.5">' +
               '<a href="' + mapsUrl + '" target="_blank" class="text-xs font-bold text-[#00f59b] hover:underline">' + t("openGmaps") + '</a>' +
               ((lat && lng) ? '<button type="button" onclick="toggleGameCardMap(\'' + game.GameID + '\', \'' + lat + '\', \'' + lng + '\', \'' + game.LocationName.replace(/'/g, "") + '\')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-700/40 text-xs font-semibold hover:bg-emerald-900 cursor-pointer">' + t("toggleMapBtn") + '</button>' : '') +
+              '<button type="button" onclick="togglePitchGraphic(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-700/40 text-xs font-semibold hover:bg-emerald-900 cursor-pointer">' + t("pitchViewBtn") + '</button>' +
+              '<a href="' + buildGoogleCalendarUrl(game) + '" target="_blank" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 text-xs font-semibold hover:bg-slate-700">' + t("addCalBtn") + '</a>' +
+              '<button type="button" onclick="copyMatchShareSummary(\'' + game.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 text-xs font-semibold hover:bg-slate-700 cursor-pointer">' + t("shareBtn") + '</button>' +
             '</div>' +
           '</div>' +
           '<div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 flex flex-col justify-center">' +
             '<div class="flex justify-between text-xs font-bold mb-1.5">' +
-              '<span class="text-slate-300">' + t("thresholdTitle") + ' (' + game.MinThreshold + ' Min)</span>' +
-              '<span class="text-[#00f59b]">' + yesCount + ' / ' + game.MaxCap + ' ' + t("spotsFilled") + '</span>' +
+              '<span class="text-slate-300">' + t("thresholdTitle") + ' (' + minThreshold + ' Min)</span>' +
+              '<span class="text-[#00f59b]">' + yesCount + ' / ' + maxCap + ' ' + t("spotsFilled") + '</span>' +
             '</div>' +
             '<div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-[#00f59b] transition-all duration-300" style="width: ' + pct + '%"></div></div>' +
-            '<div class="text-[11px] text-slate-400 mt-1.5">' + (isConfirmed ? t("minReachedMsg") : Math.max(0, game.MinThreshold - yesCount) + ' ' + t("needMoreMsg")) + '</div>' +
+            '<div class="text-[11px] text-slate-400 mt-1.5">' + (isConfirmed ? t("minReachedMsg") : Math.max(0, minThreshold - yesCount) + ' ' + t("needMoreMsg")) + '</div>' +
+          '</div>' +
+        '</div>' +
+
+        // Gear & Goalkeeper Check Bar (Respects Global Pinnies Setting!)
+        '<div class="bg-[#0b130f] px-3.5 py-2.5 rounded-xl border border-emerald-950 mb-4 flex flex-wrap items-center justify-between gap-2 text-xs">' +
+          '<span class="font-bold text-slate-300">' + t("gearBarTitle") + '</span>' +
+          '<div class="flex flex-wrap items-center gap-3">' +
+            '<span>⚽ Ball: <b class="' + (ballBringers.length ? 'text-[#00f59b]' : 'text-amber-300') + '">' + (ballBringers.length ? ballBringers.join(", ") : "Needed") + '</b></span>' +
+            (requirePinnies ? '<span>🦺 Pinnies: <b class="' + (pinnieBringers.length ? 'text-[#00f59b]' : 'text-amber-300') + '">' + (pinnieBringers.length ? pinnieBringers.join(", ") : "Needed") + '</b></span>' : '') +
+            '<span>🧤 GK: <b class="' + (gkPlayers.length ? 'text-[#00f59b]' : 'text-slate-400') + '">' + (gkPlayers.length ? gkPlayers.join(", ") : "Open") + '</b></span>' +
           '</div>' +
         '</div>' +
 
@@ -801,11 +1214,20 @@
           '<div id="game-map-' + game.GameID + '" class="w-full h-56 sm:h-64"></div>' +
         '</div>' +
 
+        (openPitchGraphicByGame[game.GameID] ? render2dSoccerPitchHtml(game) : '') +
+
         blastsSectionHtml +
         rsvpSectionHtml +
+        teamsSectionHtml +
 
-        '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">' +
-          '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-[#00f59b] mb-2">' + t("playingYesCol") + ' (' + yesList.length + '/' + game.MaxCap + ')</div><div class="space-y-1 text-slate-200">' + (yesList.length ? yesList.map(function(r, i) { return '<div>' + (i + 1) + '. ' + r.fullName + '</div>'; }).join("") : '<span class="text-slate-500">' + t("noneYet") + '</span>') + '</div></div>' +
+        '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">' +
+          '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-[#00f59b] mb-2">' + t("playingYesCol") + ' (' + yesCount + '/' + maxCap + ')</div><div class="space-y-1 text-slate-200">' + (yesList.length ? yesList.map(function(r, i) {
+            const gearIcons = (r.bringBall ? ' ⚽' : '') + (requirePinnies && r.bringPinnies ? ' 🦺' : '') + (r.playGK ? ' 🧤' : '');
+            const gList = r.guestNames || [];
+            const guestBadge = gList.length ? ' <span class="text-emerald-300 font-bold">(+' + gList.length + ': ' + gList.join(", ") + ')</span>' : '';
+            return '<div>' + (i + 1) + '. <b>' + r.fullName + '</b> <span class="text-slate-400 font-mono">[' + (r.playGK ? 'GK' : (r.position || 'MID')) + ']</span>' + guestBadge + gearIcons + '</div>';
+          }).join("") : '<span class="text-slate-500">' + t("noneYet") + '</span>') + '</div></div>' +
+          '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-sky-400 mb-2">' + t("waitlistCol") + ' (' + waitlistList.length + ')</div><div class="space-y-1 text-slate-300">' + (waitlistList.length ? waitlistList.map(function(r, i) { return '<div>#' + (i + 1) + ' ' + r.fullName + ' <span class="text-slate-400 font-mono">[' + (r.position || 'MID') + ']</span></div>'; }).join("") : '<span class="text-slate-500">' + t("noneWord") + '</span>') + '</div></div>' +
           '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-amber-300 mb-2">' + t("maybeCol") + ' (' + maybeList.length + ')</div><div class="space-y-1 text-slate-300">' + (maybeList.length ? maybeList.map(function(r) { return '<div>• ' + r.fullName + '</div>'; }).join("") : '<span class="text-slate-500">' + t("noneWord") + '</span>') + '</div></div>' +
           '<div class="bg-[#0b130f]/70 p-3 rounded-xl border border-emerald-950"><div class="font-bold text-rose-400 mb-2">' + t("notPlayingCol") + ' (' + noList.length + ')</div><div class="space-y-1 text-slate-400">' + (noList.length ? noList.map(function(r) { return '<div>• ' + r.fullName + '</div>'; }).join("") : '<span class="text-slate-500">' + t("noneWord") + '</span>') + '</div></div>' +
         '</div></div>';
@@ -837,12 +1259,94 @@
     }
 
     // =========================================================================
-    // ADMIN GAME BLAST MODAL & VISIBILITY HANDLERS
+    // INTERACTIVE NAMED GUEST MANAGER MODAL (Up to 3 Named Guests)
+    // =========================================================================
+    function openGuestManagerModal(gameId) {
+      const game = (appData.games || []).find(function(g) { return String(g.GameID) === String(gameId); });
+      if (!game || !currentUser) return;
+      const myEntry = (game.roster || []).find(function(r) { return r.email.toLowerCase() === currentUser.email.toLowerCase(); });
+      const existingGuests = (myEntry && myEntry.guestNames) ? myEntry.guestNames : [];
+
+      document.getElementById("modal-root").innerHTML = `
+        <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+          <div class="glass-card rounded-3xl p-6 max-w-md w-full">
+            <h3 class="text-lg font-extrabold text-white mb-1">👥 Manage Your Named Guests (Max 3)</h3>
+            <p class="text-xs text-slate-400 mb-4">
+              Enter the full name of each guest you are bringing to <b>${game.Title}</b>. Each guest is counted toward the ${game.MaxCap}-player cap and checked for duplicates so two players never count the same guest twice.
+            </p>
+            <div class="space-y-3 mb-5">
+              <div>
+                <label class="text-xs font-bold text-slate-400 block mb-1">Guest #1 Full Name</label>
+                <input id="guest-name-0" type="text" value="${existingGuests[0] || ''}" placeholder="e.g. Alex Rivera (Leave blank if none)" class="w-full p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs font-bold text-slate-400 block mb-1">Guest #2 Full Name</label>
+                <input id="guest-name-1" type="text" value="${existingGuests[1] || ''}" placeholder="e.g. Jordan Lee (Leave blank if none)" class="w-full p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+              </div>
+              <div>
+                <label class="text-xs font-bold text-slate-400 block mb-1">Guest #3 Full Name</label>
+                <input id="guest-name-2" type="text" value="${existingGuests[2] || ''}" placeholder="e.g. Chris Taylor (Leave blank if none)" class="w-full p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+              </div>
+            </div>
+            <div class="flex justify-between items-center gap-2">
+              <button type="button" onclick="clearAllMyGuests('${game.GameID}')" class="px-3 py-2 rounded-xl text-xs font-bold bg-rose-950 text-rose-300 cursor-pointer">Clear Guests</button>
+              <div class="flex gap-2">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300 cursor-pointer">Cancel</button>
+                <button type="button" onclick="saveMyNamedGuests('${game.GameID}')" class="px-5 py-2 rounded-xl text-xs neon-btn">💾 Save Guests</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function saveMyNamedGuests(gameId) {
+      const g0 = document.getElementById("guest-name-0").value.replace(/,/g, " ").trim();
+      const g1 = document.getElementById("guest-name-1").value.replace(/,/g, " ").trim();
+      const g2 = document.getElementById("guest-name-2").value.replace(/,/g, " ").trim();
+      const namesList = [g0, g1, g2].filter(Boolean);
+
+      const res = await apiPost({
+        action: "updateSignupExtras",
+        gameId: gameId,
+        field: "guestNames",
+        value: namesList
+      });
+
+      if (res && res.success) {
+        appData = res;
+        closeModal();
+        showBanner(res.message || "Guest list updated!");
+        renderCurrentTab();
+      } else if (res) {
+        alert(res.error);
+      }
+    }
+
+    async function clearAllMyGuests(gameId) {
+      const res = await apiPost({
+        action: "updateSignupExtras",
+        gameId: gameId,
+        field: "guestNames",
+        value: []
+      });
+      if (res && res.success) {
+        appData = res;
+        closeModal();
+        showBanner("Guests cleared.");
+        renderCurrentTab();
+      } else if (res) {
+        alert(res.error);
+      }
+    }
+
+    // =========================================================================
+    // ADMIN GAME BLAST, TEAM BALANCER & SCOREBOARD MODALS
     // =========================================================================
     function openBlastModal(gameId) {
       const game = (appData.games || []).find(function(g) { return String(g.GameID) === String(gameId); });
       if (!game) return;
-      const rsvpCount = (game.roster || []).filter(function(r) { return r.status === "Yes" || r.status === "Maybe"; }).length;
+      const rsvpCount = (game.roster || []).filter(function(r) { return r.status === "Yes" || r.status === "Maybe" || r.status === "Waitlist"; }).length;
 
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
@@ -850,7 +1354,7 @@
             <h3 class="text-lg font-extrabold text-white mb-1">📢 Send Game Update / Email Blast</h3>
             <p class="text-xs text-slate-400 mb-3">
               Game: <b class="text-white">${game.Title} (${game.Date} @ ${game.Time})</b><br>
-              This message will be emailed immediately to <b>${rsvpCount} RSVPed (Yes/Maybe) player(s)</b> and posted under the match card for future signups to read.
+              This message will be emailed immediately to <b>${rsvpCount} RSVPed (Yes/Maybe/Waitlist) player(s)</b> and posted under the match card for future signups to read.
             </p>
             <textarea id="blast-msg-input" rows="4" placeholder="Type your update or announcement here (e.g., Field #2 is wet, we moved 50 yards north to Field #4)..." class="w-full mb-4 p-3 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white"></textarea>
             <div class="flex justify-end gap-2">
@@ -898,8 +1402,64 @@
       }
     }
 
+    async function generateTeams(gameId) {
+      const res = await apiPost({ action: "adminGenerateTeams", gameId: gameId });
+      if (res && res.success) {
+        appData = res;
+        showBanner(res.message || "Balanced teams generated!");
+        renderCurrentTab();
+      } else if (res) {
+        showBanner(res.error, true);
+      }
+    }
+
+    function openScoreModal(gameId) {
+      const game = (appData.games || []).find(function(g) { return String(g.GameID) === String(gameId); });
+      if (!game) return;
+      const wVal = (game.ScoreWhite !== undefined && game.ScoreWhite !== "") ? game.ScoreWhite : 0;
+      const dVal = (game.ScoreDark !== undefined && game.ScoreDark !== "") ? game.ScoreDark : 0;
+
+      document.getElementById("modal-root").innerHTML = `
+        <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+          <div class="glass-card rounded-2xl p-6 max-w-sm w-full text-center">
+            <h3 class="text-lg font-extrabold text-white mb-1">🏆 Record Final Match Score</h3>
+            <p class="text-xs text-slate-400 mb-4">${game.Title} (${game.Date})</p>
+            <div class="flex items-center justify-center gap-4 mb-5">
+              <div>
+                <label class="text-xs font-bold text-slate-400 block mb-1">⚪ Team White</label>
+                <input id="sc-white" type="number" min="0" value="${wVal}" class="w-20 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-center text-lg font-extrabold text-white">
+              </div>
+              <span class="text-2xl font-extrabold text-slate-400 mt-4">—</span>
+              <div>
+                <label class="text-xs font-bold text-slate-400 block mb-1">⚫ Team Dark</label>
+                <input id="sc-dark" type="number" min="0" value="${dVal}" class="w-20 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-center text-lg font-extrabold text-white">
+              </div>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300 cursor-pointer">Cancel</button>
+              <button type="button" onclick="submitGameScore('${game.GameID}')" class="px-5 py-2 rounded-xl text-xs neon-btn">Save Score</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function submitGameScore(gameId) {
+      const scoreWhite = Number(document.getElementById("sc-white").value || 0);
+      const scoreDark = Number(document.getElementById("sc-dark").value || 0);
+      const res = await apiPost({ action: "adminSaveScore", gameId: gameId, scoreWhite: scoreWhite, scoreDark: scoreDark });
+      if (res && res.success) {
+        appData = res;
+        closeModal();
+        showBanner(res.message || "Score saved!");
+        renderCurrentTab();
+      } else if (res) {
+        alert(res.error);
+      }
+    }
+
     // =========================================================================
-    // PAST GAMES & PLAYER DIRECTORY VIEW
+    // PAST GAMES, MOTM VOTING & PLAYER DIRECTORY VIEW
     // =========================================================================
     function renderHistoryAndDirectoryView() {
       const container = document.getElementById("view-container");
@@ -908,38 +1468,127 @@
       });
 
       container.innerHTML = '<div class="space-y-6">' +
-        '<div class="glass-card rounded-2xl p-4 sm:p-6"><h2 class="text-lg font-extrabold text-white mb-1">' + t("dirTitle") + '</h2><p class="text-xs text-slate-400 mb-4">' + t("dirSub") + '</p>' +
+        '<div class="glass-card rounded-3xl p-4 sm:p-6"><h2 class="text-lg font-extrabold text-white mb-1">' + t("dirTitle") + '</h2><p class="text-xs text-slate-400 mb-4">' + t("dirSub") + '</p>' +
         '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">' +
         (profilesList.length === 0 ? '<p class="text-xs text-slate-500">No registered players yet.</p>' : '') +
         profilesList.map(function(p) {
           const attended = (appData.games || []).filter(function(g) { return (g.roster || []).some(function(r) { return r.email.toLowerCase() === p.email.toLowerCase() && r.status === 'Yes'; }); }).length;
           const isSusp = String(p.status || 'Active').toLowerCase() === 'suspended';
-          return '<div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 flex justify-between items-center">' +
-            '<div><div class="font-bold text-white text-sm">' + p.fullName + (p.role === 'Admin' ? ' 👑' : '') + (isSusp ? ' <span class="text-[10px] text-rose-400">(Inactive)</span>' : '') + '</div><a href="mailto:' + p.email + '" class="text-xs text-[#00f59b] hover:underline">' + p.email + '</a></div>' +
-            '<span class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 text-xs font-bold">' + attended + ' ' + t("gamesPlayedBadge") + '</span></div>';
+          const rel = p.reliability !== undefined ? p.reliability : 100;
+          return '<div class="bg-[#0b130f] p-3.5 rounded-2xl border border-emerald-950 flex justify-between items-center gap-2">' +
+            '<div>' +
+              '<div class="font-bold text-white text-sm flex items-center gap-1.5 flex-wrap">' +
+                '<span>' + p.fullName + '</span>' +
+                '<span class="text-[11px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">' + (p.position || 'MID') + '</span>' +
+                (p.role === 'Admin' ? '<span>👑</span>' : '') +
+                (isSusp ? '<span class="text-[10px] text-rose-400">(Inactive)</span>' : '') +
+              '</div>' +
+              '<a href="mailto:' + p.email + '" class="text-xs text-[#00f59b] hover:underline block mt-0.5">' + p.email + '</a>' +
+              '<div class="text-[11px] text-slate-400 mt-1">' +
+                t("reliabilityWord") + ': <b>' + rel + '%</b>' +
+                (p.motmCount ? ' • <span class="text-amber-300 font-bold">🏆 ' + p.motmCount + ' MOTM</span>' : '') +
+              '</div>' +
+            '</div>' +
+            '<span class="px-2.5 py-1 rounded-xl bg-emerald-950 text-emerald-300 text-xs font-bold shrink-0">' + attended + ' ' + t("gamesPlayedBadge") + '</span></div>';
         }).join("") + '</div></div>' +
-        '<div class="glass-card rounded-2xl p-4 sm:p-6"><h2 class="text-lg font-extrabold text-white mb-4">' + t("allGamesTitle") + '</h2><div class="space-y-3">' +
+
+        '<div class="glass-card rounded-3xl p-4 sm:p-6"><h2 class="text-lg font-extrabold text-white mb-4">' + t("allGamesTitle") + '</h2><div class="space-y-3">' +
         ((appData.games || []).length === 0 ? '<p class="text-xs text-slate-500">No games recorded yet.</p>' : '') +
         (appData.games || []).map(function(g) {
-          const yesNames = (g.roster || []).filter(function(r) { return r.status === "Yes"; }).map(function(r) { return r.fullName; });
+          const yesList = (g.roster || []).filter(function(r) { return r.status === "Yes"; });
+          const yesNames = yesList.map(function(r) {
+            return r.fullName + (r.guestNames && r.guestNames.length ? " (+" + r.guestNames.length + ": " + r.guestNames.join(", ") + ")" : "");
+          });
           const noNames = (g.roster || []).filter(function(r) { return r.status === "No"; }).map(function(r) { return r.fullName; });
-          return '<div class="bg-[#0b130f] p-4 rounded-xl border border-emerald-950"><div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">' +
-            '<span class="font-bold text-white text-sm">' + g.Title + ' — ' + g.Date + ' @ ' + g.Time + ' (' + g.LocationName + ')</span>' +
-            '<span class="text-xs font-bold px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 w-fit">' + yesNames.length + ' ' + t("playedWord") + '</span></div>' +
+          const hasScore = (g.ScoreWhite !== undefined && g.ScoreWhite !== "" && g.ScoreDark !== undefined && g.ScoreDark !== "");
+          const myEntry = currentUser ? (g.roster || []).find(function(r) { return r.email.toLowerCase() === currentUser.email.toLowerCase(); }) : null;
+          const myVote = myEntry ? (myEntry.motmVote || "") : "";
+
+          return '<div class="bg-[#0b130f] p-4 rounded-2xl border border-emerald-950">' +
+            '<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">' +
+              '<div class="flex items-center gap-2 flex-wrap">' +
+                '<span class="font-bold text-white text-sm">' + g.Title + ' — ' + g.Date + ' @ ' + g.Time + ' (' + g.LocationName + ')</span>' +
+                (hasScore ? '<span class="px-2.5 py-0.5 rounded-full bg-emerald-950 text-[#00f59b] border border-emerald-500/40 text-xs font-extrabold">⚪ White ' + g.ScoreWhite + ' - ' + g.ScoreDark + ' Dark ⚫</span>' : '') +
+              '</div>' +
+              '<div class="flex items-center gap-2">' +
+                (currentUser && currentUser.isAdmin ? '<button type="button" onclick="openScoreModal(\'' + g.GameID + '\')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold cursor-pointer">' + t("recordScoreBtn") + '</button>' : '') +
+                '<span class="text-xs font-bold px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 w-fit">' + (g.yesCount || yesList.length) + ' ' + t("playedWord") + '</span>' +
+              '</div>' +
+            '</div>' +
             '<div class="text-xs text-slate-300"><b>' + t("attendedYes") + '</b> ' + (yesNames.length ? yesNames.join(", ") : t("noneWord")) + '</div>' +
-            '<div class="text-xs text-slate-500 mt-1"><b>' + t("absentNo") + '</b> ' + (noNames.length ? noNames.join(", ") : t("noneWord")) + '</div></div>';
+            '<div class="text-xs text-slate-500 mt-1"><b>' + t("absentNo") + '</b> ' + (noNames.length ? noNames.join(", ") : t("noneWord")) + '</div>' +
+            (g.motmWinnerName ? '<div class="mt-2 text-xs font-bold text-amber-300">' + t("motmWinnerLbl") + ' ' + g.motmWinnerName + ' (' + g.motmWinnerVotes + ' votes)</div>' : '') +
+            (!isSystemAdminOnly(currentUser.email) && yesList.length > 0 ? (
+              '<div class="mt-3 pt-2.5 border-t border-emerald-950 flex flex-wrap items-center gap-2 text-xs">' +
+                '<span class="font-semibold text-slate-400">' + t("voteMotmPrompt") + '</span>' +
+                '<select onchange="submitMotmVote(\'' + g.GameID + '\', this.value)" class="bg-[#111c16] border border-emerald-900 rounded-xl px-2.5 py-1 text-xs text-white font-semibold cursor-pointer">' +
+                  '<option value="">-- Select Player --</option>' +
+                  yesList.map(function(p) {
+                    return '<option value="' + p.email + '" ' + (myVote === p.email ? 'selected' : '') + '>' + p.fullName + '</option>';
+                  }).join("") +
+                '</select>' +
+              '</div>'
+            ) : '') +
+          '</div>';
         }).join("") + '</div></div></div>';
     }
 
+    async function submitMotmVote(gameId, nomineeEmail) {
+      if (!nomineeEmail) return;
+      const res = await apiPost({ action: "voteMotm", gameId: gameId, nomineeEmail: nomineeEmail });
+      if (res && res.success) {
+        appData = res;
+        showBanner(res.message || "Man of the Match vote saved!");
+        renderCurrentTab();
+      } else if (res) {
+        showBanner(res.error, true);
+      }
+    }
+
     // =========================================================================
-    // COMMISSIONER ADMIN VIEW
+    // COMMISSIONER ADMIN VIEW (Includes Global Pinnies Switch & Guest Privilege Toggle)
     // =========================================================================
+    function switchAdminSubTab(sub) {
+      adminSubTab = sub;
+      renderAdminView();
+    }
+
+    async function adminTogglePinnies(newVal) {
+      const res = await apiPost({
+        action: "adminTogglePinniesSetting",
+        requirePinnies: newVal
+      });
+      if (res && res.success) {
+        appData = res;
+        showBanner(res.message || "Pinnies setting updated!");
+        renderAdminView();
+      } else if (res) {
+        showBanner(res.error, true);
+      }
+    }
+
+    async function adminToggleGuestPriv(targetEmail, canBring) {
+      const res = await apiPost({
+        action: "adminToggleGuestPrivilege",
+        targetEmail: targetEmail,
+        canBring: canBring
+      });
+      if (res && res.success) {
+        appData = res;
+        showBanner(res.message || "Guest privilege updated!");
+        renderAdminView();
+      } else if (res) {
+        showBanner(res.error, true);
+      }
+    }
+
     function renderAdminView() {
       const container = document.getElementById("view-container");
       const profilesList = Object.values(appData.profiles || {});
       const invitesList = appData.invites || [];
       const recurringList = appData.recurring || [];
       const activeLocations = (appData.locations || []).filter(function(l) { return String(l.LocationStatus || "Active").toLowerCase() !== "inactive"; });
+      const requirePinnies = appData.requirePinnies !== false;
 
       const editingGame = editingGameId ? (appData.games || []).find(function(g) { return String(g.GameID) === String(editingGameId); }) : null;
       const editingSeries = editingSeriesId ? recurringList.find(function(s) { return String(s.SeriesID) === String(editingSeriesId); }) : null;
@@ -951,11 +1600,39 @@
         { d: "4", name: "Thu" }, { d: "5", name: "Fri" }, { d: "6", name: "Sat" }, { d: "0", name: "Sun" }
       ];
 
+      const showSec = function(sec) { return adminSubTab === "all" || adminSubTab === sec; };
+
       container.innerHTML = `
         <div class="space-y-6">
 
+          <!-- Admin Command Bar: Section Filter + Global Pinnies Requirement Toggle -->
+          <div class="glass-card rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex flex-wrap gap-1.5">
+              ${[
+                { id: "all", lbl: "📋 All Sections" },
+                { id: "invites", lbl: "✉️ Invites (" + invitesList.length + ")" },
+                { id: "recurring", lbl: "🔁 Recurring (" + recurringList.length + ")" },
+                { id: "games", lbl: "📅 Games (" + (appData.games || []).length + ")" },
+                { id: "locations", lbl: "📍 Fields (" + (appData.locations || []).length + ")" },
+                { id: "players", lbl: "🛡️ Players (" + profilesList.length + ")" }
+              ].map(tab => `
+                <button type="button" onclick="switchAdminSubTab('${tab.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${adminSubTab === tab.id ? 'neon-btn' : 'bg-[#0b130f] text-slate-300 border border-emerald-900/50'}">
+                  ${tab.lbl}
+                </button>
+              `).join("")}
+            </div>
+
+            <!-- Global System Setting: Pinnies Needed ON/OFF -->
+            <div class="flex items-center justify-between md:justify-end gap-2.5 bg-[#0b130f] px-3.5 py-2 rounded-xl border border-emerald-950">
+              <span class="text-xs font-bold text-slate-300">🦺 Require Pinnies at Games:</span>
+              <button type="button" onclick="adminTogglePinnies(${!requirePinnies})" class="px-3 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${requirePinnies ? 'bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40' : 'bg-slate-800 text-slate-400'}">
+                ${requirePinnies ? '✅ ON (Required)' : '🚫 OFF (Not Needed)'}
+              </button>
+            </div>
+          </div>
+
           <!-- 1. INVITE NEW PLAYERS & TRACK INVITATION STATUS -->
-          <div class="glass-card rounded-2xl p-4 sm:p-6">
+          <div class="glass-card rounded-2xl p-4 sm:p-6 ${showSec('invites') ? '' : 'hidden'}">
             <h3 class="text-lg font-extrabold text-white mb-1">✉️ 1. Player Invitations & Invite Tracker</h3>
             <p class="text-xs text-slate-400 mb-4">Send new invitations and see everyone who has been invited, whether they have registered yet, or resend/revoke their invite.</p>
             <div class="flex flex-col sm:flex-row gap-2 max-w-lg mb-5">
@@ -993,7 +1670,7 @@
           </div>
 
           <!-- 2. RECURRING GAME SCHEDULE BUILDER & EDITOR -->
-          <div id="admin-recurring-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingSeries ? 'border-2 border-[#00f59b]' : ''}">
+          <div id="admin-recurring-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingSeries ? 'border-2 border-[#00f59b]' : ''} ${showSec('recurring') ? '' : 'hidden'}">
             <div class="flex justify-between items-center mb-1">
               <h3 class="text-lg font-extrabold text-white">
                 ${editingSeries ? `🔁 Editing Recurring Schedule: ${editingSeries.Title}` : '🔁 2. Recurring Game Schedule Builder'}
@@ -1078,7 +1755,7 @@
           </div>
 
           <!-- 3. SCHEDULE OR EDIT SINGLE GAME -->
-          <div id="admin-game-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingGame ? 'border-2 border-amber-400' : ''}">
+          <div id="admin-game-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingGame ? 'border-2 border-amber-400' : ''} ${showSec('games') ? '' : 'hidden'}">
             <div class="flex justify-between items-center mb-1">
               <h3 class="text-lg font-extrabold text-white">${editingGame ? `✏️ Editing Single Game: ${editingGame.Title}` : '📅 3. Schedule or Edit Single Game'}</h3>
               ${editingGame ? `<button type="button" onclick="cancelEditGame()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Edit</button>` : ''}
@@ -1128,9 +1805,11 @@
                       <div class="text-slate-400">📍 ${g.LocationName} • ${g.yesCount || 0}/${g.MaxCap} Yes (Min ${g.MinThreshold})</div>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                      <button type="button" onclick="openBlastModal('${g.GameID}')" class="px-3 py-1.5 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 font-bold hover:bg-emerald-900 cursor-pointer">📢 Blast</button>
-                      <button type="button" onclick="startEditGame('${g.GameID}')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit</button>
-                      <button type="button" onclick="adminRemoveGame('${g.GameID}')" class="px-3 py-1.5 rounded-lg bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">Delete</button>
+                      <button type="button" onclick="openBlastModal('${g.GameID}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 font-bold hover:bg-emerald-900 cursor-pointer">📢 Blast</button>
+                      <button type="button" onclick="generateTeams('${g.GameID}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 font-bold hover:bg-emerald-900 cursor-pointer">👕 Teams</button>
+                      <button type="button" onclick="openScoreModal('${g.GameID}')" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold hover:bg-amber-500/30 cursor-pointer">🏆 Score</button>
+                      <button type="button" onclick="startEditGame('${g.GameID}')" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold hover:bg-amber-500/30 cursor-pointer">✏️ Edit</button>
+                      <button type="button" onclick="adminRemoveGame('${g.GameID}')" class="px-2.5 py-1.5 rounded-lg bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">Delete</button>
                     </div>
                   </div>
                 `).join("")}
@@ -1139,7 +1818,7 @@
           </div>
 
           <!-- 4. INTERACTIVE LEAFLET FIELD PICKER & LOCATION MANAGER -->
-          <div id="admin-loc-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingLoc ? 'border-2 border-amber-400' : ''}">
+          <div id="admin-loc-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingLoc ? 'border-2 border-amber-400' : ''} ${showSec('locations') ? '' : 'hidden'}">
             <div class="flex justify-between items-center mb-1">
               <h3 class="text-lg font-extrabold text-white">${editingLoc ? `✏️ Editing Location: ${editingLoc.Name}` : '📍 4. Interactive Map Field Pinpointer & Location Manager'}</h3>
               ${editingLoc ? `<button type="button" onclick="cancelEditLocation()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Edit</button>` : ''}
@@ -1216,11 +1895,11 @@
             </div>
           </div>
 
-          <!-- 5. PLAYER MANAGEMENT, CO-ADMINS & IMMUTABLE SYSTEM ADMIN PROTECTION -->
-          <div class="glass-card rounded-2xl p-4 sm:p-6">
-            <h3 class="text-lg font-extrabold text-white mb-1">🛡️ 5. Manage Players, Co-Admins & Account Suspensions</h3>
+          <!-- 5. PLAYER MANAGEMENT, GUEST PRIVILEGE TOGGLE, CO-ADMINS & SUSPENSIONS -->
+          <div class="glass-card rounded-2xl p-4 sm:p-6 ${showSec('players') ? '' : 'hidden'}">
+            <h3 class="text-lg font-extrabold text-white mb-1">🛡️ 5. Manage Players, Guest Privileges, Co-Admins & Suspensions</h3>
             <p class="text-xs text-slate-400 mb-4">
-              Players who participated in past games can only be <b>Suspended</b> (never deleted) so past rosters stay intact. Primary System Admin (<b>pitchpulseleague@gmail.com</b>) and backup recovery (<b>ralph@me.com</b>) are permanently protected.
+              Enable or disable <b>Guest Privileges (0–3 guests)</b> per player, promote Co-Admins, or suspend accounts. Players with past match history can only be Suspended (never deleted) so historical rosters remain accurate.
             </p>
             <div class="space-y-2">
               ${profilesList.length === 0 ? '<p class="text-xs text-slate-500">No players registered yet.</p>' : ''}
@@ -1229,18 +1908,25 @@
                 const isSysOnly = isSystemAdminOnly(p.email);
                 const isAdmin = p.role === "Admin" || isProt;
                 const isSuspended = !isProt && String(p.status || "Active").toLowerCase() === "suspended";
+                const canGuests = p.canBringGuests !== false;
                 return `
                   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0b130f] p-3.5 rounded-xl border ${isSuspended ? 'border-rose-800/70 bg-rose-950/20' : 'border-emerald-950'} text-xs">
                     <div>
                       <div class="flex items-center gap-2 flex-wrap">
                         <span class="font-bold text-white text-sm ${isSuspended ? 'line-through text-slate-400' : ''}">${p.fullName}</span>
                         <span class="text-slate-400">${p.email}</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">${p.position || 'MID'}</span>
                         <span class="px-2.5 py-0.5 rounded font-bold border ${isAdmin ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-slate-800 text-slate-300 border-slate-700'}">
                           ${isSysOnly ? '🛡️ System Admin (Non-Player)' : (isProt ? '🛡️ Protected Admin' : (isAdmin ? '👑 Co-Admin (Plays)' : 'Player'))}
                         </span>
                         <span class="px-2 py-0.5 rounded font-bold ${isSuspended ? 'bg-rose-600 text-white' : 'bg-emerald-950 text-[#00f59b]'}">
                           ${isSuspended ? '🚫 SUSPENDED' : 'Active'}
                         </span>
+                        ${!isSysOnly ? `
+                          <span class="px-2 py-0.5 rounded font-bold ${canGuests ? 'bg-emerald-950 text-emerald-300' : 'bg-rose-950 text-rose-300'}">
+                            ${canGuests ? '👥 Guests Allowed' : '🚫 No Guests'}
+                          </span>
+                        ` : ''}
                         ${p.hasHistory ? '<span class="text-[11px] text-slate-400">🔒 Has Match History</span>' : ''}
                       </div>
                     </div>
@@ -1248,6 +1934,9 @@
                       ${isProt ? `
                         <span class="text-xs text-emerald-400 font-semibold italic">Immutable Master Account</span>
                       ` : `
+                        <button type="button" onclick="adminToggleGuestPriv('${p.email}', ${!canGuests})" class="px-2.5 py-1.5 rounded-lg font-bold cursor-pointer ${canGuests ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40'}">
+                          ${canGuests ? '🚫 Disable Guests' : '✅ Allow Guests'}
+                        </button>
                         <button type="button" onclick="adminToggleRole('${p.email}', '${isAdmin ? 'Player' : 'Admin'}')" class="px-2.5 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 cursor-pointer">
                           ${isAdmin ? 'Demote to Player' : 'Make Co-Admin'}
                         </button>
@@ -1269,7 +1958,9 @@
         </div>
       `;
 
-      setTimeout(initAdminLocationPickerMap, 80);
+      if (showSec("locations")) {
+        setTimeout(initAdminLocationPickerMap, 80);
+      }
     }
 
     // =========================================================================
@@ -1360,7 +2051,7 @@
     }
 
     // =========================================================================
-    // ACTION HANDLERS
+    // ACTION HANDLERS (RSVP, EXTRAS, ADMIN CRUD)
     // =========================================================================
     async function submitRsvp(gameId, status) {
       if (!currentUser) {
@@ -1376,9 +2067,26 @@
       const res = await apiPost({ action: "updateSignup", gameId: gameId, email: currentUser.email, status: status });
       if (res && res.success) {
         appData = res;
+        if (res.message) showBanner(res.message);
         renderCurrentTab();
       } else if (res && res.error) {
         showBanner(res.error, true);
+      }
+    }
+
+    async function toggleSignupExtra(gameId, field, value) {
+      const res = await apiPost({
+        action: "updateSignupExtras",
+        gameId: gameId,
+        field: field,
+        value: value
+      });
+      if (res && res.success) {
+        appData = res;
+        renderCurrentTab();
+      } else if (res && res.error) {
+        showBanner(res.error, true);
+        renderCurrentTab();
       }
     }
 
@@ -1414,6 +2122,7 @@
 
     function startEditSeries(seriesId) {
       editingSeriesId = seriesId;
+      adminSubTab = "all";
       renderAdminView();
       setTimeout(function() {
         const el = document.getElementById("admin-recurring-form-card");
@@ -1482,6 +2191,7 @@
 
     function startEditGame(gameId) {
       editingGameId = gameId;
+      adminSubTab = "all";
       switchTab("admin");
       setTimeout(function() {
         const el = document.getElementById("admin-game-form-card");
@@ -1523,7 +2233,7 @@
     }
 
     async function adminRemoveGame(gameId) {
-      if (!confirm("Delete/Cancel this scheduled game? (Any players who RSVPed Yes/Maybe will automatically receive a cancellation email).")) return;
+      if (!confirm("Delete/Cancel this scheduled game? (Any players who RSVPed Yes/Maybe/Waitlist will automatically receive a cancellation email).")) return;
       const res = await apiPost({ action: "adminDeleteGame", gameId: gameId });
       if (res && res.success) {
         appData = res;
@@ -1534,6 +2244,7 @@
 
     function startEditLocation(locId) {
       editingLocationId = locId;
+      adminSubTab = "all";
       renderAdminView();
       setTimeout(function() {
         const el = document.getElementById("admin-loc-form-card");
@@ -1628,31 +2339,81 @@
     }
 
     // =========================================================================
-    // LOGIN, REGISTRATION & BACKUP ADMIN RECOVERY MODALS
+    // 6-BOX AUTO-ADVANCE PIN LOGIN, REGISTER & PROFILE MODALS
     // =========================================================================
     function showLoginModal() {
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
-          <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
+          <div class="glass-card rounded-3xl p-6 max-w-sm w-full">
             <h3 class="text-lg font-extrabold text-white mb-1">${t("loginBtn")}</h3>
-            <p class="text-xs text-slate-400 mb-4">Enter your email and 6-digit PIN code.</p>
-            <input id="l-email" type="email" placeholder="Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
-            <input id="l-pin" type="password" maxlength="6" inputmode="numeric" placeholder="6-Digit PIN" class="w-full mb-2 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white tracking-widest">
+            <p class="text-xs text-slate-400 mb-4">Enter your email and 6-digit PIN (auto-submits on 6th digit).</p>
+            <input id="l-email" type="email" placeholder="Email Address" class="w-full mb-4 p-3 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
+            <div class="flex justify-between gap-1.5 mb-3">
+              ${[0,1,2,3,4,5].map(i => `
+                <input id="pin-box-${i}" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-box"
+                  oninput="onPinBoxInput(${i}, event)" onkeydown="onPinBoxKey(${i}, event)" onpaste="onPinBoxPaste(event)">
+              `).join("")}
+            </div>
             <div class="text-right mb-4">
-              <button type="button" onclick="showForgotPinModal()" class="text-xs text-[#00f59b] hover:underline cursor-pointer">Forgot 6-Digit PIN / Backup Admin Recovery?</button>
+              <button type="button" onclick="showForgotPinModal()" class="text-xs text-[#00f59b] font-semibold hover:underline cursor-pointer">Forgot 6-Digit PIN / Backup Admin Recovery?</button>
             </div>
             <div class="flex justify-end gap-2">
-              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300 cursor-pointer">Cancel</button>
-              <button type="button" onclick="doLogin()" class="px-5 py-2 rounded-xl text-xs neon-btn">Login</button>
+              <button type="button" onclick="closeModal()" class="px-4 py-2.5 rounded-xl text-xs bg-slate-800 text-slate-300 cursor-pointer">Cancel</button>
+              <button type="button" onclick="doLogin()" class="px-5 py-2.5 rounded-xl text-xs neon-btn">Login</button>
             </div>
           </div>
         </div>
       `;
+      setTimeout(function() {
+        const emIn = document.getElementById("l-email");
+        if (emIn) emIn.focus();
+      }, 60);
+    }
+
+    function getEnteredPinBoxes() {
+      return [0,1,2,3,4,5].map(function(i) {
+        const el = document.getElementById("pin-box-" + i);
+        return el ? el.value.trim() : "";
+      }).join("");
+    }
+
+    function onPinBoxInput(idx, e) {
+      const val = e.target.value.replace(/[^0-9]/g, "");
+      e.target.value = val.slice(-1);
+      if (e.target.value && idx < 5) {
+        const nextEl = document.getElementById("pin-box-" + (idx + 1));
+        if (nextEl) nextEl.focus();
+      }
+      const fullPin = getEnteredPinBoxes();
+      if (fullPin.length === 6) {
+        doLogin();
+      }
+    }
+
+    function onPinBoxKey(idx, e) {
+      if (e.key === "Backspace" && !e.target.value && idx > 0) {
+        const prevEl = document.getElementById("pin-box-" + (idx - 1));
+        if (prevEl) prevEl.focus();
+      }
+    }
+
+    function onPinBoxPaste(e) {
+      const pasted = (e.clipboardData || window.clipboardData).getData("text").replace(/[^0-9]/g, "").slice(0, 6);
+      if (pasted.length > 0) {
+        e.preventDefault();
+        for (let i = 0; i < 6; i++) {
+          const bx = document.getElementById("pin-box-" + i);
+          if (bx) bx.value = pasted[i] || "";
+        }
+        if (pasted.length === 6) doLogin();
+      }
     }
 
     async function doLogin() {
       const email = document.getElementById("l-email").value.trim();
-      const pin = document.getElementById("l-pin").value.trim();
+      const pin = getEnteredPinBoxes();
+      if (!email || pin.length !== 6) return alert("Please enter your email and all 6 digits of your PIN.");
+
       const res = await apiPost({ action: "login", email: email, pin: pin });
       if (res && res.success) {
         currentUser = res.user;
@@ -1671,12 +2432,18 @@
     function showRegisterModal() {
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
-          <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
+          <div class="glass-card rounded-3xl p-6 max-w-sm w-full">
             <h3 class="text-lg font-extrabold text-white mb-1">${t("registerBtn")}</h3>
             <p class="text-xs text-slate-400 mb-4">Your email must be invited by a League Admin first.</p>
             <input id="r-name" type="text" placeholder="Your Full Name" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
             <input id="r-email" type="email" placeholder="Invited Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
-            <input id="r-pin" type="password" maxlength="6" inputmode="numeric" placeholder="Create 6-Digit PIN (Numbers)" class="w-full mb-4 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white tracking-widest">
+            <select id="r-pos" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white font-semibold cursor-pointer">
+              <option value="MID">Preferred Position: Midfielder (MID)</option>
+              <option value="DEF">Preferred Position: Defender (DEF)</option>
+              <option value="FWD">Preferred Position: Forward (FWD)</option>
+              <option value="GK">Preferred Position: Goalkeeper (GK)</option>
+            </select>
+            <input id="r-pin" type="password" maxlength="6" inputmode="numeric" placeholder="Create 6-Digit PIN (Numbers)" class="w-full mb-4 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white tracking-widest text-center font-bold">
             <div class="flex justify-end gap-2">
               <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300 cursor-pointer">Cancel</button>
               <button type="button" onclick="doRegister()" class="px-5 py-2 rounded-xl text-xs neon-btn">Create Profile</button>
@@ -1689,9 +2456,10 @@
     async function doRegister() {
       const fullName = document.getElementById("r-name").value.trim();
       const email = document.getElementById("r-email").value.trim();
+      const position = document.getElementById("r-pos").value;
       const pin = document.getElementById("r-pin").value.trim();
       if (pin.length !== 6) return alert("PIN must be exactly 6 digits.");
-      const res = await apiPost({ action: "register", fullName: fullName, email: email, pin: pin });
+      const res = await apiPost({ action: "register", fullName: fullName, email: email, position: position, pin: pin });
       if (res && res.success) {
         currentUser = res.user;
         currentUser.pin = pin;
@@ -1709,7 +2477,7 @@
     function showForgotPinModal() {
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
-          <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
+          <div class="glass-card rounded-3xl p-6 max-w-sm w-full">
             <h3 class="text-lg font-extrabold text-white mb-1">🔒 Reset Your 6-Digit PIN</h3>
             <p class="text-xs text-slate-400 mb-4">Enter your registered email to receive a 6-digit verification code.</p>
             <input id="f-email" type="email" placeholder="Registered Email Address" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
@@ -1739,7 +2507,7 @@
         alert(res.message);
         document.getElementById("modal-root").innerHTML = `
           <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
-            <div class="glass-card rounded-2xl p-6 max-w-sm w-full">
+            <div class="glass-card rounded-3xl p-6 max-w-sm w-full">
               <h3 class="text-lg font-extrabold text-white mb-1">Enter Verification Code</h3>
               <p class="text-xs text-slate-400 mb-3">Resetting PIN for: <b class="text-white">${targetEmail}</b></p>
               <input id="rst-code" type="text" maxlength="6" placeholder="6-Digit Code from Email" class="w-full mb-3 p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
@@ -1766,17 +2534,39 @@
 
     function openMyProfileModal() {
       const myHistory = (appData.games || []).filter(function(g) { return (g.roster || []).some(function(r) { return r.email.toLowerCase() === currentUser.email.toLowerCase(); }); });
+      const myProf = (appData.profiles && appData.profiles[currentUser.email.toLowerCase()]) || {};
+      const curPos = currentUser.position || myProf.position || "MID";
+      const rel = myProf.reliability !== undefined ? myProf.reliability : 100;
+
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
-          <div class="glass-card rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+          <div class="glass-card rounded-3xl p-6 max-w-md w-full max-h-[85vh] overflow-y-auto">
             <h3 class="text-lg font-extrabold text-white">${currentUser.fullName}</h3>
-            <p class="text-xs text-[#00f59b] mb-4">${currentUser.email} • ${isSystemAdminOnly(currentUser.email) ? 'System Administrator (Non-Player)' : (currentUser.role || 'Player')}</p>
+            <p class="text-xs text-[#00f59b] mb-3">${currentUser.email} • ${isSystemAdminOnly(currentUser.email) ? 'System Administrator (Non-Player)' : (currentUser.role || 'Player')} • Reliability: ${rel}%</p>
+            
+            ${!isSystemAdminOnly(currentUser.email) ? `
+              <div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950 mb-4">
+                <label class="text-xs font-bold text-slate-400 block mb-1.5">Preferred Field Position (Used for Team Balancing)</label>
+                <div class="flex gap-2">
+                  <select id="prof-pos-select" class="flex-1 bg-[#111c16] border border-emerald-900 rounded-xl p-2 text-xs text-white font-semibold">
+                    <option value="MID" ${curPos === 'MID' ? 'selected' : ''}>Midfielder (MID)</option>
+                    <option value="DEF" ${curPos === 'DEF' ? 'selected' : ''}>Defender (DEF)</option>
+                    <option value="FWD" ${curPos === 'FWD' ? 'selected' : ''}>Forward / Striker (FWD)</option>
+                    <option value="GK" ${curPos === 'GK' ? 'selected' : ''}>Goalkeeper (GK)</option>
+                  </select>
+                  <button type="button" onclick="saveMyPosition()" class="px-4 py-2 rounded-xl text-xs neon-btn">Save</button>
+                </div>
+              </div>
+            ` : ''}
+
             <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">My Match RSVP History (${myHistory.length})</h4>
             <div class="space-y-2 mb-5">
               ${myHistory.length ? myHistory.map(g => {
-                const st = g.roster.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase()).status;
+                const entry = g.roster.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
+                const st = entry.status;
+                const gBadge = (entry.guestNames && entry.guestNames.length) ? ' (+' + entry.guestNames.length + ': ' + entry.guestNames.join(', ') + ')' : '';
                 return `<div class="bg-[#0b130f] p-3 rounded-xl flex justify-between items-center text-xs">
-                  <div><b>${g.Title}</b><br><span class="text-slate-400">${g.Date} @ ${g.Time}</span></div>
+                  <div><b>${g.Title}</b><br><span class="text-slate-400">${g.Date} @ ${g.Time}${gBadge}</span></div>
                   <span class="px-2.5 py-1 rounded font-bold ${st === 'Yes' ? 'bg-emerald-950 text-[#00f59b]' : 'bg-slate-800 text-slate-300'}">${st}</span>
                 </div>`;
               }).join("") : '<p class="text-xs text-slate-500">No RSVPs recorded yet.</p>'}
@@ -1789,6 +2579,24 @@
       `;
     }
 
+    async function saveMyPosition() {
+      const pos = document.getElementById("prof-pos-select").value;
+      const res = await apiPost({
+        action: "updateProfileDetails",
+        position: pos,
+        fullName: currentUser.fullName
+      });
+      if (res && res.success) {
+        currentUser.position = pos;
+        localStorage.setItem("soccer_user", JSON.stringify(currentUser));
+        appData = res;
+        closeModal();
+        showBanner("Position updated to " + pos + "!");
+        renderAuthBar();
+        renderCurrentTab();
+      }
+    }
+
     function closeModal() {
       document.getElementById("modal-root").innerHTML = "";
     }
@@ -1796,7 +2604,7 @@
     function logout() {
       localStorage.removeItem("soccer_user");
       currentUser = null;
-      appData = { games: [], locations: [], profiles: {}, invites: [], recurring: [] };
+      appData = { requirePinnies: true, games: [], locations: [], profiles: {}, invites: [], recurring: [] };
       activeTab = "upcoming";
       renderAuthBar();
       renderCurrentTab();
