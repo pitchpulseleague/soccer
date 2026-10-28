@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-  <meta name="theme-color" content="#f8fafc">
+  <meta name="theme-color" content="#047857" id="meta-theme-color">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Pitch Pulse">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23070b09'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23047857'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" id="pwa-manifest-link">
   <title>Pitch Pulse League — Lunchtime Soccer Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
@@ -226,6 +228,19 @@
     body.light-mode .soccer-pitch-bg .pitch-player-label {
       color: #ffffff !important;
     }
+    /* High-contrast Shirt Assignment Callouts */
+    .shirt-banner-white {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      border: 2px solid #047857 !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    }
+    .shirt-banner-dark {
+      background: #0f172a !important;
+      color: #ffffff !important;
+      border: 2px solid #00f59b !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+    }
     .leaflet-container {
       font-family: 'Inter', sans-serif;
       z-index: 10;
@@ -257,22 +272,24 @@
           <div>
             <div class="flex items-center gap-2">
               <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-tight">PITCH PULSE LEAGUE</h1>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-950 text-[#00f59b] border border-emerald-500/40">v4.0 Pro</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-950 text-[#00f59b] border border-emerald-500/40">v4.1 Pro</span>
             </div>
             <p id="hdr-subtitle" class="text-[11px] sm:text-xs text-emerald-400/80 font-medium">Weekly Match Signups • Live Rosters • Pitch Forecast</p>
           </div>
         </div>
 
-        <!-- Mobile Quick Theme & Language Toggles -->
+        <!-- Mobile Quick Theme, Language & Install App Toggles -->
         <div class="flex md:hidden items-center gap-1.5">
+          <button type="button" onclick="openPwaInstallModal()" id="pwa-btn-mob" class="px-2 py-1.5 rounded-xl text-xs font-bold bg-emerald-950 border border-emerald-600/50 text-[#00f59b] cursor-pointer" title="Install App to Home Screen">📲 App</button>
           <button type="button" onclick="toggleLanguage()" id="lang-btn-mob" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 cursor-pointer">🌐 ES</button>
           <button type="button" onclick="toggleTheme()" id="theme-btn-mob" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[#111c16] border border-amber-500/40 text-amber-300 cursor-pointer">🌙 Dark</button>
         </div>
       </div>
 
-      <!-- Right Controls: Language, Theme & Auth -->
+      <!-- Right Controls: Install App, Language, Theme & Auth -->
       <div class="flex flex-wrap items-center justify-center md:justify-end gap-2 w-full md:w-auto">
         <div class="hidden md:flex items-center gap-1.5 mr-1">
+          <button type="button" onclick="openPwaInstallModal()" id="pwa-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-950 border border-emerald-600/50 text-[#00f59b] hover:bg-emerald-900 cursor-pointer">📲 Install App</button>
           <button type="button" onclick="toggleLanguage()" id="lang-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-emerald-800/60 text-emerald-300 hover:bg-emerald-950 cursor-pointer">🌐 Español</button>
           <button type="button" onclick="toggleTheme()" id="theme-btn-desk" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#111c16] border border-amber-500/40 text-amber-300 hover:bg-emerald-950 cursor-pointer">🌙 Dark Mode</button>
         </div>
@@ -325,7 +342,7 @@
       </button>
       <button type="button" onclick="switchTab('history')" id="mob-nav-history" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs font-semibold text-slate-400 cursor-pointer">
         <span class="text-lg leading-none mb-0.5">📜</span>
-        <span id="mob-lbl-history" class="text-[11px]">Directory</span>
+        <span id="mob-lbl-history" class="text-[11px]">Standings</span>
       </button>
       <button type="button" onclick="openMyProfileModal()" id="mob-nav-profile" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs font-semibold text-slate-400 cursor-pointer">
         <span class="text-lg leading-none mb-0.5">👤</span>
@@ -376,6 +393,85 @@
     }
 
     // =========================================================================
+    // INSTALLABLE PWA MANIFEST & HOME-SCREEN INSTALL HANDLER
+    // =========================================================================
+    let deferredPwaPrompt = null;
+
+    (function initPwaManifest() {
+      try {
+        const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23047857'/%3E%3Ctext x='256' y='345' font-size='280' text-anchor='middle'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E";
+        const manifestObj = {
+          name: "Pitch Pulse League — Lunchtime Soccer Hub",
+          short_name: "Pitch Pulse",
+          description: "Weekly Match Signups, Live Rosters, Balanced Lineups & Pitch Forecast",
+          start_url: window.location.origin + window.location.pathname,
+          scope: window.location.origin + window.location.pathname,
+          display: "standalone",
+          background_color: "#f1f5f9",
+          theme_color: "#047857",
+          icons: [
+            { src: iconSvg, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+            { src: iconSvg, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+          ]
+        };
+        const blob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
+        const manifestLink = document.getElementById("pwa-manifest-link");
+        if (manifestLink) {
+          manifestLink.setAttribute("href", URL.createObjectURL(blob));
+        }
+      } catch (e) {}
+    })();
+
+    window.addEventListener("beforeinstallprompt", function(e) {
+      e.preventDefault();
+      deferredPwaPrompt = e;
+    });
+
+    function openPwaInstallModal() {
+      if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        deferredPwaPrompt.userChoice.then(function() {
+          deferredPwaPrompt = null;
+        });
+        return;
+      }
+
+      document.getElementById("modal-root").innerHTML = `
+        <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true">
+          <div class="glass-card rounded-3xl p-6 max-w-md w-full">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-950 border border-[#00f59b]/40 flex items-center justify-center text-2xl">⚽</div>
+              <div>
+                <h3 class="text-lg font-extrabold text-white">📲 Install Pitch Pulse App</h3>
+                <p class="text-xs text-slate-400">Launch full-screen from your phone's Home Screen</p>
+              </div>
+            </div>
+            <div class="space-y-3 text-xs text-slate-200 mb-5">
+              <div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950">
+                <div class="font-extrabold text-[#00f59b] mb-1">🍎 iPhone / iPad (Safari):</div>
+                <ol class="list-decimal pl-4 space-y-1">
+                  <li>Tap the <b>Share</b> button (<span class="font-mono">⬆️</span>) at the bottom of Safari.</li>
+                  <li>Scroll down and tap <b>"Add to Home Screen"</b>.</li>
+                  <li>Tap <b>Add</b> in the top-right corner.</li>
+                </ol>
+              </div>
+              <div class="bg-[#0b130f] p-3.5 rounded-xl border border-emerald-950">
+                <div class="font-extrabold text-[#00f59b] mb-1">🤖 Android (Chrome) / Desktop:</div>
+                <ol class="list-decimal pl-4 space-y-1">
+                  <li>Tap the <b>3-dot menu (⋮)</b> in Chrome's top-right corner.</li>
+                  <li>Tap <b>"Add to Home screen"</b> or <b>"Install app"</b>.</li>
+                </ol>
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button type="button" onclick="closeModal()" class="px-5 py-2 rounded-xl text-xs neon-btn">Got It</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
     // COMPLETE BILINGUAL DICTIONARY (EN + ES)
     // =========================================================================
     let currentLang = localStorage.getItem("soccer_lang") || "en";
@@ -413,6 +509,7 @@
         youAreCaptainBadge: "⭐ You are Match Captain for this game",
         stepDownBtn: "🏳️ Step Down",
         approveSmallSidedBtn: "⚡ Approve Small-Sided GameOn",
+        nudgeBtn: "🔔 Nudge Unresponded",
         editGameBtn: "✏️ Edit",
         cancelGameBtn: "🚫 Cancel Game",
         blastBtn: "📢 Blast",
@@ -530,6 +627,7 @@
         youAreCaptainBadge: "⭐ Eres el Capitán de este partido",
         stepDownBtn: "🏳️ Ceder Capitanía",
         approveSmallSidedBtn: "⚡ Aprobar Formato Reducido",
+        nudgeBtn: "🔔 Recordar a Pendientes",
         editGameBtn: "✏️ Editar",
         cancelGameBtn: "🚫 Cancelar",
         blastBtn: "📢 Aviso",
@@ -717,6 +815,7 @@
 
     let activeTab = "upcoming";
     let adminSubTab = "all";
+    let adminMapVisible = false; // v4.1 Scroll-Trap Fix: Admin Leaflet Map collapsed by default!
     let swapModeByGame = {};
     let weatherCache = {};
     let editingGameId = null;
@@ -849,7 +948,6 @@
       }
     }
 
-    // Section 9C: 1-Tap .ics Calendar File Download for Apple Calendar / Outlook
     function downloadIcsCalendar(gameId) {
       const game = (appData.games || []).find(function(g) { return String(g.GameID) === String(gameId); });
       if (!game) return;
@@ -1018,7 +1116,7 @@
     }, 60000);
 
     // =========================================================================
-    // KICKOFF-HOUR SPECIFIC WEATHER + DAILY FALLBACK ENGINE (v4.0 Upgrade)
+    // KICKOFF-HOUR SPECIFIC WEATHER + DAILY FALLBACK ENGINE
     // =========================================================================
     async function fetchWeatherForAllGamesAsync() {
       const games = appData.games || [];
@@ -1262,7 +1360,7 @@
     }
 
     // =========================================================================
-    // UPCOMING GAMES (Includes Retained Cancelled Games, Captain Tools, 1-Tap Swapper & Timing Notes)
+    // UPCOMING GAMES (Includes Shirt Color Banner, 1-Tap Nudge, Swapper & Timing Notes)
     // =========================================================================
     function renderUpcomingGamesView() {
       const container = document.getElementById("view-container");
@@ -1318,6 +1416,28 @@
         }
       } else {
         renderCurrentTab();
+      }
+    }
+
+    async function nudgeUnrespondedPlayers(gameId) {
+      const game = (appData.games || []).find(function(g) { return String(g.GameID) === String(gameId); });
+      if (!game) return;
+      const count = game.unrespondedCount || 0;
+      const namesPreview = (game.unrespondedNames && game.unrespondedNames.length)
+        ? "\n\nPlayers to nudge: " + game.unrespondedNames.join(", ")
+        : "";
+      if (!confirm("Send a quick 1-Click RSVP reminder email to the " + count + " unresponded player(s) for " + game.Title + "?" + namesPreview)) return;
+
+      const res = await apiPost({
+        action: "adminNudgeUnresponded",
+        gameId: gameId
+      });
+      if (res && res.success) {
+        appData = res;
+        showBanner(res.message || "Unresponded players nudged!");
+        renderCurrentTab();
+      } else if (res) {
+        showBanner(res.error, true);
       }
     }
 
@@ -1398,7 +1518,48 @@
         '</div>';
       }
 
-      // v4.0 Upgrade: Interactive 1-Tap Team Swapper inside Balanced Lineups
+      // v4.1 Feature #1: Personal "What Shirt Color Am I Wearing?" Parking-Lot Callout Banner
+      let myShirtBannerHtml = "";
+      if (!isCancelled && currentUser && game.teams && game.teams.white && game.teams.dark) {
+        const myEm = currentUser.email.toLowerCase().trim();
+        const onWhite = game.teams.white.some(function(p) { return String(p.email || "").toLowerCase().trim() === myEm; });
+        const onDark = game.teams.dark.some(function(p) { return String(p.email || "").toLowerCase().trim() === myEm; });
+
+        const guestTeamNotes = [];
+        game.teams.white.forEach(function(p) {
+          if (String(p.email || "").toLowerCase().indexOf(myEm + "_guest_") === 0) {
+            guestTeamNotes.push(escHtml(p.fullName.split(" (Guest")[0]) + " ➔ ⚪ Team White");
+          }
+        });
+        game.teams.dark.forEach(function(p) {
+          if (String(p.email || "").toLowerCase().indexOf(myEm + "_guest_") === 0) {
+            guestTeamNotes.push(escHtml(p.fullName.split(" (Guest")[0]) + " ➔ ⚫ Team Dark");
+          }
+        });
+
+        if (onWhite) {
+          myShirtBannerHtml = '<div class="shirt-banner-white p-3.5 rounded-2xl mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">' +
+            '<div class="flex items-center gap-2.5">' +
+              '<span class="text-2xl">⚪</span>' +
+              '<div><div class="text-xs sm:text-sm font-extrabold tracking-wide uppercase">YOU ARE ON TEAM WHITE — WEAR A WHITE SHIRT!</div>' +
+              (guestTeamNotes.length ? '<div class="text-xs font-semibold opacity-85 mt-0.5">👥 Your Guests: ' + guestTeamNotes.join(" • ") + '</div>' : '') +
+              '</div>' +
+            '</div>' +
+            '<span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 w-fit">👕 Lineup Locked</span>' +
+          '</div>';
+        } else if (onDark) {
+          myShirtBannerHtml = '<div class="shirt-banner-dark p-3.5 rounded-2xl mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">' +
+            '<div class="flex items-center gap-2.5">' +
+              '<span class="text-2xl">⚫</span>' +
+              '<div><div class="text-xs sm:text-sm font-extrabold tracking-wide uppercase">YOU ARE ON TEAM DARK — WEAR A DARK SHIRT!</div>' +
+              (guestTeamNotes.length ? '<div class="text-xs font-semibold text-emerald-300 mt-0.5">👥 Your Guests: ' + guestTeamNotes.join(" • ") + '</div>' : '') +
+              '</div>' +
+            '</div>' +
+            '<span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 w-fit">👕 Lineup Locked</span>' +
+          '</div>';
+        }
+      }
+
       const swapState = swapModeByGame[gId];
       const isSwapActive = !!swapState;
 
@@ -1414,7 +1575,7 @@
                 '</button>'
               ) : '') +
             '</div>' +
-            (game.ScoreWhite !== "" && game.ScoreDark !== "" ? '<span class="px-3 py-1 rounded-full bg-emerald-950 text-[#00f59b] border border-emerald-500/40 text-xs font-extrabold">🏆 Final: White ' + escHtml(game.ScoreWhite) + ' - ' + escHtml(game.ScoreDark) + ' Dark</span>' : '<span class="text-[11px] text-slate-400">Balanced Positional Split</span>') +
+            (game.ScoreWhite !== "" && game.ScoreDark !== "" ? '<span class="px-3 py-1 rounded-full bg-emerald-950 text-[#00f59b] border border-emerald-500/40 text-xs font-extrabold">🏆 Final: White ' + escHtml(game.ScoreWhite) + ' - ' + escHtml(game.ScoreDark) + ' Dark</span>' : '<span class="text-[11px] text-slate-400">Balanced by Position & Win-Rate</span>') +
           '</div>' +
           (isSwapActive ? '<div class="mb-3 p-2.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-xs font-semibold text-amber-300">👉 <b>1-Tap Swap Mode:</b> Tap one player on <b>Team White</b> and one player on <b>Team Dark</b> to swap them immediately.</div>' : '') +
           (game.teamsStale ? '<div class="mb-3 p-2.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-xs font-bold text-amber-300 flex items-center justify-between gap-2"><span>' + t("staleTeamsBadge") + '</span>' + (canManageGame ? '<button type="button" onclick="generateTeams(\'' + escJsArg(gId) + '\')" class="px-2.5 py-1 rounded-lg neon-btn text-[11px]">🔄 Re-Balance Now</button>' : '') + '</div>' : '') +
@@ -1447,7 +1608,6 @@
         '</div>';
       }
 
-      // Admin/Captain Activity Log Section (Section 7A)
       let activityLogHtml = "";
       if (canManageGame && game.adminActivity && game.adminActivity.length > 0) {
         const latestAct = game.adminActivity[0];
@@ -1473,6 +1633,7 @@
           '<div class="text-xs text-slate-300 mt-0.5">' + t("sysAdminNoPlaySub") + '</div></div>' +
           '<div class="flex flex-wrap gap-2 shrink-0">' +
             '<button type="button" onclick="openBlastModal(\'' + escJsArg(gId) + '\')" class="px-3 py-2 rounded-xl text-xs font-bold neon-btn">' + t("blastBtn") + '</button>' +
+            (game.unrespondedCount > 0 ? '<button type="button" onclick="nudgeUnrespondedPlayers(\'' + escJsArg(gId) + '\')" class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 cursor-pointer">' + t("nudgeBtn") + ' (' + game.unrespondedCount + ')</button>' : '') +
             '<button type="button" onclick="generateTeams(\'' + escJsArg(gId) + '\')" class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 cursor-pointer">' + t("balanceTeamsBtn") + '</button>' +
             '<button type="button" onclick="openAttendanceModal(\'' + escJsArg(gId) + '\')" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 cursor-pointer">' + t("attendanceBtn") + '</button>' +
             '<button type="button" onclick="startEditGame(\'' + escJsArg(gId) + '\')" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 cursor-pointer">' + t("editGameBtn") + '</button>' +
@@ -1580,6 +1741,7 @@
           (canManageGame ? (
             '<div class="flex flex-wrap items-center gap-1.5 mt-2.5">' +
               '<button type="button" onclick="openBlastModal(\'' + escJsArg(gId) + '\')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 text-xs font-bold hover:bg-emerald-900 cursor-pointer">' + t("blastBtn") + '</button>' +
+              (!isCancelled && game.unrespondedCount > 0 ? '<button type="button" onclick="nudgeUnrespondedPlayers(\'' + escJsArg(gId) + '\')" title="' + escHtml((game.unrespondedNames || []).join(", ")) + '" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 text-xs font-bold hover:bg-emerald-900 cursor-pointer">' + t("nudgeBtn") + ' (' + game.unrespondedCount + ')</button>' : '') +
               '<button type="button" onclick="generateTeams(\'' + escJsArg(gId) + '\')" class="px-2.5 py-1 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 text-xs font-bold hover:bg-emerald-900 cursor-pointer">' + t("balanceTeamsBtn") + '</button>' +
               '<button type="button" onclick="openAttendanceModal(\'' + escJsArg(gId) + '\')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 cursor-pointer">' + t("attendanceBtn") + '</button>' +
               '<button type="button" onclick="openScoreModal(\'' + escJsArg(gId) + '\')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 cursor-pointer">' + t("recordScoreBtn") + '</button>' +
@@ -1590,6 +1752,9 @@
           '</div>' +
           renderWeatherBadge(game) +
         '</div>' +
+
+        // v4.1 Feature #1: Personal Shirt Color Assignment Callout right at top of card!
+        myShirtBannerHtml +
 
         (game.ScheduleChangeSummary && !isCancelled ? (
           '<div class="mb-4 px-3.5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/40 text-xs text-amber-300 font-semibold">' +
@@ -2010,7 +2175,6 @@
         return !isSystemAdminOnly(p.email);
       });
 
-      // Sort by Season Points descending, then Games Played descending
       profilesList.sort(function(a, b) {
         return (b.points || 0) - (a.points || 0) || (b.gamesPlayed || 0) - (a.gamesPlayed || 0);
       });
@@ -2022,7 +2186,6 @@
       const riv = appData.rivalryStats || { whiteWins: 0, darkWins: 0, draws: 0, whiteGoals: 0, darkGoals: 0, totalMatchesScored: 0 };
 
       container.innerHTML = '<div class="space-y-6">' +
-        // v4.0 Upgrade: White vs. Dark Season Rivalry Scoreboard
         '<div class="glass-card rounded-3xl p-4 sm:p-6 border border-emerald-800/50">' +
           '<div class="flex justify-between items-center mb-3">' +
             '<h2 class="text-sm sm:text-base font-extrabold uppercase tracking-wider text-[#00f59b]">🏆 Season Rivalry Series: Team White vs. Team Dark</h2>' +
@@ -2132,11 +2295,30 @@
     }
 
     // =========================================================================
-    // COMMISSIONER ADMIN VIEW (All 5 Complete Sections 100% Preserved)
+    // COMMISSIONER ADMIN VIEW (All 5 Complete Sections + Collapsible Map Toggle)
     // =========================================================================
     function switchAdminSubTab(sub) {
       adminSubTab = sub;
       renderAdminView();
+    }
+
+    function toggleAdminPickerMap() {
+      adminMapVisible = !adminMapVisible;
+      const wrap = document.getElementById("admin-picker-map-wrap");
+      const btn = document.getElementById("admin-map-toggle-btn");
+      if (wrap) {
+        if (adminMapVisible) {
+          wrap.classList.remove("hidden");
+          if (btn) btn.textContent = "🗺️ Hide Interactive Map";
+          setTimeout(function() {
+            initAdminLocationPickerMap();
+            if (adminPickerMap) adminPickerMap.invalidateSize();
+          }, 60);
+        } else {
+          wrap.classList.add("hidden");
+          if (btn) btn.textContent = "🗺️ Show Interactive Map Pinpointer";
+        }
+      }
     }
 
     async function adminTogglePinnies(newVal) {
@@ -2422,6 +2604,7 @@
                       </div>
                       <div class="flex flex-wrap items-center gap-1.5">
                         <button type="button" onclick="openBlastModal('${escJsArg(g.GameID)}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 font-bold hover:bg-emerald-900 cursor-pointer">📢 Blast</button>
+                        ${!isCanc && g.unrespondedCount > 0 ? `<button type="button" onclick="nudgeUnrespondedPlayers('${escJsArg(g.GameID)}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 font-bold hover:bg-emerald-900 cursor-pointer">🔔 Nudge (${g.unrespondedCount})</button>` : ''}
                         <button type="button" onclick="generateTeams('${escJsArg(g.GameID)}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 font-bold hover:bg-emerald-900 cursor-pointer">👕 Teams</button>
                         <button type="button" onclick="openAttendanceModal('${escJsArg(g.GameID)}')" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold hover:bg-amber-500/30 cursor-pointer">📋 Attendance</button>
                         <button type="button" onclick="openScoreModal('${escJsArg(g.GameID)}')" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold hover:bg-amber-500/30 cursor-pointer">🏆 Score</button>
@@ -2435,14 +2618,19 @@
             </div>
           </div>
 
-          <!-- 4. INTERACTIVE LEAFLET FIELD PICKER & LOCATION MANAGER -->
+          <!-- 4. INTERACTIVE LEAFLET FIELD PICKER & LOCATION MANAGER (Collapsible Map Toggle!) -->
           <div id="admin-loc-form-card" class="glass-card rounded-2xl p-4 sm:p-6 ${editingLoc ? 'border-2 border-amber-400' : ''} ${showSec('locations') ? '' : 'hidden'}">
-            <div class="flex justify-between items-center mb-1">
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-1">
               <h3 class="text-lg font-extrabold text-white">${editingLoc ? `✏️ Editing Location: ${escHtml(editingLoc.Name)}` : '📍 4. Interactive Map Field Pinpointer & Arrival Guide'}</h3>
-              ${editingLoc ? `<button type="button" onclick="cancelEditLocation()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Edit</button>` : ''}
+              <div class="flex items-center gap-2">
+                <button type="button" id="admin-map-toggle-btn" onclick="toggleAdminPickerMap()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 hover:bg-emerald-900 cursor-pointer">
+                  ${adminMapVisible ? '🗺️ Hide Interactive Map' : '🗺️ Show Interactive Map Pinpointer'}
+                </button>
+                ${editingLoc ? `<button type="button" onclick="cancelEditLocation()" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white cursor-pointer">Cancel Edit</button>` : ''}
+              </div>
             </div>
             <p class="text-xs text-slate-400 mb-4">
-              Search any park/address below or <b>click/drag the pin directly on the map</b> to pinpoint the exact soccer pitch. Add parking/entrance details in the Arrival Guide field!
+              Search any park/address below (which automatically opens the map) or tap <b>Show Interactive Map Pinpointer</b> to drag the pin—keeping the map hidden when not in use prevents mobile scroll trapping!
             </p>
 
             <div class="flex flex-col sm:flex-row gap-2 mb-3">
@@ -2452,7 +2640,7 @@
               </button>
             </div>
 
-            <div class="rounded-xl overflow-hidden border border-emerald-800/60 mb-4">
+            <div id="admin-picker-map-wrap" class="${adminMapVisible ? '' : 'hidden'} rounded-xl overflow-hidden border border-emerald-800/60 mb-4">
               <div id="admin-picker-map" class="w-full h-64 sm:h-72"></div>
             </div>
 
@@ -2584,7 +2772,7 @@
         </div>
       `;
 
-      if (showSec("locations")) {
+      if (showSec("locations") && adminMapVisible) {
         setTimeout(initAdminLocationPickerMap, 80);
       }
     }
@@ -2648,6 +2836,16 @@
     async function searchFieldOnMap() {
       const q = document.getElementById("map-search-query").value.trim();
       if (!q) return alert("Enter a park name, city, or street address to search.");
+
+      if (!adminMapVisible) {
+        adminMapVisible = true;
+        const wrap = document.getElementById("admin-picker-map-wrap");
+        const btn = document.getElementById("admin-map-toggle-btn");
+        if (wrap) wrap.classList.remove("hidden");
+        if (btn) btn.textContent = "🗺️ Hide Interactive Map";
+        initAdminLocationPickerMap();
+      }
+
       try {
         const res = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(q));
         const results = await res.json();
@@ -2667,6 +2865,7 @@
         }
 
         if (adminPickerMap && adminPickerMarker) {
+          adminPickerMap.invalidateSize();
           adminPickerMap.setView([lat, lng], 16);
           adminPickerMarker.setLatLng([lat, lng]);
           const popupB = document.createElement("b");
@@ -2887,6 +3086,7 @@
 
     function startEditLocation(locId) {
       editingLocationId = locId;
+      adminMapVisible = true; // Auto-open map when editing a field on map!
       adminSubTab = "all";
       renderAdminView();
       setTimeout(function() {
@@ -2919,6 +3119,7 @@
       });
       if (res && res.success) {
         editingLocationId = null;
+        adminMapVisible = false; // Auto-collapse map after saving!
         appData = res;
         showBanner(res.message || "Location saved!");
         renderAdminView();
@@ -3206,7 +3407,6 @@
       } else if (res) alert(res.error);
     }
 
-    // Section 3B: Includes "Away Until" Reminder Pause inside My Profile Modal
     function openMyProfileModal() {
       const myHistory = (appData.games || []).filter(function(g) { return (g.roster || []).some(function(r) { return r.email.toLowerCase() === currentUser.email.toLowerCase(); }); });
       const myProf = (appData.profiles && appData.profiles[currentUser.email.toLowerCase()]) || {};
