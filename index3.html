@@ -655,7 +655,7 @@
       const dr = document.getElementById("how-we-play-drawer");
       const bodyEl = document.getElementById("how-we-play-body");
       if (!dr) return;
-      if (bodyEl) bodyEl.textContent = appData.howWePlayRules || "• Bring both a White and Dark shirt.\n• Turf shoes or cleats allowed.\n• Call your own fouls and update RSVPs at least 3 hours before kickoff.";
+      if (bodyEl) bodyEl.textContent = appData.howWePlayRules || "• Bring both a White and Dark shirt.\n• Respectful pickup play.";
       dr.classList.toggle("hidden");
     }
 
@@ -1530,6 +1530,27 @@
       if (res?.success) { appData = res; showBanner(res.message || "Stepped down."); renderCurrentTab(); }
     }
 
+    function toggleGameCardMap(gameId) {
+      const g = (appData.games || []).find(x => String(x.GameID) === String(gameId));
+      if (!g?.locationDetails) return;
+      const wrap = document.getElementById("game-map-wrap-" + gameId);
+      if (!wrap) return;
+      if (wrap.classList.contains("hidden")) {
+        wrap.classList.remove("hidden");
+        setTimeout(() => {
+          const lat = parseFloat(g.locationDetails.lat), lng = parseFloat(g.locationDetails.lng);
+          if (isNaN(lat) || isNaN(lng)) return;
+          if (gameCardMaps[gameId]) gameCardMaps[gameId].remove();
+          const map = L.map("game-map-" + gameId).setView([lat, lng], 15);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap" }).addTo(map);
+          const bNode = document.createElement("b");
+          bNode.textContent = "⚽ " + g.LocationName;
+          L.marker([lat, lng]).addTo(map).bindPopup(bNode).openPopup();
+          gameCardMaps[gameId] = map;
+        }, 60);
+      } else wrap.classList.add("hidden");
+    }
+
     // =========================================================================
     // PAST GAMES, STANDINGS & RIVALRY DASHBOARD
     // =========================================================================
@@ -1840,7 +1861,7 @@
       }
     }
 
-    // PIN Login
+    // 6-Box Numeric Auto-Advance PIN Login with Paste Event Listener
     function showLoginModal() {
       document.getElementById("modal-root").innerHTML = `
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true">
@@ -1850,7 +1871,7 @@
             <input id="l-email" type="email" placeholder="${t("emailPh")}" class="w-full mb-4 p-3 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
             <div class="flex justify-between gap-1.5 mb-3">
               ${[0,1,2,3,4,5].map(i => `
-                <input id="pin-box-${i}" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-box"
+                <input id="pin-box-${i}" type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="PIN Digit ${i + 1}" class="pin-box"
                   oninput="onPinInput(${i}, event)" onkeydown="onPinKey(${i}, event)" onpaste="onPinPaste(event)">
               `).join("")}
             </div>
@@ -1992,7 +2013,7 @@
     }
 
     // =========================================================================
-    // ADMIN PANEL (SECTIONS 1 THROUGH 5 - 100% UNABRIDGED)
+    // ADMIN PANEL (SECTIONS 1 THROUGH 5 - FULLY ARTICULATED & COMPLETE)
     // =========================================================================
     function switchAdminSubTab(sub) { adminSubTab = sub; renderAdminView(); }
 
@@ -2032,29 +2053,33 @@
             </div>
           </div>
 
-          <!-- Section 1: Player Invitations -->
+          <!-- Section 1: Player Invitations & Invite Tracker Table -->
           <div class="glass-card rounded-2xl p-4 sm:p-6 ${showSec('invites') ? '' : 'hidden'}">
             <h3 class="text-lg font-extrabold text-white mb-1">✉️ 1. Player Invitations & Invite Tracker</h3>
-            <p class="text-xs text-slate-400 mb-4">Send new email invites and manage pending invitations.</p>
+            <p class="text-xs text-slate-400 mb-4">Send new invitations and see everyone who has been invited, whether they have registered yet, or resend/revoke their invite.</p>
             <div class="flex flex-col sm:flex-row gap-2 max-w-lg mb-4">
               <input id="inv-em" type="email" placeholder="player@email.com" class="flex-1 bg-[#0b130f] border border-emerald-900 rounded-xl px-3.5 py-2 text-sm text-white">
-              <button type="button" onclick="adminInvitePlayer()" class="neon-btn px-5 py-2 rounded-xl text-sm">Send Invite</button>
+              <button type="button" onclick="adminInvitePlayer()" class="neon-btn px-5 py-2 rounded-xl text-sm">Send Email Invite</button>
             </div>
             <div class="border-t border-emerald-950 pt-3">
               <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Sent Invitations (${invites.length})</h4>
               <div class="space-y-1.5 max-h-56 overflow-y-auto text-xs">
+                ${invites.length === 0 ? '<p class="text-xs text-slate-500">No invitations sent yet.</p>' : ''}
                 ${invites.map(inv => {
                   const isReg = inv.Status === "Registered" || !!appData.profiles[String(inv.Email).toLowerCase()];
+                  const isProt = isProtectedEmail(inv.Email);
                   return `
                     <div class="flex justify-between items-center bg-[#0b130f] p-2.5 rounded-xl border border-emerald-950">
                       <div>
                         <b>${escHtml(inv.Email)}</b>
+                        ${inv.FullName ? `<span class="text-slate-400">(${escHtml(inv.FullName)})</span>` : ''}
                         <span class="ml-1.5 px-2 py-0.5 rounded font-bold ${isReg ? 'bg-emerald-950 text-[#00f59b]' : 'bg-amber-500/20 text-amber-300'}">${isReg ? 'Registered' : 'Pending'}</span>
+                        ${inv.InvitedDate ? `<span class="text-slate-500 ml-1">Invited: ${escHtml(inv.InvitedDate)}</span>` : ''}
                       </div>
                       <div class="flex gap-1.5">
                         ${!isReg ? `
-                          <button type="button" onclick="adminResendInvite('${escJsArg(inv.Email)}')" class="px-2 py-1 rounded bg-emerald-950 text-emerald-300 font-bold hover:bg-emerald-900">Resend</button>
-                          <button type="button" onclick="adminRevokeInvite('${escJsArg(inv.Email)}')" class="px-2 py-1 rounded bg-rose-950 text-rose-300 font-bold hover:bg-rose-900">Revoke</button>
+                          <button type="button" onclick="adminResendInvite('${escJsArg(inv.Email)}')" class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 font-bold hover:bg-emerald-900 cursor-pointer">Resend</button>
+                          ${!isProt ? `<button type="button" onclick="adminRevokeInvite('${escJsArg(inv.Email)}')" class="px-2.5 py-1 rounded bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">Revoke</button>` : ''}
                         ` : '<span class="text-slate-500 italic">Active</span>'}
                       </div>
                     </div>
@@ -2070,6 +2095,7 @@
               <h3 class="text-lg font-extrabold text-white">${editingRec ? `🔁 Edit Series: ${escHtml(editingRec.Title)}` : '🔁 2. Recurring Schedule Builder'}</h3>
               ${editingRec ? `<button type="button" onclick="cancelEditSeries()" class="text-xs px-2.5 py-1 rounded bg-slate-800 text-slate-300">Cancel</button>` : ''}
             </div>
+            <p class="text-xs text-slate-400 mb-4">Schedule recurring matches across dates with automatic exclusion of skipped/cancelled occurrences.</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-3">
               <input id="rec-t" type="text" placeholder="Series Title" value="${editingRec ? escHtml(editingRec.Title) : ''}" class="p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
               <select id="rec-loc" class="p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-sm text-white">
@@ -2187,7 +2213,7 @@
                     ${!isProtectedEmail(p.email) ? `
                       <button type="button" onclick="adminToggleGuestPriv('${escJsArg(p.email)}', ${p.canBringGuests === false})" class="px-2 py-1 rounded font-bold ${p.canBringGuests !== false ? 'bg-emerald-950 text-[#00f59b]' : 'bg-rose-950 text-rose-300'}">${p.canBringGuests !== false ? '👥 Guests On' : '🚫 Guests Off'}</button>
                       <button type="button" onclick="adminToggleRole('${escJsArg(p.email)}', '${p.role === 'Admin' ? 'Player' : 'Admin'}')" class="px-2 py-1 rounded bg-slate-800 text-slate-200 font-bold hover:bg-slate-700">${p.role === 'Admin' ? 'Demote' : 'Make Admin'}</button>
-                      <button type="button" onclick="adminToggleSuspend('${escJsArg(p.email)}', '${p.status === 'Suspended' ? 'Active' : 'Suspended'}')" class="px-2 py-1 rounded font-bold ${p.status === 'Suspended' ? 'bg-emerald-700 text-white' : 'bg-amber-500/20 text-amber-300'}">${p.status === 'Suspended' ? 'Reactivate' : 'Suspend'}</button>
+                      <button type="button" onclick="adminToggleSuspend('${escJsArg(p.email)}', '${p.status === 'Suspended' ? 'Active' : 'Suspended'}')" class="px-2.5 py-1 rounded font-bold ${p.status === 'Suspended' ? 'bg-emerald-700 text-white' : 'bg-amber-500/20 text-amber-300'}">${p.status === 'Suspended' ? 'Reactivate' : 'Suspend'}</button>
                     ` : '<span class="text-slate-500 italic">Protected Admin</span>'}
                   </div>
                 </div>
@@ -2363,7 +2389,7 @@
     function closeModal() { document.getElementById("modal-root").innerHTML = ""; }
     function logout() { localStorage.removeItem("soccer_user"); currentUser = null; renderAuthBar(); renderLockedGateView(); }
 
-    // Boot App
+    // App Initialization
     applyThemeAndLanguageUI();
     renderAuthBar();
     renderCurrentTab();
