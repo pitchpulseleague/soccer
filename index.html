@@ -1108,7 +1108,7 @@
           localStorage.setItem("soccer_user", JSON.stringify(currentUser));
         }
         const nowTimeStr = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-        if (ind) ind.textContent = (currentLang === "es" ? "● " : "● ") + nowTimeStr;
+        if (ind) ind.textContent = "● " + nowTimeStr;
         const hwpBody = document.getElementById("how-we-play-body");
         if (hwpBody && appData.howWePlayRules) hwpBody.textContent = appData.howWePlayRules;
         initOneSignalSdkIfConfigured();
@@ -1635,7 +1635,7 @@
                   <div class="p-2.5 rounded-xl border ${b.hidden ? 'border-amber-500/40 bg-amber-500/10 opacity-80' : 'border-emerald-950 bg-[#111c16]'}">
                     <div class="flex justify-between items-center gap-2 mb-1">
                       <span class="font-bold text-white">📣 ${escHtml(b.senderName)} <span class="text-slate-400 text-[10px]">• ${escHtml(b.timestamp || '')}</span></span>
-                      ${isAdminUser ? `<button type="button" onclick="toggleBlastVisibility('${escJsArg(b.blastId)}', ${!b.hidden})" class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-semibold">${b.hidden ? t("unhideBlastBtn") : t("hideBlastBtn")}</button>` : ''}
+                      ${isAdminUser ? `<button type="button" onclick="toggleBlastVisibility('${escJsArg(b.blastId)}', ${!b.hidden})" class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-semibold cursor-pointer">${b.hidden ? t("unhideBlastBtn") : t("hideBlastBtn")}</button>` : ''}
                     </div>
                     <div class="text-slate-200 whitespace-pre-wrap">${escHtml(b.message)}</div>
                   </div>
@@ -1763,7 +1763,7 @@
                     ${game.teams.dark.map(function(p, idx) {
                       const isSel = isSwapActive && swapState.darkIdx === idx;
                       return '<div ' + (isSwapActive ? 'onclick="selectSwapPlayer(\'' + escJsArg(gId) + '\', \'dark\', ' + idx + ')"' : '') + ' class="p-1 rounded flex justify-between items-center ' + (isSwapActive ? 'cursor-pointer hover:bg-slate-800 ' + (isSel ? 'bg-amber-400/30 border border-amber-400' : 'bg-slate-900') : '') + '">' +
-                        '<span>' + (idx + 1) + '. <b>' + escHtml(p.fullName) + '</b> <span class="text-slate-400 font-mono">[' + escHtml(p.position)}]</span></span>' +
+                        '<span>' + (idx + 1) + '. <b>' + escHtml(p.fullName) + '</b> <span class="text-slate-400 font-mono">[' + escHtml(p.position) + ']</span></span>' +
                         (isSel ? '<span class="text-amber-300 font-bold text-[10px]">' + (currentLang === "es" ? "✓ Elegido" : "Selected") + '</span>' : '') +
                       '</div>';
                     }).join("")}
@@ -1820,6 +1820,50 @@
           ` : ''}
         </div>
       `;
+    }
+
+    function toggleGameCardMap(gameId) {
+      const game = (appData.games || []).find(function(g) { return String(g.GameID) === String(gameId); });
+      if (!game || !game.locationDetails) return;
+      const wrap = document.getElementById("game-map-wrap-" + gameId);
+      if (!wrap) return;
+      const isHidden = wrap.classList.contains("hidden");
+      if (isHidden) {
+        wrap.classList.remove("hidden");
+        setTimeout(function() {
+          const latNum = parseFloat(game.locationDetails.lat);
+          const lngNum = parseFloat(game.locationDetails.lng);
+          if (isNaN(latNum) || isNaN(lngNum)) return;
+          if (gameCardMaps[gameId]) {
+            gameCardMaps[gameId].remove();
+          }
+          const map = L.map("game-map-" + gameId).setView([latNum, lngNum], 15);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap"
+          }).addTo(map);
+          const popupNode = document.createElement("b");
+          popupNode.textContent = "⚽ " + game.LocationName;
+          L.marker([latNum, lngNum]).addTo(map).bindPopup(popupNode).openPopup();
+          gameCardMaps[gameId] = map;
+        }, 60);
+      } else {
+        wrap.classList.add("hidden");
+      }
+    }
+
+    async function toggleBlastVisibility(blastId, hideFlag) {
+      const res = await apiPost({
+        action: "adminToggleBlastVisibility",
+        blastId: blastId,
+        hidden: hideFlag
+      });
+      if (res && res.success) {
+        appData = res;
+        showBanner(res.message || (currentLang === "es" ? "Visibilidad actualizada." : "Blast visibility updated."));
+        renderCurrentTab();
+      } else if (res) {
+        showBanner(res.error, true);
+      }
     }
 
     async function approveSmallSidedGame(gameId) {
@@ -1886,10 +1930,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
               ${profilesList.map(function(p, idx) {
                 const attended = p.gamesPlayed !== undefined ? p.gamesPlayed : 0;
-                const isSusp = String(p.status || 'Active').toLowerCase() === 'suspended';
                 const rel = p.reliability !== undefined ? p.reliability : 100;
                 const pts = p.points || 0;
-                const wdl = (p.wins || 0) + 'G-' + (p.draws || 0) + 'E-' + (p.losses || 0) + 'P';
+                const wdl = currentLang === "es"
+                  ? (p.wins || 0) + 'G-' + (p.draws || 0) + 'E-' + (p.losses || 0) + 'P'
+                  : (p.wins || 0) + 'W-' + (p.draws || 0) + 'D-' + (p.losses || 0) + 'L';
                 return `
                   <div class="bg-[#0b130f] p-3 rounded-2xl border border-emerald-950 flex justify-between items-center gap-2">
                     <div class="flex items-center gap-2">
@@ -2421,7 +2466,7 @@
             </div>
             <div class="flex items-center gap-2 bg-[#0b130f] px-3 py-1.5 rounded-xl border border-emerald-950 text-xs">
               <span class="font-bold text-slate-300">${currentLang === "es" ? "🦺 Casacas:" : "🦺 Pinnies:"}</span>
-              <button type="button" onclick="adminTogglePinnies(${!appData.requirePinnies})" class="px-2.5 py-0.5 rounded font-bold ${appData.requirePinnies ? 'bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40' : 'bg-slate-800 text-slate-400'}">
+              <button type="button" onclick="adminTogglePinnies(${!appData.requirePinnies})" class="px-2.5 py-0.5 rounded font-bold cursor-pointer ${appData.requirePinnies ? 'bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40' : 'bg-slate-800 text-slate-400'}">
                 ${appData.requirePinnies ? (currentLang === "es" ? "SÍ" : "ON") : "OFF"}
               </button>
             </div>
@@ -2449,8 +2494,8 @@
                       </div>
                       <div class="flex gap-1.5">
                         ${!isReg ? `
-                          <button type="button" onclick="adminResendInvite('${escJsArg(inv.Email)}')" class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold hover:bg-emerald-900">${currentLang === "es" ? "Reenviar" : "Resend"}</button>
-                          ${!isProt ? `<button type="button" onclick="adminRevokeInvite('${escJsArg(inv.Email)}')" class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-bold hover:bg-rose-900">${currentLang === "es" ? "Revocar" : "Revoke"}</button>` : ''}
+                          <button type="button" onclick="adminResendInvite('${escJsArg(inv.Email)}')" class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold hover:bg-emerald-900 cursor-pointer">${currentLang === "es" ? "Reenviar" : "Resend"}</button>
+                          ${!isProt ? `<button type="button" onclick="adminRevokeInvite('${escJsArg(inv.Email)}')" class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">${currentLang === "es" ? "Revocar" : "Revoke"}</button>` : ''}
                         ` : '<span class="text-slate-500 italic text-[11px]">' + (currentLang === "es" ? "Activo" : "Active") + '</span>'}
                       </div>
                     </div>
@@ -2464,7 +2509,7 @@
           <div id="admin-rec-card" class="glass-card rounded-2xl p-4 sm:p-5 ${editingRec ? 'border-2 border-[#00f59b]' : ''} ${showSec('recurring') ? '' : 'hidden'}">
             <div class="flex justify-between items-center mb-1">
               <h3 class="text-base sm:text-lg font-extrabold text-white">${editingRec ? (currentLang === "es" ? `🔁 Editar Serie: ${escHtml(editingRec.Title)}` : `🔁 Edit Series: ${escHtml(editingRec.Title)}`) : (currentLang === "es" ? "🔁 2. Programador de Partidos Recurrentes" : "🔁 2. Recurring Schedule Builder")}</h3>
-              ${editingRec ? `<button type="button" onclick="cancelEditSeries()" class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">${t("cancelBtn")}</button>` : ''}
+              ${editingRec ? `<button type="button" onclick="cancelEditSeries()" class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300 cursor-pointer">${t("cancelBtn")}</button>` : ''}
             </div>
             <p class="text-xs text-slate-400 mb-3">${currentLang === "es" ? "Programa partidos periódicos automáticamente sin duplicar fechas canceladas." : "Generate regular matches automatically without recreating skipped games."}</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 mb-3 text-xs">
@@ -2514,10 +2559,10 @@
                 ${recurring.map(function(sr) {
                   return `
                     <div class="flex justify-between items-center bg-[#0b130f] p-2.5 rounded-xl border border-emerald-950">
-                      <div><b>${escHtml(sr.Title)}</b> • ${escHtml(formatDaysBadges(sr.DaysOfWeek))} @ ${escHtml(sr.Time)} (${escHtml(sr.StartDate)} a ${escHtml(sr.EndDate)})</div>
+                      <div><b>${escHtml(sr.Title)}</b> • ${escHtml(formatDaysBadges(sr.DaysOfWeek))} @ ${escHtml(sr.Time)} (${escHtml(sr.StartDate)} - ${escHtml(sr.EndDate)})</div>
                       <div class="flex gap-1.5">
-                        <button type="button" onclick="startEditSeries('${escJsArg(sr.SeriesID)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30">${t("editGameBtn")}</button>
-                        <button type="button" onclick="adminStopSeries('${escJsArg(sr.SeriesID)}')" class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-bold hover:bg-rose-900">${currentLang === "es" ? "Detener" : "Stop"}</button>
+                        <button type="button" onclick="startEditSeries('${escJsArg(sr.SeriesID)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30 cursor-pointer">${t("editGameBtn")}</button>
+                        <button type="button" onclick="adminStopSeries('${escJsArg(sr.SeriesID)}')" class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">${currentLang === "es" ? "Detener" : "Stop"}</button>
                       </div>
                     </div>
                   `;
@@ -2574,8 +2619,8 @@
                     <div class="flex justify-between items-center bg-[#0b130f] p-2.5 rounded-xl border border-emerald-950">
                       <div><b>${escHtml(g.Title)}</b> • ${escHtml(g.Date)} @ ${escHtml(g.Time)} (${escHtml(g.LocationName)}) ${g.captainName ? '• 👑 ' + escHtml(g.captainName) : ''}</div>
                       <div class="flex gap-1.5">
-                        <button type="button" onclick="startEditGame('${escJsArg(g.GameID)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30">${t("editGameBtn")}</button>
-                        ${g.Status !== 'Cancelled' ? `<button type="button" onclick="adminCancelGameSubmit('${escJsArg(g.GameID)}')" class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-bold hover:bg-rose-900">${currentLang === "es" ? "Cancelar" : "Cancel"}</button>` : '<span class="text-rose-400 font-bold">' + (currentLang === "es" ? "Cancelado" : "Cancelled") + '</span>'}
+                        <button type="button" onclick="startEditGame('${escJsArg(g.GameID)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30 cursor-pointer">${t("editGameBtn")}</button>
+                        ${g.Status !== 'Cancelled' ? `<button type="button" onclick="adminCancelGameSubmit('${escJsArg(g.GameID)}')" class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-bold hover:bg-rose-900 cursor-pointer">${currentLang === "es" ? "Cancelar" : "Cancel"}</button>` : '<span class="text-rose-400 font-bold">' + (currentLang === "es" ? "Cancelado" : "Cancelled") + '</span>'}
                       </div>
                     </div>
                   `;
@@ -2595,7 +2640,7 @@
             
             <div class="flex gap-2 mb-2.5">
               <input id="map-search-query" type="text" placeholder="${currentLang === "es" ? "Buscar parque, dirección..." : "Search park, address..."}" class="flex-1 bg-[#0b130f] border border-emerald-800 rounded-xl px-3 py-1.5 text-xs text-white">
-              <button type="button" onclick="searchFieldOnMap()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40">🔍 ${currentLang === "es" ? "Buscar" : "Search"}</button>
+              <button type="button" onclick="searchFieldOnMap()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-950 text-[#00f59b] border border-[#00f59b]/40 cursor-pointer">🔍 ${currentLang === "es" ? "Buscar" : "Search"}</button>
             </div>
 
             <div id="admin-picker-map-wrap" class="${adminMapVisible ? '' : 'hidden'} rounded-xl overflow-hidden border border-emerald-800/60 mb-3">
@@ -2634,8 +2679,8 @@
                     <div class="flex justify-between items-center bg-[#0b130f] p-2.5 rounded-xl border border-emerald-950">
                       <div><b>${escHtml(l.Name)}</b> • ${escHtml(l.Address)}</div>
                       <div class="flex gap-1.5">
-                        <button type="button" onclick="startEditLocation('${escJsArg(l.LocationID)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30">${t("editGameBtn")}</button>
-                        <button type="button" onclick="adminToggleLocation('${escJsArg(l.LocationID)}', '${l.LocationStatus === 'Active' ? 'Inactive' : 'Active'}')" class="px-2 py-0.5 rounded font-bold ${l.LocationStatus === 'Active' ? 'bg-slate-800 text-slate-300' : 'bg-emerald-950 text-[#00f59b]'}">${l.LocationStatus === 'Active' ? (currentLang === "es" ? "Desactivar" : "Deactivate") : (currentLang === "es" ? "Reactivar" : "Reactivate")}</button>
+                        <button type="button" onclick="startEditLocation('${escJsArg(l.LocationID)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30 cursor-pointer">${t("editGameBtn")}</button>
+                        <button type="button" onclick="adminToggleLocation('${escJsArg(l.LocationID)}', '${l.LocationStatus === 'Active' ? 'Inactive' : 'Active'}')" class="px-2 py-0.5 rounded font-bold cursor-pointer ${l.LocationStatus === 'Active' ? 'bg-slate-800 text-slate-300' : 'bg-emerald-950 text-[#00f59b]'}">${l.LocationStatus === 'Active' ? (currentLang === "es" ? "Desactivar" : "Deactivate") : (currentLang === "es" ? "Reactivar" : "Reactivate")}</button>
                       </div>
                     </div>
                   `;
@@ -2657,9 +2702,9 @@
                     </div>
                     <div class="flex gap-1.5">
                       ${!isProtectedEmail(p.email) ? `
-                        <button type="button" onclick="adminToggleGuestPriv('${escJsArg(p.email)}', ${p.canBringGuests === false})" class="px-2 py-0.5 rounded font-bold ${p.canBringGuests !== false ? 'bg-emerald-950 text-[#00f59b]' : 'bg-rose-950 text-rose-300'}">${p.canBringGuests !== false ? (currentLang === "es" ? "Invitados SÍ" : "Guests On") : (currentLang === "es" ? "Invitados NO" : "No Guests")}</button>
-                        <button type="button" onclick="adminToggleRole('${escJsArg(p.email)}', '${p.role === 'Admin' ? 'Player' : 'Admin'}')" class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 font-bold">${p.role === 'Admin' ? (currentLang === "es" ? "Bajar a Jugador" : "Demote") : (currentLang === "es" ? "Hacer Admin" : "Make Admin")}</button>
-                        <button type="button" onclick="adminToggleSuspend('${escJsArg(p.email)}', '${p.status === 'Suspended' ? 'Active' : 'Suspended'}')" class="px-2 py-0.5 rounded font-bold ${p.status === 'Suspended' ? 'bg-emerald-700 text-white' : 'bg-amber-500/20 text-amber-300'}">${p.status === 'Suspended' ? (currentLang === "es" ? "Reactivar" : "Reactivate") : (currentLang === "es" ? "Suspender" : "Suspend")}</button>
+                        <button type="button" onclick="adminToggleGuestPriv('${escJsArg(p.email)}', ${p.canBringGuests === false})" class="px-2 py-0.5 rounded font-bold cursor-pointer ${p.canBringGuests !== false ? 'bg-emerald-950 text-[#00f59b]' : 'bg-rose-950 text-rose-300'}">${p.canBringGuests !== false ? (currentLang === "es" ? "Invitados SÍ" : "Guests On") : (currentLang === "es" ? "Invitados NO" : "No Guests")}</button>
+                        <button type="button" onclick="adminToggleRole('${escJsArg(p.email)}', '${p.role === 'Admin' ? 'Player' : 'Admin'}')" class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 font-bold cursor-pointer">${p.role === 'Admin' ? (currentLang === "es" ? "Bajar a Jugador" : "Demote") : (currentLang === "es" ? "Hacer Admin" : "Make Admin")}</button>
+                        <button type="button" onclick="adminToggleSuspend('${escJsArg(p.email)}', '${p.status === 'Suspended' ? 'Active' : 'Suspended'}')" class="px-2 py-0.5 rounded font-bold cursor-pointer ${p.status === 'Suspended' ? 'bg-emerald-700 text-white' : 'bg-amber-500/20 text-amber-300'}">${p.status === 'Suspended' ? (currentLang === "es" ? "Reactivar" : "Reactivate") : (currentLang === "es" ? "Suspender" : "Suspend")}</button>
                       ` : '<span class="text-slate-500 italic text-[11px]">' + (currentLang === "es" ? "Admin Protegido" : "Protected Admin") + '</span>'}
                     </div>
                   </div>
@@ -2710,7 +2755,7 @@
               <input id="cfg-rest-key" type="password" value="${escHtml(res.oneSignalRestKey || '')}" placeholder="os_v2_app_..." class="w-full p-2.5 rounded-xl bg-[#0b130f] border border-emerald-900 text-white font-mono">
             </div>
             <div class="flex justify-end gap-2 pt-2">
-              <button type="button" onclick="renderAdminView()" class="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300">${currentLang === "es" ? "Bloquear" : "Lock"}</button>
+              <button type="button" onclick="renderAdminView()" class="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 cursor-pointer">${currentLang === "es" ? "Bloquear" : "Lock"}</button>
               <button type="button" onclick="savePushConfigSubmit('${escJsArg(pin)}')" class="px-4 py-1.5 rounded-xl neon-btn">${currentLang === "es" ? "Guardar Claves" : "Save Push Keys"}</button>
             </div>
           </div>
