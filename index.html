@@ -6,11 +6,22 @@
   <meta name="theme-color" content="#047857" id="meta-theme-color">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pitch Pulse">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23070b09'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23047857'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+
+  <!-- Preconnect to Critical Origins for Faster First Paint -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://script.google.com">
+  <link rel="preconnect" href="https://api.open-meteo.com">
+
+  <!-- Approved "01 — Classic Stitched" Master Icons -->
+  <link rel="icon" type="image/svg+xml" href="pitch-pulse-01-classic-stitched.svg?v=4.4">
+  <link rel="icon" type="image/png" sizes="512x512" href="pitch-pulse-01-classic-stitched-512.png?v=4.4">
+  <link rel="icon" type="image/png" sizes="192x192" href="pitch-pulse-01-classic-stitched-192.png?v=4.4">
+  <link rel="apple-touch-icon" sizes="192x192" href="pitch-pulse-01-classic-stitched-192.png?v=4.4">
   <link rel="manifest" id="pwa-manifest-link">
+
   <title>Pitch Pulse League — Lunchtime Soccer Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
@@ -27,24 +38,30 @@
       color: #f1f5f9;
       transition: background-color 0.25s ease, color 0.25s ease;
       -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: none;
     }
     h1, h2, h3, .font-display { font-family: 'Outfit', sans-serif; }
     .glass-card {
-      background: rgba(17, 28, 22, 0.92);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(0, 245, 155, 0.16);
+      background: rgba(17, 28, 22, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 245, 155, 0.18);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .neon-btn {
-      background: #00f59b;
-      color: #070b09;
+      background: linear-gradient(135deg, #00f59b 0%, #10b981 100%);
+      color: #05100a;
       font-weight: 700;
-      transition: all 0.2s ease;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
     }
     .neon-btn:hover {
-      background: #34f7af;
+      background: linear-gradient(135deg, #34f7af 0%, #00f59b 100%);
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(0, 245, 155, 0.25);
+      box-shadow: 0 6px 20px rgba(0, 245, 155, 0.28);
+    }
+    .neon-btn:active {
+      transform: translateY(0) scale(0.98);
     }
     .neon-btn:disabled {
       opacity: 0.6;
@@ -265,15 +282,17 @@
 </head>
 <body class="light-mode min-h-screen pb-28">
 
-  <!-- iPhone 15 Pro Optimized Sticky Header (Single row, no multi-line wrapping!) -->
+  <!-- iPhone 15 Pro Optimized Sticky Header (Uses Approved 01 — Classic Stitched Icon) -->
   <header class="border-b border-emerald-950/80 bg-[#0b130f]/90 sticky top-0 z-30 backdrop-blur-md">
     <div class="max-w-5xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2">
       <!-- Brand & Version Pill -->
-      <div class="flex items-center gap-2 shrink-0">
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-lg shadow-sm shrink-0">⚽</div>
+      <div class="flex items-center gap-2.5 shrink-0">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-md shrink-0 bg-[#07120d] border border-[#00f59b]/40">
+          <img src="pitch-pulse-01-classic-stitched-192.png?v=4.4" alt="Pitch Pulse" class="w-full h-full object-cover" onerror="this.src='pitch-pulse-01-classic-stitched.svg'">
+        </div>
         <div class="flex items-center gap-1.5">
           <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-white leading-tight whitespace-nowrap">PITCH PULSE</h1>
-          <span class="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-950 text-[#00f59b] border border-emerald-500/40">v4.3</span>
+          <span class="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-950 text-[#00f59b] border border-emerald-500/40">v4.4</span>
         </div>
       </div>
 
@@ -346,11 +365,19 @@
 
   <script>
     // =========================================================================
-    // MASTER CONFIGURATION & XSS ESCAPING HELPERS
+    // MASTER CONFIGURATION, BRAND ASSETS & XSS ESCAPING HELPERS
     // =========================================================================
     const API_URL = "https://script.google.com/macros/s/AKfycbxD2w-OIQ6k59BqRc0jbccjq09qYsKADavM4id6o02hVTKrqdV90j1bnjLb_Fp6hEc2/exec";
     const SYSTEM_ADMIN_EMAIL = "pitchpulseleague@gmail.com";
     const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "ralph@me.com"];
+
+    // Approved "01 — Classic stitched" Asset Constants (with Cache Busting)
+    const ASSET_VERSION = "4.4";
+    const ICON_192_FILE = "pitch-pulse-01-classic-stitched-192.png?v=" + ASSET_VERSION;
+    const ICON_512_FILE = "pitch-pulse-01-classic-stitched-512.png?v=" + ASSET_VERSION;
+    const ICON_1024_FILE = "pitch-pulse-01-classic-stitched-1024.png?v=" + ASSET_VERSION;
+    const ICON_SVG_FILE = "pitch-pulse-01-classic-stitched.svg?v=" + ASSET_VERSION;
+    const BALL_ONLY_FILE = "ball-01-classic-stitched.png?v=" + ASSET_VERSION;
 
     function isProtectedEmail(em) {
       return PROTECTED_ADMINS.indexOf(String(em || "").toLowerCase().trim()) !== -1;
@@ -386,19 +413,21 @@
 
     (function initPwaManifest() {
       try {
-        const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23047857'/%3E%3Ctext x='256' y='345' font-size='280' text-anchor='middle'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E";
+        const basePath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "/");
         const manifestObj = {
           name: "Pitch Pulse League — Lunchtime Soccer Hub",
           short_name: "Pitch Pulse",
           description: "Weekly Match Signups, Live Rosters, Balanced Lineups & Pitch Forecast",
-          start_url: window.location.origin + window.location.pathname,
-          scope: window.location.origin + window.location.pathname,
+          start_url: basePath,
+          scope: basePath,
           display: "standalone",
-          background_color: "#f1f5f9",
+          background_color: "#07120d",
           theme_color: "#047857",
           icons: [
-            { src: iconSvg, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
-            { src: iconSvg, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+            { src: new URL(ICON_192_FILE, basePath).href, sizes: "192x192", type: "image/png", purpose: "any" },
+            { src: new URL(ICON_512_FILE, basePath).href, sizes: "512x512", type: "image/png", purpose: "any" },
+            { src: new URL(ICON_1024_FILE, basePath).href, sizes: "1024x1024", type: "image/png", purpose: "any" },
+            { src: new URL(ICON_SVG_FILE, basePath).href, sizes: "any", type: "image/svg+xml", purpose: "any" }
           ]
         };
         const blob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
@@ -468,7 +497,7 @@
         <div class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true">
           <div class="glass-card rounded-3xl p-5 max-w-sm w-full">
             <div class="flex items-center gap-3 mb-3">
-              <div class="w-10 h-10 rounded-2xl bg-emerald-950 border border-[#00f59b]/40 flex items-center justify-center text-xl shrink-0">⚽</div>
+              <img src="${ICON_192_FILE}" alt="Pitch Pulse" class="w-12 h-12 rounded-2xl border border-[#00f59b]/40 shadow-md shrink-0 object-cover">
               <div>
                 <h3 class="text-base font-extrabold text-white">${currentLang === "es" ? "📲 Instalar en Pantalla de Inicio" : "📲 Install Pitch Pulse App"}</h3>
                 <p class="text-[11px] text-slate-400">${currentLang === "es" ? "Usa la app en pantalla completa" : "Launch full-screen from your Home Screen"}</p>
@@ -476,7 +505,7 @@
             </div>
             <div class="space-y-2.5 text-xs text-slate-200 mb-4">
               <div class="bg-[#0b130f] p-3 rounded-xl border border-emerald-950">
-                <div class="font-extrabold text-[#00f59b] mb-1">${currentLang === "es" ? "🍎 iPhone / iPad (Safari):" : "🍎 iPhone / iPad (Safari):"}</div>
+                <div class="font-extrabold text-[#00f59b] mb-1">🍎 iPhone / iPad (Safari):</div>
                 <ol class="list-decimal pl-4 space-y-0.5">
                   <li>${currentLang === "es" ? "Toca el botón <b>Compartir</b> (<span class='font-mono'>⬆️</span>) en la barra de Safari." : "Tap the <b>Share</b> button (<span class='font-mono'>⬆️</span>) at bottom of Safari."}</li>
                   <li>${currentLang === "es" ? "Baja y selecciona <b>'Agregar a inicio'</b>." : "Scroll down and tap <b>'Add to Home Screen'</b>."}</li>
@@ -811,7 +840,7 @@
     });
 
     // =========================================================================
-    // STATE, SESSION INITIALIZATION & AUTO-POLLING
+    // STATE, INSTANT-BOOT LOCALSTORAGE CACHE & AUTO-POLLING
     // =========================================================================
     let currentUser = null;
     try {
@@ -830,6 +859,13 @@
     let adminMapVisible = false; // Collapsed by default to eliminate iPhone scroll traps
     let swapModeByGame = {};
     let weatherCache = {};
+    try {
+      const savedWeather = JSON.parse(sessionStorage.getItem("soccer_weather_v44") || "null");
+      if (savedWeather && (Date.now() - (savedWeather._ts || 0) < 1800000)) {
+        weatherCache = savedWeather;
+      }
+    } catch (e) {}
+
     let editingGameId = null;
     let editingSeriesId = null;
     let editingLocationId = null;
@@ -853,6 +889,22 @@
       invites: [],
       recurring: []
     };
+
+    // Instant-Boot Cache Hydration: Paint UI in <15ms before network sync finishes
+    if (currentUser) {
+      try {
+        const cachedApp = JSON.parse(localStorage.getItem("soccer_cached_data_v44") || "null");
+        if (cachedApp && cachedApp.games) {
+          appData = cachedApp;
+        }
+      } catch (e) {}
+    }
+
+    function saveAppDataCache(data) {
+      try {
+        localStorage.setItem("soccer_cached_data_v44", JSON.stringify(data));
+      } catch (e) {}
+    }
 
     function getTodayIso() {
       const d = new Date();
@@ -1061,7 +1113,11 @@
         clearTimeout(timer);
         const text = await res.text();
         try {
-          return JSON.parse(text);
+          const parsed = JSON.parse(text);
+          if (parsed && parsed.success && parsed.games) {
+            saveAppDataCache(parsed);
+          }
+          return parsed;
         } catch (je) {
           showBanner("⚠️ Google Apps Script error: Deploy latest Code.gs as New Version.", true);
           return null;
@@ -1133,38 +1189,51 @@
     }, 60000);
 
     // =========================================================================
-    // KICKOFF-HOUR SPECIFIC WEATHER + DAILY FALLBACK ENGINE
+    // PARALLELIZED KICKOFF-HOUR WEATHER ENGINE WITH SESSION CACHING
     // =========================================================================
     async function fetchWeatherForAllGamesAsync() {
       const games = appData.games || [];
-      let updatedAny = false;
-      for (let i = 0; i < games.length; i++) {
-        const g = games[i];
+      const uniqueCoords = {};
+      games.forEach(function(g) {
         const lat = g.locationDetails && g.locationDetails.lat;
         const lng = g.locationDetails && g.locationDetails.lng;
-        if (!lat || !lng) continue;
-        const key = lat + "," + lng;
-        if (!weatherCache[key]) {
-          try {
-            const ctrl = new AbortController();
-            const tid = setTimeout(function() { ctrl.abort(); }, 6000);
-            const url = "https://api.open-meteo.com/v1/forecast?latitude=" + encodeURIComponent(lat) + "&longitude=" + encodeURIComponent(lng) +
-              "&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m" +
-              "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode" +
-              "&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto";
-            const res = await fetch(url, { signal: ctrl.signal });
-            clearTimeout(tid);
-            const data = await res.json();
-            if (data && (data.hourly || data.daily)) {
-              weatherCache[key] = data;
-              updatedAny = true;
-            }
-          } catch (e) {
-            weatherCache[key] = { failed: true };
+        if (lat && lng) {
+          const key = lat + "," + lng;
+          if (!weatherCache[key]) {
+            uniqueCoords[key] = { lat: lat, lng: lng };
           }
         }
-      }
-      if (updatedAny && activeTab === "upcoming") {
+      });
+
+      const keysToFetch = Object.keys(uniqueCoords);
+      if (keysToFetch.length === 0) return;
+
+      await Promise.all(keysToFetch.map(async function(key) {
+        const coords = uniqueCoords[key];
+        try {
+          const ctrl = new AbortController();
+          const tid = setTimeout(function() { ctrl.abort(); }, 6000);
+          const url = "https://api.open-meteo.com/v1/forecast?latitude=" + encodeURIComponent(coords.lat) + "&longitude=" + encodeURIComponent(coords.lng) +
+            "&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m" +
+            "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode" +
+            "&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto";
+          const res = await fetch(url, { signal: ctrl.signal });
+          clearTimeout(tid);
+          const data = await res.json();
+          if (data && (data.hourly || data.daily)) {
+            weatherCache[key] = data;
+          }
+        } catch (e) {
+          weatherCache[key] = { failed: true };
+        }
+      }));
+
+      try {
+        weatherCache._ts = Date.now();
+        sessionStorage.setItem("soccer_weather_v44", JSON.stringify(weatherCache));
+      } catch (e) {}
+
+      if (activeTab === "upcoming") {
         renderUpcomingGamesView();
       }
     }
@@ -1287,7 +1356,7 @@
       const container = document.getElementById("view-container");
       container.innerHTML = `
         <div class="glass-card rounded-3xl p-6 sm:p-10 text-center max-w-lg mx-auto mt-6 shadow-2xl">
-          <div class="w-14 h-14 rounded-2xl bg-[#00f59b]/15 border border-[#00f59b]/40 flex items-center justify-center text-3xl mx-auto mb-3">🔒</div>
+          <img src="${ICON_192_FILE}" alt="Pitch Pulse" class="w-20 h-20 rounded-3xl mx-auto mb-4 border border-[#00f59b]/40 shadow-lg object-cover" onerror="this.src='${ICON_SVG_FILE}'">
           <h2 class="text-xl sm:text-2xl font-extrabold text-white mb-2">${t("lockedTitle")}</h2>
           <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6">${t("lockedSub")}</p>
           <div class="flex flex-col sm:flex-row justify-center gap-3">
@@ -1303,9 +1372,21 @@
         renderLockedGateView();
         return;
       }
-      if (activeTab === "admin" && currentUser.isAdmin) return renderAdminView();
-      if (activeTab === "history") return renderHistoryAndDirectoryView();
-      renderUpcomingGamesView();
+      const prevScrollY = window.scrollY;
+      // Clean up orphaned card map instances before re-painting DOM
+      Object.keys(gameCardMaps).forEach(function(k) {
+        try { if (gameCardMaps[k]) gameCardMaps[k].remove(); } catch (e) {}
+      });
+      gameCardMaps = {};
+
+      if (activeTab === "admin" && currentUser.isAdmin) {
+        renderAdminView();
+      } else if (activeTab === "history") {
+        renderHistoryAndDirectoryView();
+      } else {
+        renderUpcomingGamesView();
+      }
+      window.scrollTo(0, prevScrollY);
     }
 
     // =========================================================================
@@ -1340,7 +1421,7 @@
 
       return '<div class="soccer-pitch-bg rounded-2xl p-4 sm:p-5 mb-4 shadow-inner text-white">' +
         '<div class="flex justify-between items-center text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-emerald-200/90 mb-3">' +
-          '<span>⚽ ' + (currentLang === "es" ? "Formación Táctica 2D (" + game.yesCount + " Jugadores)" : "2D Tactical Formation (" + game.yesCount + " Players)") + '</span>' +
+          '<span class="flex items-center gap-1.5"><img src="' + BALL_ONLY_FILE + '" alt="" class="w-4 h-4 object-contain"> ' + (currentLang === "es" ? "Formación Táctica 2D (" + game.yesCount + " Jugadores)" : "2D Tactical Formation (" + game.yesCount + " Players)") + '</span>' +
           '<span>GK • DEF • MID • FWD</span>' +
         '</div>' +
         '<div class="space-y-3.5 relative z-10">' +
@@ -1367,6 +1448,7 @@
 
       if (upcoming.length === 0) {
         container.innerHTML = '<div class="glass-card rounded-2xl p-8 text-center">' +
+          '<img src="' + BALL_ONLY_FILE + '" alt="" class="w-12 h-12 mx-auto mb-3 opacity-80 object-contain">' +
           '<p class="text-lg font-bold text-white mb-2">' + t("noGamesTitle") + '</p>' +
           '<p class="text-sm text-slate-400 mb-4">' + t("noGamesSub") + '</p>' +
           (currentUser && currentUser.isAdmin ? '<button type="button" onclick="switchTab(\'admin\')" class="neon-btn px-5 py-2.5 rounded-xl text-xs">' + t("tabAdmin") + '</button>' : '') +
@@ -1613,7 +1695,7 @@
             <div class="bg-[#0b130f] px-3 py-2 rounded-xl border border-emerald-950 mb-3 flex flex-wrap items-center justify-between gap-2 text-xs">
               <span class="font-bold text-slate-300">${t("gearBarTitle")}</span>
               <div class="flex items-center gap-3">
-                <span>⚽ ${currentLang === "es" ? "Balón" : "Ball"}: <b class="${ballBringers.length ? 'text-[#00f59b]' : 'text-amber-300'}">${ballBringers.length ? escHtml(ballBringers.join(", ")) : (currentLang === "es" ? "Falta" : "Needed")}</b></span>
+                <span class="inline-flex items-center gap-1"><img src="${BALL_ONLY_FILE}" alt="" class="w-3.5 h-3.5 object-contain"> ${currentLang === "es" ? "Balón" : "Ball"}: <b class="${ballBringers.length ? 'text-[#00f59b]' : 'text-amber-300'}">${ballBringers.length ? escHtml(ballBringers.join(", ")) : (currentLang === "es" ? "Falta" : "Needed")}</b></span>
                 ${requirePinnies ? `<span>🦺 ${currentLang === "es" ? "Casacas" : "Pinnies"}: <b class="${pinnieBringers.length ? 'text-[#00f59b]' : 'text-amber-300'}">${pinnieBringers.length ? escHtml(pinnieBringers.join(", ")) : (currentLang === "es" ? "Faltan" : "Needed")}</b></span>` : ''}
                 <span>🧤 ${currentLang === "es" ? "Portero" : "GK"}: <b class="${gkPlayers.length ? 'text-[#00f59b]' : 'text-slate-400'}">${gkPlayers.length ? escHtml(gkPlayers.join(", ")) : (currentLang === "es" ? "Libre" : "Open")}</b></span>
               </div>
@@ -1980,8 +2062,8 @@
                         ${hasScore ? `<span class="px-2.5 py-0.5 rounded-full bg-emerald-950 text-[#00f59b] font-extrabold">⚪ ${currentLang === "es" ? "Blanco" : "White"} ${escHtml(g.ScoreWhite)} - ${escHtml(g.ScoreDark)} ${currentLang === "es" ? "Oscuro" : "Dark"} ⚫</span>` : ''}
                       </div>
                       <div class="flex items-center gap-1.5">
-                        ${canManageThis ? `<button type="button" onclick="openAttendanceModal('${escJsArg(gId)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">${t("attendanceBtn")}</button>` : ''}
-                        ${canManageThis ? `<button type="button" onclick="openScoreModal('${escJsArg(gId)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">${t("recordScoreBtn")}</button>` : ''}
+                        ${canManageThis ? `<button type="button" onclick="openAttendanceModal('${escJsArg(gId)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold cursor-pointer">${t("attendanceBtn")}</button>` : ''}
+                        ${canManageThis ? `<button type="button" onclick="openScoreModal('${escJsArg(gId)}')" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold cursor-pointer">${t("recordScoreBtn")}</button>` : ''}
                         <span class="font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300">${g.yesCount || yesList.length} ${t("playedWord")}</span>
                       </div>
                     </div>
@@ -1990,7 +2072,7 @@
                     ${!isSystemAdminOnly(currentUser?.email) && iAttended && yesList.length ? `
                       <div class="mt-2 pt-1.5 border-t border-emerald-950 flex items-center gap-2">
                         <span class="text-slate-400 font-semibold">${t("voteMotmPrompt")}</span>
-                        <select onchange="submitMotmVote('${escJsArg(gId)}', this.value)" class="bg-[#111c16] border border-emerald-900 rounded-lg px-2 py-0.5 text-xs text-white">
+                        <select onchange="submitMotmVote('${escJsArg(gId)}', this.value)" class="bg-[#111c16] border border-emerald-900 rounded-lg px-2 py-0.5 text-xs text-white cursor-pointer">
                           <option value="">${currentLang === "es" ? "-- Votar Jugador --" : "-- Vote Player --"}</option>
                           ${yesList.map(function(p) { return `<option value="${escHtml(p.email)}" ${myEntry?.motmVote === p.email ? 'selected' : ''}>${escHtml(p.fullName)}</option>`; }).join("")}
                         </select>
@@ -2211,7 +2293,7 @@
                   <option value="Email" ${curPref === 'Email' ? 'selected' : ''}>${currentLang === "es" ? "📧 Solo Correo Electrónico" : "📧 Email Alerts Only"}</option>
                 </select>
                 <div class="mt-1.5 flex justify-between items-center">
-                  <button type="button" onclick="subscribeCurrentDeviceToPush()" class="text-[11px] text-[#00f59b] font-bold hover:underline">${currentLang === "es" ? "📲 Activar Notificaciones Push en este teléfono →" : "📲 Enable Lock-Screen Push on This Device →"}</button>
+                  <button type="button" onclick="subscribeCurrentDeviceToPush()" class="text-[11px] text-[#00f59b] font-bold hover:underline cursor-pointer">${currentLang === "es" ? "📲 Activar Notificaciones Push en este teléfono →" : "📲 Enable Lock-Screen Push on This Device →"}</button>
                 </div>
               </div>
 
@@ -2306,9 +2388,13 @@
       const res = await apiPost({ action: "login", email: email, pin: pin });
       if (res && res.success) {
         currentUser = res.user;
-        if (res.appData) appData = res.appData;
+        if (res.appData) {
+          appData = res.appData;
+          saveAppDataCache(appData);
+        }
         localStorage.setItem("soccer_user", JSON.stringify(currentUser));
         closeModal(); renderAuthBar(); switchTab("upcoming");
+        fetchWeatherForAllGamesAsync();
       } else {
         if (btn) { btn.disabled = false; btn.textContent = t("loginBtn"); }
         alert(res?.error || (currentLang === "es" ? "Error al iniciar sesión" : "Login failed"));
@@ -2350,9 +2436,13 @@
       const res = await apiPost({ action: "register", fullName: fullName, email: email, position: position, pin: pin });
       if (res && res.success) {
         currentUser = res.user;
-        if (res.appData) appData = res.appData;
+        if (res.appData) {
+          appData = res.appData;
+          saveAppDataCache(appData);
+        }
         localStorage.setItem("soccer_user", JSON.stringify(currentUser));
         closeModal(); renderAuthBar(); switchTab("upcoming");
+        fetchWeatherForAllGamesAsync();
       } else alert(res?.error || (currentLang === "es" ? "Error al registrarse" : "Registration failed"));
     }
 
@@ -2367,7 +2457,7 @@
               <span>${currentLang === "es" ? "Recuperación de Emergencia Admin hacia ralph@me.com" : "Emergency Recovery to ralph@me.com"}</span>
             </label>
             <div class="flex justify-end gap-2">
-              <button type="button" onclick="closeModal()" class="px-3 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300">${t("cancelBtn")}</button>
+              <button type="button" onclick="closeModal()" class="px-3 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300 cursor-pointer">${t("cancelBtn")}</button>
               <button type="button" onclick="sendResetCode()" class="px-4 py-1.5 rounded-xl text-xs neon-btn">${currentLang === "es" ? "Enviar Código" : "Send Code"}</button>
             </div>
           </div>
@@ -2938,13 +3028,22 @@
     }
 
     function closeModal() { document.getElementById("modal-root").innerHTML = ""; }
-    function logout() { localStorage.removeItem("soccer_user"); currentUser = null; renderAuthBar(); renderLockedGateView(); }
+    function logout() {
+      localStorage.removeItem("soccer_user");
+      localStorage.removeItem("soccer_cached_data_v44");
+      currentUser = null;
+      renderAuthBar();
+      renderLockedGateView();
+    }
 
-    // Boot App
+    // Boot App (Instant render from localStorage cache, then background sync)
     applyThemeAndLanguageUI();
     renderAuthBar();
     renderCurrentTab();
-    if (currentUser) syncFromBackend(true);
+    if (currentUser) {
+      fetchWeatherForAllGamesAsync();
+      syncFromBackend(true);
+    }
   </script>
 </body>
 </html>
