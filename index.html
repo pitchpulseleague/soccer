@@ -364,7 +364,8 @@
         addField: "Add a field", editField: "Edit field", searchPlacePh: "Search a park or address", fieldName: "Field name", address: "Address", latitude: "Latitude", longitude: "Longitude",
         arrivalPh: "Parking, entrance, meeting point…", placeNotFound: "Place not found.", errFieldFields: "Enter a name and an address.",
         reactivate: "Reactivate", deactivate: "Deactivate", deleteFieldConfirm: "Delete this field?", deleteFieldBody: "Fields with match history are deactivated instead, so old matches keep their location.",
-        searchPlayersPh: "Search players", emailPh: "player@email.com", mapStyleLabel: "Map style", mapStyleMap: "Map", mapStyleSatellite: "Satellite", suspended: "Suspended", noGuestsShort: "No guests",
+        searchPlayersPh: "Search players", emailPh: "player@email.com", mapStyleLabel: "Map style", mapStyleMap: "Map", mapStyleSatellite: "Satellite",
+        rsvpLinkLogin: "Log in once on this phone to save your answer: {status}.", rsvpLinkOtherTitle: "This answer is for {email}", rsvpLinkOtherBody: "You're logged in as {me}. Log out to answer as {email}.", rsvpLinkGone: "That match isn't open for answers anymore.", suspended: "Suspended", noGuestsShort: "No guests",
         defaultTeamLbl: "Default team", noDefaultTeam: "None", defaultTeamHelp: "Used when an organizer picks \"Use default teams\". Players can still be moved on match day.",
         protectedAdmin: "Protected admin — can't be suspended, demoted or removed.", guestsAllowed: "Can bring guests", adminRights: "Admin rights",
         promoteConfirm: "Make {name} an admin?", demoteConfirm: "Remove admin rights from {name}?", suspendConfirm: "Suspend {name}?", reactivateConfirm: "Reactivate {name}?",
@@ -483,7 +484,8 @@
         addField: "Agregar cancha", editField: "Editar cancha", searchPlacePh: "Busca un parque o dirección", fieldName: "Nombre de la cancha", address: "Dirección", latitude: "Latitud", longitude: "Longitud",
         arrivalPh: "Estacionamiento, entrada, punto de encuentro…", placeNotFound: "No se encontró el lugar.", errFieldFields: "Escribe un nombre y una dirección.",
         reactivate: "Reactivar", deactivate: "Desactivar", deleteFieldConfirm: "¿Eliminar esta cancha?", deleteFieldBody: "Las canchas con historial se desactivan en lugar de borrarse, para que los partidos anteriores conserven su lugar.",
-        searchPlayersPh: "Buscar jugadores", emailPh: "jugador@correo.com", mapStyleLabel: "Tipo de mapa", mapStyleMap: "Mapa", mapStyleSatellite: "Satélite", suspended: "Suspendido", noGuestsShort: "Sin invitados",
+        searchPlayersPh: "Buscar jugadores", emailPh: "jugador@correo.com", mapStyleLabel: "Tipo de mapa", mapStyleMap: "Mapa", mapStyleSatellite: "Satélite",
+        rsvpLinkLogin: "Inicia sesión una vez en este teléfono para guardar tu respuesta: {status}.", rsvpLinkOtherTitle: "Esta respuesta es de {email}", rsvpLinkOtherBody: "Tienes la sesión de {me}. Cierra sesión para responder como {email}.", rsvpLinkGone: "Ese partido ya no acepta respuestas.", suspended: "Suspendido", noGuestsShort: "Sin invitados",
         defaultTeamLbl: "Equipo fijo", noDefaultTeam: "Ninguno", defaultTeamHelp: "Se usa cuando el organizador elige \"Usar equipos fijos\". El día del partido se puede mover igual.",
         protectedAdmin: "Admin protegido — no se puede suspender, degradar ni eliminar.", guestsAllowed: "Puede traer invitados", adminRights: "Permisos de admin",
         promoteConfirm: "¿Hacer admin a {name}?", demoteConfirm: "¿Quitar permisos de admin a {name}?", suspendConfirm: "¿Suspender a {name}?", reactivateConfirm: "¿Reactivar a {name}?",
@@ -816,6 +818,7 @@
         renderAuthBar();
         renderCurrentTab();
         fetchWeatherForAllGamesAsync();
+        applyEmailRsvpIfReady();
       } else if (data && data.authError) {
         logout(true);
         showToast(data.error || t("errSession"), true);
@@ -2185,9 +2188,10 @@
     // =========================================================================
     // LOGIN, REGISTRATION (invite link) & PIN RESET
     // =========================================================================
-    function showLoginModal(prefillEmail) {
+    function showLoginModal(prefillEmail, note) {
       renderSheetModal(`
         ${sheetHeader("🔑 " + escHtml(t("loginTitle")), escHtml(t("loginSub")))}
+        ${note ? `<div class="mb-3 p-3 rounded-2xl bg-emerald-950 border border-[#00f59b]/40 text-sm font-semibold text-emerald-300">${escHtml(note)}</div>` : ""}
         <label class="block mb-3"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("emailLbl"))}</span>
           <input id="l-email" type="email" ${prefillEmail ? "" : "autofocus"} autocomplete="username" inputmode="email" autocapitalize="none" value="${escHtml(prefillEmail || "")}" class="tap mt-1 w-full px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"></label>
         <span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("pinLbl"))}</span>
@@ -2234,6 +2238,7 @@
           setAppData(res.appData || {});
           closeModal(); renderAuthBar(); switchTab("upcoming");
           fetchWeatherForAllGamesAsync(); initOneSignalSdkIfConfigured();
+          applyEmailRsvpIfReady();
         } else {
           for (let i = 0; i < 6; i++) { const bx = byId("pin-box-" + i); if (bx) bx.value = ""; }
           const first = byId("pin-box-0"); if (first) first.focus();
@@ -2903,6 +2908,42 @@
     }
 
     // =========================================================================
+    // ANSWER BUTTONS IN EMAILS (?rsvp=Yes|Maybe|No&game=…&email=…)
+    // Logged in on this phone: the answer is applied right away (with the usual checks).
+    // Not logged in: a login sheet with the email filled in, then the answer is applied.
+    // =========================================================================
+    let pendingEmailRsvp = null;
+    function readEmailRsvpLink() {
+      let p;
+      try { p = new URLSearchParams(location.search); } catch (e) { return; }
+      const status = p.get("rsvp"), gameId = p.get("game");
+      if (!gameId || ["Yes", "Maybe", "No"].indexOf(status) === -1) return;
+      pendingEmailRsvp = { status: status, gameId: gameId, email: String(p.get("email") || "").toLowerCase().trim() };
+      try { history.replaceState(null, "", location.pathname); } catch (e) {} // a refresh must not answer again
+    }
+    function emailRsvpNote(r) { return t("rsvpLinkLogin", { status: statusWord(r.status) }); }
+    function applyEmailRsvpIfReady() {
+      const r = pendingEmailRsvp;
+      if (!r || !currentUser) return;
+      pendingEmailRsvp = null;
+      if (r.email && myEmail() !== r.email) {
+        confirmDialog({ icon: "✉️", title: t("rsvpLinkOtherTitle", { email: r.email }), body: t("rsvpLinkOtherBody", { me: currentUser.email, email: r.email }), okLabel: t("logoutBtn"),
+          onOk: function() { logout(); pendingEmailRsvp = r; showLoginModal(r.email, emailRsvpNote(r)); } });
+        return;
+      }
+      const g = findGame(r.gameId);
+      if (!g) { showToast(t("rsvpLinkGone"), true); return; }
+      if (activeTab !== "upcoming") switchTab("upcoming");
+      expandedGames[r.gameId] = true;
+      renderCurrentTab();
+      setTimeout(function() {
+        const el = byId("game-" + r.gameId);
+        if (el) try { el.scrollIntoView({ block: "start" }); } catch (e) {}
+        onRsvpTap(r.gameId, r.status);
+      }, 60);
+    }
+
+    // =========================================================================
     // INVITE LINKS (?invite=…&email=…) & BOOT
     // =========================================================================
     function handleInviteLink() {
@@ -2924,15 +2965,18 @@
     }
 
     applyThemeAndLanguageUI();
+    readEmailRsvpLink();
     handleInviteLink();
     renderAuthBar();
     renderCurrentTab();
     if (currentUser) {
       fetchWeatherForAllGamesAsync();
-      syncFromBackend(true);
+      syncFromBackend(true);           // the email answer is applied once fresh data arrives
       initOneSignalSdkIfConfigured();
     } else if (pendingInvite) {
       showRegisterModal();
+    } else if (pendingEmailRsvp) {
+      showLoginModal(pendingEmailRsvp.email, emailRsvpNote(pendingEmailRsvp));
     }
   </script>
 </body>
