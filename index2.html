@@ -24,7 +24,7 @@
   <link rel="apple-touch-icon" sizes="192x192" href="pitch-pulse-01-classic-stitched-192.png?v=5.0">
   <link rel="manifest" id="pwa-manifest-link">
 
-  <title>Pitch Pulse League · Design preview</title>
+  <title>Pitch Pulse League · Layout preview 2</title>
 
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
@@ -947,6 +947,483 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       .press:active, .neon-btn:active, .dock-btn:active .ic { transform: none !important; }
     }
 
+/* Layout preview 2: distinct materials and control families, using the same DOM. */
+body[data-design="iphone"][data-standalone="false"] .app-header {
+  background: rgba(23,27,24,.94);
+  border-bottom-color: var(--pp-skin-line);
+  color: var(--pp-skin-ink);
+}
+body[data-design="iphone"].light-mode[data-standalone="false"] .app-header {
+  background: rgba(249,250,249,.94);
+}
+body[data-design="iphone"][data-standalone="false"] .app-header .hdr-title,
+body[data-design="android"][data-standalone="false"] .app-header .hdr-title {
+  color: var(--pp-skin-ink);
+  text-transform: none;
+  letter-spacing: -.02em;
+}
+body[data-design="iphone"] .hdr-title { font-weight: 700; }
+body[data-design="iphone"][data-standalone="false"] .hdr-btn {
+  color: var(--pp-skin-accent);
+  background: transparent;
+  border-radius: 10px;
+}
+body[data-design="iphone"] .hdr-logo { border-radius: 9px; box-shadow: none; }
+body[data-design="iphone"] .view-title { font-size: 24px; letter-spacing: -.025em; font-weight: 750; }
+body[data-design="iphone"] .match-card { border-radius: 20px; }
+body[data-design="iphone"] .match-title { font-weight: 750; }
+body[data-design="iphone"] .match-compact { border-radius: 16px; }
+body[data-design="iphone"] .match-weather { background: transparent !important; border: 0; padding: 0; }
+body[data-design="iphone"] .rsvp-panel { border-radius: 14px; }
+body[data-design="iphone"] .rsvp-grid {
+  border-radius: 12px;
+  padding: 4px;
+  gap: 3px;
+  background: var(--pp-skin-surface-3);
+}
+body[data-design="iphone"] .rsvp-choice[data-rsvp] {
+  border-radius: 8px;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+body[data-design="iphone"] .rsvp-choice[data-rsvp][aria-pressed="true"] {
+  background: var(--pp-skin-surface) !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.14);
+}
+body[data-design="iphone"] .rsvp-choice[data-rsvp="Yes"][aria-pressed="true"] { color: var(--pp-skin-accent) !important; }
+body[data-design="iphone"] .rsvp-choice[data-rsvp="Maybe"][aria-pressed="true"] { color: var(--pp-skin-amber-ink) !important; }
+body[data-design="iphone"] .rsvp-choice[data-rsvp="No"][aria-pressed="true"] { color: var(--pp-skin-rose-ink) !important; }
+body[data-design="iphone"] .rsvp-choice[data-rsvp="Yes"].bg-sky-500[aria-pressed="true"] { color: var(--pp-skin-blue-ink) !important; }
+body[data-design="iphone"] .match-secondary-actions { gap: 0; }
+body[data-design="iphone"] .match-secondary-actions > button {
+  background: transparent !important;
+  border-width: 0;
+  border-radius: 8px;
+}
+body[data-design="iphone"] .match-secondary-actions > button + button { border-left: 1px solid var(--pp-skin-line); border-radius: 0 8px 8px 0; }
+body[data-design="iphone"] #mobile-bottom-dock { box-shadow: 0 -1px 12px rgba(0,0,0,.03); }
+body[data-design="iphone"] .dock-btn[aria-current="page"] .ic { stroke-width: 2.4; }
+
+body[data-design="android"][data-standalone="false"] .app-header {
+  background: var(--pp-skin-dock);
+  color: var(--pp-skin-ink);
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+body[data-design="android"] .hdr-title { font-size: 19px; font-weight: 600; }
+body[data-design="android"][data-standalone="false"] .hdr-btn {
+  background: transparent;
+  color: var(--pp-skin-ink);
+  border-radius: 999px;
+}
+body[data-design="android"] .hdr-logo { border-radius: 50%; box-shadow: none; }
+body[data-design="android"] .view-title { font-size: 23px; letter-spacing: -.015em; font-weight: 600; }
+body[data-design="android"] .match-title { font-weight: 650; }
+body[data-design="android"] .match-card { border-radius: 28px; }
+body[data-design="android"] .match-compact {
+  background: var(--pp-skin-surface-2) !important;
+  border-color: transparent !important;
+  border-radius: 24px;
+}
+body[data-design="android"] .rsvp-panel { border-radius: 24px; }
+body[data-design="android"] .rsvp-grid { gap: 6px; }
+body[data-design="android"] .rsvp-choice[data-rsvp] { border-radius: 999px; }
+body[data-design="android"] .match-secondary-actions > button {
+  background: var(--pp-skin-surface-2) !important;
+  border-color: transparent !important;
+  border-radius: 999px;
+}
+body[data-design="android"] .match-collapse { border-radius: 16px; background: var(--pp-skin-surface-2) !important; }
+body[data-design="android"] .match-weather { border-radius: 16px; border-color: transparent !important; }
+body[data-design="android"] .roster-section > h3 { font-weight: 600; }
+
+/* Keep the status-bar area legible for existing black-translucent Home Screen apps. */
+body[data-standalone="true"] .app-header {
+  background: #07120d;
+  color: #fff;
+}
+body[data-standalone="true"] .app-header .hdr-title { color: #fff; }
+
+/* A persistent action cue also works in Generic and when movement is reduced. */
+body[data-design="generic"] .rsvp-panel {
+  border: 1px solid transparent;
+  border-left-width: 3px;
+  border-radius: 16px;
+  padding: 12px;
+}
+body[data-design="generic"] .rsvp-panel:is([data-attention="answer"],[data-attention="reconfirm"]) {
+  border-color: rgba(0,245,155,.32);
+  background: rgba(0,245,155,.035);
+}
+body[data-design="generic"].light-mode .rsvp-panel:is([data-attention="answer"],[data-attention="reconfirm"]) {
+  border-color: #95c9ae;
+  background: #f3f9f5;
+}
+.rsvp-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+body[data-design="generic"] .rsvp-attention-label {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #1b3e2d;
+  border: 1px solid #497f5f;
+  color: #c9f4d9;
+  padding: 3px 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+body[data-design="generic"].light-mode .rsvp-attention-label { background: #e1f2e6; border-color: #95c9ae; color: #14643f; }
+
+.motion-picker { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
+.motion-choice { padding: 9px 3px; font-size: 13px; min-width: 0; overflow-wrap: anywhere; }
+.motion-demo {
+  display: grid;
+  gap: 6px;
+  margin: 14px 0 8px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #0b130f;
+  border: 1px solid #28503a;
+}
+.motion-demo > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  min-height: 38px;
+  min-width: 0;
+  color: #d1fae5;
+  background: #172a1e;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.motion-demo > div > span { flex: 1; min-width: 0; }
+.motion-demo b { padding: 2px 6px; border: 1px solid #648d70; border-radius: 999px; font-size: 10px; line-height: 1.3; max-width: 42%; font-weight: 700; }
+.motion-preview-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #193924;
+  border: 1px solid #648d70;
+  color: #d1fae5;
+  font-size: 14px;
+  font-weight: 700;
+}
+.motion-preview-btn:disabled { opacity: .5; cursor: not-allowed; }
+body.light-mode .motion-demo { background: #f1f5f2; border-color: #d3dfd5; }
+body.light-mode .motion-demo > div { background: #fff; color: #28513b; }
+body.light-mode .motion-preview-btn { color: #23543a; background: #e6f1e8; border-color: #a8c4ae; }
+body:is([data-design="iphone"],[data-design="android"]) .motion-demo {
+  background: var(--pp-skin-surface-2);
+  border-color: var(--pp-skin-line);
+}
+body:is([data-design="iphone"],[data-design="android"]) .motion-demo > div {
+  background: var(--pp-skin-surface);
+  color: var(--pp-skin-ink);
+}
+body:is([data-design="iphone"],[data-design="android"]) .motion-preview-btn {
+  background: var(--pp-skin-accent-soft);
+  color: var(--pp-skin-accent);
+  border-color: var(--pp-skin-accent-line);
+  border-radius: var(--pp-skin-control-radius);
+}
+body[data-design="iphone"] .motion-demo > div { border-radius: 6px; }
+body[data-design="android"] .motion-demo > div { border-radius: 18px; }
+
+/* Finite native motion is applied only from deliberate interaction hooks. */
+html[data-motion="reduced"] { scroll-behavior: auto !important; }
+body[data-motion="reduced"] .press:active,
+body[data-motion="reduced"] .neon-btn:active,
+body[data-motion="reduced"] .dock-btn:active .ic { transform: none; }
+@media (hover:hover) and (pointer:fine) {
+  body:is([data-design="iphone"],[data-design="android"])[data-standalone="false"] .hdr-btn:hover { background: var(--pp-skin-surface-3); }
+}
+
+/* Pitch Pulse responsive layout, revision 2.
+ * One set of game actions and one roster; available space controls their layout.
+ * Insert after the optional design skins. Generic shares these layout repairs.
+ */
+:root {
+  --pp-header-height: 56px;
+  --pp-page-width: 1280px;
+  --pp-rail-width: 80px;
+  --pp-viewport-height: 100vh;
+}
+@supports (height: 100dvh) {
+  :root { --pp-viewport-height: 100dvh; }
+}
+body.min-h-screen {
+  --pp-layout-line: rgba(148, 163, 184, 0.20);
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+}
+body.light-mode { --pp-layout-line: rgba(15, 23, 42, 0.13); }
+body[data-signed-in="false"] { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+
+/* Keep controls reachable on a cover screen and full names out of the toolbar. */
+body #app-header > div {
+  width: 100%;
+  max-width: var(--pp-page-width);
+  height: var(--pp-header-height);
+  min-height: var(--pp-header-height);
+  padding-inline: 12px;
+  gap: 8px;
+}
+body #app-header > div > div:first-child { min-width: 0; flex: 1 1 auto; gap: 10px; }
+body #app-header .hdr-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+body #app-header .hdr-logo { flex: 0 0 36px; width: 36px; height: 36px; }
+body #app-header .hdr-btn { min-width: 44px; height: 44px; padding-inline: 10px; flex-shrink: 0; }
+body #app-header > div > div:last-child { gap: 6px; }
+body #desktop-auth-bar { display: none !important; }
+@media (min-width: 1120px) {
+  body #desktop-auth-bar { display: flex !important; min-width: 0; max-width: 220px; }
+  body #desktop-auth-bar > button { min-width: 0; max-width: 220px; }
+  body #desktop-auth-bar > button > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+@media (max-width: 359px) {
+  body #app-header > div > div:first-child { gap: 7px; }
+  body #app-header .hdr-logo { flex-basis: 30px; width: 30px; height: 30px; }
+  body #app-header .hdr-title { font-size: 14px; letter-spacing: 0.01em; }
+  body #app-header > div > div:last-child { gap: 3px; }
+}
+
+body #app-main {
+  width: 100%;
+  max-width: var(--pp-page-width);
+  margin-top: 16px;
+  padding-left: max(12px, env(safe-area-inset-left)) !important;
+  padding-right: max(12px, env(safe-area-inset-right)) !important;
+}
+body #nav-tabs-bar { flex-wrap: wrap; gap: 8px; }
+body #nav-tabs-bar > h2 { min-width: 0; flex: 1 1 110px; }
+body #nav-tabs-bar > div { min-width: 0; max-width: 100%; flex-wrap: wrap; justify-content: flex-end; }
+body #sync-indicator { min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+body #view-container { min-width: 0; }
+
+/* Compact matches can share a row. An open match always owns the full row. */
+.games-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 14px;
+  align-items: start;
+}
+body #view-container > .games-list > :not([hidden]) { min-width: 0; margin-top: 0; margin-bottom: 0; }
+.games-list > .match-card,
+.games-list > h3,
+.games-list > #show-more-btn { grid-column: 1 / -1; }
+body .match-card,
+body .match-compact {
+  min-width: 0;
+  max-width: 100%;
+  scroll-margin-top: calc(var(--pp-header-height) + env(safe-area-inset-top) + 12px);
+}
+body .match-card { container-type: inline-size; container-name: match; }
+.match-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
+.match-main { min-width: 0; container-type: inline-size; container-name: match-main; }
+.match-side { min-width: 0; container-type: inline-size; container-name: match-side; }
+.match-layout[data-has-side="false"] { grid-template-columns: minmax(0, 1fr); }
+.match-layout[data-has-side="false"] > .match-main { grid-column: 1 / -1; }
+.match-layout[data-has-side="false"] > .match-side,
+.match-side:empty { display: none; }
+body .match-side > :first-child { margin-top: 0; }
+body .match-side > .roster-section:first-child { padding-top: 0; border-top: 0; }
+body .match-primary-info { min-width: 0; gap: 12px; }
+body .match-primary-info > .min-w-0 { min-width: 0; flex: 1 1 auto; }
+body .match-header-tools { max-width: 40%; }
+body .match-collapse { flex-shrink: 0; min-width: 44px; min-height: 44px; }
+body .match-weather { min-width: 0; max-width: 100%; }
+body .match-weather > div { white-space: normal; overflow-wrap: break-word; }
+body .match-title { overflow-wrap: break-word; }
+body .match-venue { max-width: 100%; text-align: start; }
+body .match-venue > .truncate { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+body .match-turnout > .flex { flex-wrap: wrap; row-gap: 4px; }
+body .match-secondary-actions > button { min-width: 0; min-height: 48px; padding: 8px; line-height: 1.35; white-space: normal; }
+body .match-main > button { min-width: 0; padding-inline: 12px; padding-block: 8px; }
+
+/* 580px of card content gives a 302px action column and 245px usable sidebar.
+ * At a 669px viewport: 24px outer gutters + 44px card padding + 2px border
+ * leave 599px: approximately 312px main and 254px sidebar after its inset.
+ */
+@container match (min-width: 580px) {
+  .match-layout[data-has-side="true"] {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 16px;
+  }
+  .match-layout[data-has-side="true"] > .match-side {
+    border-inline-start: 1px solid var(--pp-skin-line, var(--pp-layout-line));
+    padding-inline-start: 16px;
+  }
+}
+
+/* A narrow action column is a narrow phone layout even inside a wide device. */
+@container match-main (max-width: 360px) {
+  body .match-primary-info { display: block; position: relative; }
+  body .match-primary-info:has(.match-collapse) > .min-w-0 { padding-inline-end: 52px; }
+  body .match-header-tools { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; max-width: 100%; gap: 6px; }
+  body .match-collapse { position: absolute; inset-inline-end: 0; inset-block-start: 0; }
+  body .match-weather { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; margin-top: 6px; text-align: start; }
+  body .match-title { font-size: 21px; line-height: 1.25; }
+  body .match-secondary-actions { gap: 6px; }
+  body .match-secondary-actions > button { font-size: 13px; gap: 6px; }
+}
+
+/* RSVP choice geometry is driven by its own space, including the sidebar split. */
+body .rsvp-panel { min-width: 0; container-type: inline-size; container-name: response; }
+body .rsvp-grid { min-width: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+body .rsvp-choice[data-rsvp] { min-width: 0; }
+body .rsvp-choice[data-rsvp] > span { max-width: 100%; min-width: 0; }
+body .rsvp-choice[data-rsvp] > span > span { min-width: 0; white-space: normal; overflow-wrap: break-word; }
+@container response (max-width: 320px) {
+  body[data-design] .rsvp-choice[data-rsvp] { min-height: 76px; padding: 8px 4px; }
+  body[data-design] .rsvp-choice[data-rsvp] > span { flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.25; }
+  body[data-design] .rsvp-choice[data-rsvp] > span > span { display: flex; align-items: center; justify-content: center; min-height: 2.5em; }
+}
+
+/* Never apply the old viewport-based two-column roster inside a narrow pane. */
+body .match-side .roster-list.grid { grid-template-columns: minmax(0, 1fr); }
+body .match-side .roster-row { min-width: 0; max-width: 100%; }
+body .match-side .roster-row > .min-w-0 { overflow-wrap: anywhere; }
+body .roster-filter { min-width: 0; white-space: normal; line-height: 1.3; }
+body .roster-filter > b { white-space: nowrap; }
+body .teams-list { min-width: 0; }
+body .teams-panel { min-width: 0; }
+body .teams-panel > .flex { flex-wrap: wrap; }
+body .teams-panel .pitch-player-label { max-width: 100%; overflow-wrap: anywhere; }
+@container match-side (max-width: 360px) {
+  body .teams-list { grid-template-columns: minmax(0, 1fr); }
+  body[data-design] .roster-filter { padding-inline: 3px; font-size: 12px; min-height: 48px; }
+  body .roster-filter > b { display: block; }
+}
+@container match-side (min-width: 520px) {
+  body .match-side .roster-list.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Older browsers keep a functional single column instead of stretching controls. */
+@supports not (container-type: inline-size) {
+  body .match-layout { grid-template-columns: minmax(0, 1fr); }
+  body .match-main { max-width: 680px; width: 100%; }
+  body .match-side { max-width: 680px; width: 100%; }
+}
+
+/* Shared navigation: retain conditional hidden tabs and the original handlers. */
+body #mobile-dock-grid { width: 100%; max-width: 600px; }
+body #mobile-dock-grid > .dock-btn { min-width: 0; }
+body #mobile-dock-grid > .dock-btn > span { max-width: 100%; white-space: normal; line-height: 1.2; }
+
+/* Square unfolded screens use the bottom bar. Short, sufficiently wide screens
+ * and large desktop windows move this same bar to the left and reclaim height.
+ * A 594px-wide landscape cover keeps its full width; no rail is shown there.
+ */
+@media (min-width: 1080px), (min-width: 840px) and (max-height: 600px) {
+  body[data-signed-in="true"] { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+  body[data-signed-in="true"] #mobile-bottom-dock {
+    top: calc(var(--pp-header-height) + env(safe-area-inset-top));
+    right: auto;
+    bottom: 0;
+    left: 0;
+    width: calc(var(--pp-rail-width) + env(safe-area-inset-left));
+    padding-top: 12px;
+    padding-right: 0;
+    padding-left: env(safe-area-inset-left);
+    border-top: 0;
+    border-inline-end: 1px solid var(--pp-skin-line, var(--pp-layout-line));
+    border-radius: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  body[data-signed-in="true"] #mobile-dock-grid { display: flex; flex-direction: column; gap: 8px; padding: 0 6px; }
+  body[data-signed-in="true"] #mobile-dock-grid > .dock-btn { width: 100%; min-height: 64px; padding: 8px 2px; }
+  body[data-signed-in="true"] #app-main {
+    width: calc(100% - var(--pp-rail-width) - env(safe-area-inset-left));
+    max-width: none;
+    margin-left: calc(var(--pp-rail-width) + env(safe-area-inset-left));
+    margin-right: 0;
+    padding-left: 20px !important;
+    padding-right: max(20px, env(safe-area-inset-right)) !important;
+  }
+  body[data-signed-in="true"] #app-main > * { max-width: var(--pp-page-width); margin-left: auto; margin-right: auto; }
+  body[data-signed-in="true"] #toast-root { padding-left: calc(var(--pp-rail-width) + env(safe-area-inset-left) + 12px); }
+}
+
+/* In landscape the viewport can be short even when it has ample horizontal room. */
+@media (min-width: 480px) and (max-height: 480px) {
+  :root { --pp-header-height: 48px; }
+  body #app-main { margin-top: 10px; }
+  body #mobile-active-view-title { font-size: 22px; line-height: 1.15; }
+  body #nav-tabs-bar { margin-bottom: 10px; }
+  body #mobile-dock-grid { padding-top: 2px; }
+  body #mobile-dock-grid > .dock-btn { min-height: 44px; padding-top: 2px; padding-bottom: 2px; gap: 1px; }
+  body #mobile-dock-grid > .dock-btn .ic { width: 22px; height: 22px; }
+  body #mobile-bottom-dock { padding-bottom: max(4px, env(safe-area-inset-bottom)); }
+}
+
+/* Sheets use the visible viewport, including Safari's keyboard, when available.
+ * JS may set --pp-visual-height / --pp-visual-top from window.visualViewport.
+ * Without it, dvh (or vh on older browsers) supplies a working fallback.
+ */
+body .sheet-overlay {
+  top: var(--pp-visual-top, 0px);
+  bottom: auto;
+  height: var(--pp-visual-height, var(--pp-viewport-height));
+  min-height: 0;
+  padding-top: max(8px, env(safe-area-inset-top));
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+body #sheet-panel {
+  min-width: 0;
+  max-height: calc(var(--pp-visual-height, var(--pp-viewport-height)) - max(8px, env(safe-area-inset-top)) - 8px);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-block: 16px;
+  container-type: inline-size;
+  container-name: sheet;
+}
+body #sheet-panel input,
+body #sheet-panel select,
+body #sheet-panel textarea { min-width: 0; max-width: 100%; }
+body #sheet-panel .pin-box { min-width: 0; flex: 1 1 0; max-width: 46px; }
+body #sheet-panel .score-team { min-width: 0; }
+body #sheet-panel .score-team button { width: 44px; min-width: 44px; min-height: 44px; }
+body #sheet-panel .score-team input { width: 44px; min-width: 44px; }
+body #sheet-panel .match-date-time > label { min-width: 0; }
+@container sheet (max-width: 380px) {
+  body #sheet-panel .match-date-time { grid-template-columns: minmax(0, 1fr); }
+}
+@container sheet (max-width: 359px) {
+  body .score-entry { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  body .score-divider { display: none; }
+}
+@media (min-width: 640px) {
+  body .sheet-overlay {
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding-left: max(16px, env(safe-area-inset-left));
+  }
+  body #sheet-panel { max-height: calc(var(--pp-visual-height, var(--pp-viewport-height)) - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom))); }
+}
+@media (min-width: 480px) and (max-height: 480px) {
+  body .sheet-overlay {
+    align-items: center;
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+  }
+  body #sheet-panel {
+    max-height: calc(var(--pp-visual-height, var(--pp-viewport-height)) - max(8px, env(safe-area-inset-top)) - max(8px, env(safe-area-inset-bottom)));
+    padding-top: 12px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
   </style>
   <script>
     // Safety net: if the page ever shows a class the pre-built block above doesn't cover
@@ -1011,17 +1488,21 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
   <script>
     // Restore this account's local skin before the first paint. A missing/invalid session uses Generic.
     (function () {
-      var design = "generic", motion = "auto";
+      var design = "generic", motion = "expressive", signedIn = false;
       try {
         var user = JSON.parse(localStorage.getItem("soccer_user") || "null");
         if (user && user.email && user.pin) {
+          signedIn = true;
           var saved = JSON.parse(localStorage.getItem("pitchpulse_appearance_v1:" + String(user.email).trim().toLowerCase()) || "null") || {};
           if (["generic", "iphone", "android"].indexOf(saved.design) !== -1) design = saved.design;
-          if (saved.motion === "reduced") motion = "reduced";
+          if (["expressive", "standard", "reduced"].indexOf(saved.motion) !== -1) motion = saved.motion;
         }
       } catch (e) {}
       var reduced = motion === "reduced" || !window.matchMedia || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       document.body.setAttribute("data-design", design);
+      document.body.setAttribute("data-signed-in", String(signedIn));
+      document.body.setAttribute("data-standalone", String(!!navigator.standalone || !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)));
+      document.body.setAttribute("data-motion-level", motion);
       document.body.setAttribute("data-motion", reduced ? "reduced" : "full");
       document.documentElement.setAttribute("data-motion", reduced ? "reduced" : "full");
     })();
@@ -1477,44 +1958,60 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
   "designGeneric": "Generic",
   "designIphone": "iPhone Friendly",
   "designAndroid": "Android Friendly",
-  "designGenericHelp": "The current Pitch Pulse look.",
-  "designIphoneHelp": "Quiet surfaces and grouped controls.",
-  "designAndroidHelp": "Soft surfaces and rounded controls.",
-  "designDeviceHelp": "All three designs work on any phone or computer.",
+  "designGenericHelp": "Pitch Pulse’s familiar bold cards and dark header.",
+  "designIphoneHelp": "Neutral toolbar, grouped answers and simple lists.",
+  "designAndroidHelp": "Tonal toolbar, rounded cards and pill navigation.",
+  "designDeviceHelp": "Choose the look you like. Every design adapts to narrow, wide and landscape windows.",
   "colorTheme": "Color theme",
   "motionLabel": "Motion",
-  "motionAuto": "Auto",
+  "motionExpressive": "Expressive",
+  "motionStandard": "Standard",
   "motionReduced": "Reduced",
-  "motionAutoHelp": "Follows your device’s motion setting. The new designs add brief transitions and a one-time cue when a reply is needed.",
+  "motionExpressiveHelp": "Visible page transitions, cards that settle into place, and a single bounce when a reply is needed. Works with every design.",
+  "motionStandardHelp": "Short, gentle transitions and a quieter reply cue.",
   "motionReducedHelp": "Extra animations and smooth scrolling are off. Reply reminders remain visible.",
   "motionDeviceReduced": "Your device’s Reduce Motion setting is active. Reply reminders remain visible.",
   "appearanceLocalNote": "Design and motion apply immediately and are saved for your account in this browser.",
   "appearanceSessionOnly": "Design and motion apply immediately. This browser could not save them; they will reset after a reload.",
   "replyNeeded": "Reply needed",
   "replyReconfirm": "Please reconfirm",
-  "designPreview": "Design preview"
+  "designPreview": "Layout preview 2",
+  "previewMotion": "Preview motion",
+  "previewMotionHelp": "A visual sample only. Your match answers stay as they are.",
+  "previewMatchDetails": "Match details",
+  "previewYourAnswer": "Your answer",
+  "previewRoster": "Who’s coming",
+  "previewMotionUnavailable": "Motion preview is unavailable in this browser."
 });
     Object.assign(I18N.es, {
   "designLabel": "Diseño",
   "designGeneric": "Genérico",
   "designIphone": "Para iPhone",
   "designAndroid": "Para Android",
-  "designGenericHelp": "El diseño actual de Pitch Pulse.",
-  "designIphoneHelp": "Superficies sencillas y controles agrupados.",
-  "designAndroidHelp": "Superficies suaves y controles redondeados.",
-  "designDeviceHelp": "Los tres diseños funcionan en cualquier teléfono o computadora.",
+  "designGenericHelp": "Las tarjetas y el encabezado oscuro de Pitch Pulse.",
+  "designIphoneHelp": "Barra neutra, respuestas agrupadas y listas sencillas.",
+  "designAndroidHelp": "Barra de tonos suaves, tarjetas redondeadas y navegación tipo píldora.",
+  "designDeviceHelp": "Elige el diseño que prefieras. Todos se adaptan a ventanas estrechas, amplias y horizontales.",
   "colorTheme": "Tema de color",
   "motionLabel": "Movimiento",
-  "motionAuto": "Automático",
+  "motionExpressive": "Expresivo",
+  "motionStandard": "Estándar",
   "motionReduced": "Reducido",
-  "motionAutoHelp": "Sigue el ajuste de movimiento del dispositivo. Los nuevos diseños añaden transiciones breves y un aviso visual que aparece una vez cuando falta una respuesta.",
+  "motionExpressiveHelp": "Transiciones visibles, tarjetas que se acomodan y un solo rebote cuando falta tu respuesta. Funciona en todos los diseños.",
+  "motionStandardHelp": "Transiciones breves y suaves, con un aviso de respuesta más discreto.",
   "motionReducedHelp": "Las animaciones extra y el desplazamiento suave están desactivados. Los avisos de respuesta siguen visibles.",
   "motionDeviceReduced": "Tu dispositivo tiene activado Reducir movimiento. Los avisos de respuesta siguen visibles.",
   "appearanceLocalNote": "El diseño y el movimiento se aplican al instante y se guardan para tu cuenta en este navegador.",
   "appearanceSessionOnly": "El diseño y el movimiento se aplican al instante. Este navegador no pudo guardarlos; se restablecerán al recargar.",
   "replyNeeded": "Falta tu respuesta",
   "replyReconfirm": "Confirma de nuevo",
-  "designPreview": "Vista de prueba"
+  "designPreview": "Vista de prueba 2",
+  "previewMotion": "Probar movimiento",
+  "previewMotionHelp": "Solo es una muestra visual. Tus respuestas a los partidos se mantienen.",
+  "previewMatchDetails": "Datos del partido",
+  "previewYourAnswer": "Tu respuesta",
+  "previewRoster": "Quién viene",
+  "previewMotionUnavailable": "La vista de movimiento no está disponible en este navegador."
 });
 
     function t(key, params) {
@@ -2422,12 +2919,208 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       return null;
     }
 
+    // Native, presentation-only motion. The caller supplies the current user's
+    // preference and the OS/visibility gate; this module never changes app data.
+    // Inline this function before LOCAL APPEARANCE, then create one instance there.
+    function createPresentationMotionV2(env) {
+      const win = env.window || window;
+      const doc = env.document || document;
+      const active = env.animations || new Set();
+      const byElement = env.byElement || new WeakMap();
+      const records = new Map();
+      let lastWidth = Number(win.innerWidth) || 0;
+      let batchNumber = 0;
+
+      function mode() {
+        if (!env.allowed() || doc.visibilityState === "hidden") return "reduced";
+        const value = env.mode();
+        return value === "standard" ? "standard" : (value === "reduced" ? "reduced" : "expressive");
+      }
+      function isTypingInside(el) {
+        const focused = doc.activeElement;
+        return !!(focused && el.contains && el.contains(focused) &&
+          (focused.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(focused.tagName || "")));
+      }
+      function usable(el) {
+        return !!(el && el.isConnected && typeof el.animate === "function" && mode() !== "reduced");
+      }
+      function animate(el, frames, timing, after) {
+        if (!usable(el)) return null;
+        const options = typeof timing === "object" && timing ? timing : { duration: timing || 180 };
+        try {
+          const previous = byElement.get(el);
+          if (previous) stop(previous);
+          const animation = el.animate(frames, {
+            duration: Math.max(1, Math.min(1000, Number(options.duration) || 180)),
+            delay: Math.max(0, Math.min(160, Number(options.delay) || 0)),
+            easing: options.easing || "cubic-bezier(.22,.78,.2,1)",
+            // Backwards applies only during the short stagger delay. No retained
+            // transform/opacity remains after completion or cancellation.
+            fill: options.delay ? "backwards" : "none",
+            iterations: 1
+          });
+          let settled = false;
+          const finish = function(cancelled) {
+            if (settled) return;
+            settled = true;
+            active.delete(animation);
+            records.delete(animation);
+            if (byElement.get(el) === animation) byElement.delete(el);
+            if (after) { try { after({ cancelled: !!cancelled }); } catch (e) {} }
+          };
+          active.add(animation);
+          byElement.set(el, animation);
+          records.set(animation, finish);
+          animation.onfinish = function() { finish(false); };
+          animation.oncancel = function() { finish(true); };
+          return animation;
+        } catch (e) { return null; }
+      }
+      function stop(animation) {
+        const finish = records.get(animation);
+        try { animation.cancel(); } catch (e) {}
+        // WebKit may deliver cancel asynchronously. Settle immediately so a
+        // resized or closed view cannot retain a stale callback or busy flag.
+        if (finish) finish(true);
+        else active.delete(animation);
+      }
+      function cancel() {
+        batchNumber++;
+        Array.from(active).forEach(stop);
+      }
+      function visible(el) {
+        if (!el || !el.isConnected) return false;
+        if (typeof el.getBoundingClientRect !== "function") return true;
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < (win.innerHeight || Infinity);
+      }
+      function navigationItems(surface) {
+        // Animate at most three independent, currently visible surfaces. Nested
+        // panels are excluded so parent and child motion never compound.
+        const candidates = surface.querySelectorAll ? Array.from(surface.querySelectorAll(
+          "[data-motion-item], .match-card, .match-compact, section.glass-card"
+        )).filter(visible) : [];
+        return candidates.filter(function(el) {
+          return !candidates.some(function(parent) { return parent !== el && parent.contains && parent.contains(el); });
+        }).slice(0, 3);
+      }
+      function entryFrames(kind, direction) {
+        if (mode() === "standard") return [
+          { opacity: .82, transform: "translateY(4px)" },
+          { opacity: 1, transform: "translateY(0)" }
+        ];
+        const design = env.design ? env.design() : "generic";
+        if (kind === "filter") return [
+          { opacity: .55, transform: "translateY(10px)" },
+          { opacity: 1, transform: "translateY(0)" }
+        ];
+        if (kind === "expand") return [
+          { opacity: .65, transform: "translateY(14px)" },
+          { opacity: 1, transform: "translateY(-1px)", offset: .78 },
+          { opacity: 1, transform: "translateY(0)" }
+        ];
+        if (design === "iphone" && kind === "navigation") {
+          const sign = direction < 0 ? -1 : 1;
+          return [
+            { opacity: .55, transform: "translateX(" + (24 * sign) + "px)" },
+            { opacity: 1, transform: "translateX(" + (-1 * sign) + "px)", offset: .82 },
+            { opacity: 1, transform: "translateX(0)" }
+          ];
+        }
+        return [
+          { opacity: .55, transform: "translateY(" + (design === "android" ? 24 : 16) + "px)" },
+          { opacity: 1, transform: "translateY(-1px)", offset: .82 },
+          { opacity: 1, transform: "translateY(0)" }
+        ];
+      }
+      function enter(surface, options) {
+        options = options || {};
+        if (!usable(surface) || isTypingInside(surface)) return false;
+        // A new deliberate navigation supersedes the previous one, including
+        // animations on nodes just replaced by the existing renderer.
+        cancel();
+        const kind = options.kind || "navigation";
+        const expressive = mode() === "expressive";
+        const candidates = kind === "navigation" ? navigationItems(surface) : [];
+        const targets = candidates.length ? candidates : [surface];
+        const batch = ++batchNumber;
+        let pending = targets.length, started = 0, cancelled = false;
+        function done(state) {
+          cancelled = cancelled || !!(state && state.cancelled);
+          pending--;
+          if (!pending && started && options.after) options.after({ cancelled: cancelled || batch !== batchNumber });
+        }
+        targets.forEach(function(el, index) {
+          const duration = expressive ? (kind === "filter" ? 260 : (kind === "expand" ? 380 : 420)) : 170;
+          const result = animate(el, entryFrames(kind, options.direction || 1), {
+            duration: duration,
+            delay: expressive && targets.length > 1 ? index * 45 : 0
+          }, done);
+          if (result) started++;
+          else done({ cancelled: true });
+        });
+        return started > 0;
+      }
+      function attention(label, after) {
+        // The label alone moves. RSVP buttons, text contrast, card geometry and
+        // pointer targets remain stable throughout the cue.
+        const expressive = mode() === "expressive";
+        return animate(label, expressive ? [
+          { transform: "translateY(0)" },
+          { transform: "translateY(-6px)", offset: .32 },
+          { transform: "translateY(1.5px)", offset: .62 },
+          { transform: "translateY(-1px)", offset: .82 },
+          { transform: "translateY(0)" }
+        ] : [
+          { transform: "translateY(0)" },
+          { transform: "translateY(-2px)", offset: .45 },
+          { transform: "translateY(0)" }
+        ], { duration: expressive ? 680 : 320, easing: "cubic-bezier(.25,.65,.3,1)" }, after);
+      }
+      function selection(icon) {
+        return animate(icon, mode() === "expressive" ? [
+          { transform: "scale(.84)" },
+          { transform: "scale(1.12)", offset: .58 },
+          { transform: "scale(1)" }
+        ] : [{ opacity: .6 }, { opacity: 1 }], mode() === "expressive" ? 330 : 150);
+      }
+      function preview(container) {
+        if (!usable(container)) return false;
+        const pieces = container.querySelectorAll ? Array.from(container.querySelectorAll("[data-motion-demo-piece]")).slice(0, 3) : [];
+        const targets = pieces.length ? pieces : [container];
+        const expressive = mode() === "expressive";
+        targets.forEach(function(el, index) {
+          animate(el, entryFrames("navigation", 1), {
+            duration: expressive ? 420 : 170,
+            delay: expressive ? index * 60 : 0
+          }, function(state) {
+            if (state.cancelled || index !== targets.length - 1 || !container.isConnected) return;
+            const label = container.querySelector && container.querySelector("[data-motion-demo-cue]");
+            if (label) attention(label);
+          });
+        });
+        return true;
+      }
+      function viewportChanged() {
+        const width = Number(win.innerWidth) || 0;
+        // Width changes cover folding and normal orientation changes. Height-only
+        // Safari toolbar/keyboard changes do not constantly interrupt motion.
+        if (!width || !lastWidth) { lastWidth = width; return false; }
+        if (Math.abs(width - lastWidth) < 8) return false;
+        lastWidth = width;
+        cancel();
+        return true;
+      }
+      return { animate: animate, enter: enter, attention: attention, selection: selection,
+        preview: preview, cancel: cancel, viewportChanged: viewportChanged };
+    }
+
     // =========================================================================
     // LOCAL APPEARANCE — presentation only; never sent to the league API
     // =========================================================================
     const PRESENTATION_KEY_PREFIX = "pitchpulse_appearance_v1:";
     const PRESENTATION_DESIGNS = ["generic", "iphone", "android"];
-    const PRESENTATION_MOTIONS = ["auto", "reduced"];
+    const PRESENTATION_MOTIONS = ["expressive", "standard", "reduced"];
     const presentationByAccount = new Map();
     const presentationSessionOnly = new Set();
     const presentationAnimations = new Set();
@@ -2435,9 +3128,15 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
     const seenRsvpAttention = new Set();
     const reducedMotionQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
     let presentationFreshEpoch = -1;
+    let presentationEntranceEpoch = -1;
     let rsvpAttentionObserver = null;
     let rsvpAttentionGeneration = 0;
     let rsvpAttentionBusy = false;
+    const presentationMotion = createPresentationMotionV2({
+      window: window, document: document, animations: presentationAnimations,
+      byElement: presentationAnimationByElement, mode: getMotionPref,
+      design: getDesignPref, allowed: motionAllowed
+    });
 
     function presentationAccount() {
       return currentUser ? String(currentUser.email || "").trim().toLowerCase() : "";
@@ -2446,12 +3145,13 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       const p = value && typeof value === "object" ? value : {};
       return {
         design: PRESENTATION_DESIGNS.indexOf(p.design) !== -1 ? p.design : "generic",
-        motion: PRESENTATION_MOTIONS.indexOf(p.motion) !== -1 ? p.motion : "auto"
+        // The first preview called this Auto. Its device-motion override is retained.
+        motion: PRESENTATION_MOTIONS.indexOf(p.motion) !== -1 ? p.motion : "expressive"
       };
     }
     function presentationPreferences() {
       const account = presentationAccount();
-      if (!account) return { design: "generic", motion: "auto" };
+      if (!account) return { design: "generic", motion: "expressive" };
       if (!presentationByAccount.has(account)) {
         let saved = null;
         try { saved = JSON.parse(localStorage.getItem(PRESENTATION_KEY_PREFIX + account) || "null"); } catch (e) {}
@@ -2462,7 +3162,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
     function getDesignPref() { return presentationPreferences().design; }
     function getMotionPref() { return presentationPreferences().motion; }
     function motionAllowed() {
-      return getMotionPref() === "auto" && !!reducedMotionQuery && !reducedMotionQuery.matches && document.visibilityState !== "hidden";
+      return getMotionPref() !== "reduced" && !!reducedMotionQuery && !reducedMotionQuery.matches && document.visibilityState !== "hidden";
     }
     function savePresentationPreferences() {
       const account = presentationAccount();
@@ -2482,25 +3182,31 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       cancelPresentationAnimations();
       applyPresentationPreferences();
       refreshPresentationControls();
-      scheduleRsvpAttention();
+      previewPresentationMotion();
+      if (!byId("prof-motion-demo")) animateNavigationSurface(byId("view-container"));
       return true;
     }
     function setMotionPref(value) {
       if (!presentationAccount() || PRESENTATION_MOTIONS.indexOf(value) === -1) return false;
       presentationPreferences().motion = value;
       savePresentationPreferences();
+      cancelPresentationAnimations();
       applyPresentationPreferences();
       refreshPresentationControls();
-      scheduleRsvpAttention();
+      previewPresentationMotion();
       return true;
     }
     function applyPresentationPreferences() {
       const design = getDesignPref();
       const reduced = getMotionPref() === "reduced" || !reducedMotionQuery || reducedMotionQuery.matches;
       document.body.setAttribute("data-design", design);
+      document.body.setAttribute("data-signed-in", String(!!currentUser));
+      document.body.setAttribute("data-standalone", String(typeof isStandalone === "function" && isStandalone()));
+      document.body.setAttribute("data-motion-level", getMotionPref());
       document.body.setAttribute("data-motion", reduced ? "reduced" : "full");
       document.documentElement.setAttribute("data-motion", reduced ? "reduced" : "full");
-      if (reduced || design === "generic" || document.visibilityState === "hidden") {
+      syncPresentationChrome();
+      if (reduced || document.visibilityState === "hidden") {
         cancelPresentationAnimations();
         disconnectRsvpAttention();
       }
@@ -2519,47 +3225,71 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       if (note) note.textContent = t(presentationSessionOnly.has(presentationAccount()) ? "appearanceSessionOnly" : "appearanceLocalNote");
       const help = byId("prof-motion-help");
       if (help) help.textContent = presentationMotionHelp();
+      const preview = byId("prof-motion-preview");
+      if (preview) preview.disabled = !motionAllowed();
     }
     function presentationMotionHelp() {
       if (getMotionPref() === "reduced") return t("motionReducedHelp");
-      return t(reducedMotionQuery && reducedMotionQuery.matches ? "motionDeviceReduced" : "motionAutoHelp");
+      return t(reducedMotionQuery && reducedMotionQuery.matches ? "motionDeviceReduced" : (getMotionPref() === "standard" ? "motionStandardHelp" : "motionExpressiveHelp"));
     }
     function cancelPresentationAnimations() {
-      presentationAnimations.forEach(function(animation) { try { animation.cancel(); } catch (e) {} });
-      presentationAnimations.clear();
+      presentationMotion.cancel();
       rsvpAttentionBusy = false;
     }
     function animatePresentation(el, frames, duration, after) {
-      if (!el || !el.isConnected || typeof el.animate !== "function" || !motionAllowed() || getDesignPref() === "generic") return null;
-      try {
-        const previous = presentationAnimationByElement.get(el);
-        if (previous) previous.cancel();
-        const animation = el.animate(frames, { duration: duration || 180, easing: "cubic-bezier(.2,.7,.2,1)" });
-        presentationAnimations.add(animation);
-        presentationAnimationByElement.set(el, animation);
-        const cleanup = function() {
-          presentationAnimations.delete(animation);
-          if (presentationAnimationByElement.get(el) === animation) presentationAnimationByElement.delete(el);
-          if (after) after();
-        };
-        animation.onfinish = cleanup;
-        animation.oncancel = cleanup;
-        return animation;
-      } catch (e) { return null; } // Presentation never gates a normal app action.
+      return presentationMotion.animate(el, frames, duration, after);
     }
     // Only dock navigation calls this wrapper. Polling and server saves use the original renderers.
     function navigateTab(tab) {
       const before = activeTab;
       switchTab(tab);
-      if (currentUser && activeTab !== before) animateNavigationSurface(byId("view-container"));
+      if (currentUser && activeTab !== before) {
+        const order = ["upcoming", "history", "admin"];
+        animateNavigationSurface(byId("view-container"), "navigation", order.indexOf(activeTab) - order.indexOf(before));
+        const button = byId("mob-nav-" + activeTab);
+        if (button) presentationMotion.selection(button.querySelector(".ic"));
+      }
     }
     function revealExpandedGame(gameId) {
-      animateNavigationSurface(byId("game-" + gameId));
+      animateNavigationSurface(byId("game-" + gameId), "expand");
     }
-    function animateNavigationSurface(el) {
+    function settleUpcomingPresentation(container) {
+      if (currentUser && presentationFreshEpoch === authEpoch && presentationEntranceEpoch !== authEpoch && !editingSurfaceBusy()) {
+        presentationEntranceEpoch = authEpoch;
+        animateNavigationSurface(container);
+      } else scheduleRsvpAttention();
+    }
+    function animateNavigationSurface(el, kind, direction) {
       disconnectRsvpAttention();
-      const animation = animatePresentation(el, [{ opacity: 0.65 }, { opacity: 1 }], 180, scheduleRsvpAttention);
-      if (!animation) scheduleRsvpAttention();
+      const started = presentationMotion.enter(el, { kind: kind || "navigation", direction: direction || 1,
+        after: function(state) { if (!state.cancelled) scheduleRsvpAttention(); }
+      });
+      if (!started) scheduleRsvpAttention();
+    }
+    function previewPresentationMotion() {
+      const sample = byId("prof-motion-demo");
+      if (!sample || !motionAllowed()) return false;
+      cancelPresentationAnimations();
+      disconnectRsvpAttention();
+      const ok = presentationMotion.preview(sample);
+      const note = byId("prof-motion-demo-note");
+      if (note) note.textContent = t(ok ? "previewMotionHelp" : "previewMotionUnavailable");
+      return ok;
+    }
+    function syncPresentationChrome() {
+      // Safari uses the page background for display areas outside the web viewport.
+      const dark = effectiveTheme() === "dark", design = getDesignPref();
+      const bg = design === "iphone" ? (dark ? "#0c0e0d" : "#f2f3f5")
+        : design === "android" ? (dark ? "#101310" : "#f1f5ef") : (dark ? "#070b09" : "#f2f4f7");
+      const rootStyle = document.documentElement.style;
+      if (rootStyle && rootStyle.setProperty) {
+        rootStyle.setProperty("background-color", bg);
+        rootStyle.setProperty("color-scheme", dark ? "dark" : "light");
+      }
+      const theme = byId("meta-theme-color");
+      const standalone = typeof isStandalone === "function" && isStandalone();
+      if (theme) theme.setAttribute("content", standalone || design === "generic" ? "#07120d"
+        : design === "iphone" ? (dark ? "#171b18" : "#f9faf9") : (dark ? "#1a241c" : "#e6eee1"));
     }
     // The static prompt survives a pending save; only an acknowledged answer clears it.
     function rsvpReplyState(game, meta) {
@@ -2580,7 +3310,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
     }
     function scheduleRsvpAttention() {
       disconnectRsvpAttention();
-      if (getDesignPref() === "generic" || !motionAllowed() || presentationFreshEpoch !== authEpoch || !currentUser || activeTab !== "upcoming" || editingSurfaceBusy() || presentationAnimations.size) return;
+      if (!motionAllowed() || presentationFreshEpoch !== authEpoch || !currentUser || activeTab !== "upcoming" || editingSurfaceBusy() || presentationAnimations.size) return;
       const generation = rsvpAttentionGeneration;
       const account = presentationAccount();
       const panels = Array.from(document.querySelectorAll('.rsvp-panel[data-attention]')).filter(function(panel) {
@@ -2594,7 +3324,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       }).filter(function(target) { return target.area && target.label; });
       const show = function(target) {
         const panel = target.panel;
-        if (generation !== rsvpAttentionGeneration || account !== presentationAccount() || !panel.isConnected || rsvpAttentionBusy || !motionAllowed() || getDesignPref() === "generic" || activeTab !== "upcoming" || editingSurfaceBusy() || presentationFreshEpoch !== authEpoch) return;
+        if (generation !== rsvpAttentionGeneration || account !== presentationAccount() || !panel.isConnected || rsvpAttentionBusy || presentationAnimations.size || !motionAllowed() || activeTab !== "upcoming" || editingSurfaceBusy() || presentationFreshEpoch !== authEpoch) return;
         const game = findGame(panel.getAttribute("data-game-id"));
         const kind = game ? rsvpAttentionKind(game) : "";
         if (!kind) return;
@@ -2602,8 +3332,8 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
         if (seenRsvpAttention.has(key)) return;
         seenRsvpAttention.add(key);
         rsvpAttentionBusy = true;
-        // A single 2px lift of the small label leaves the text and response buttons fully opaque.
-        if (!animatePresentation(target.label, [{ transform: "translateY(0)" }, { transform: "translateY(-2px)", offset: 0.5 }, { transform: "translateY(0)" }], 460, function() { rsvpAttentionBusy = false; })) rsvpAttentionBusy = false;
+        // Move the label once; answer buttons and their hit targets stay still.
+        if (!presentationMotion.attention(target.label, function() { rsvpAttentionBusy = false; })) rsvpAttentionBusy = false;
         if (rsvpAttentionObserver) rsvpAttentionObserver.unobserve(target.area);
       };
       if (typeof window.IntersectionObserver === "function") {
@@ -2645,6 +3375,30 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       refreshPresentationControls();
       scheduleRsvpAttention();
     });
+    function updatePresentationViewport() {
+      const style = document.documentElement.style;
+      const viewport = window.visualViewport;
+      if (style && style.setProperty) {
+        if (viewport && viewport.height > 0) {
+          style.setProperty("--pp-visual-height", viewport.height + "px");
+          style.setProperty("--pp-visual-top", viewport.offsetTop + "px");
+        } else {
+          if (style.removeProperty) {
+            style.removeProperty("--pp-visual-height");
+            style.removeProperty("--pp-visual-top");
+          }
+        }
+      }
+    }
+    window.addEventListener("resize", function() {
+      updatePresentationViewport();
+      if (presentationMotion.viewportChanged()) disconnectRsvpAttention();
+    }, { passive: true });
+    if (window.visualViewport && window.visualViewport.addEventListener) {
+      window.visualViewport.addEventListener("resize", updatePresentationViewport, { passive: true });
+      window.visualViewport.addEventListener("scroll", updatePresentationViewport, { passive: true });
+    }
+    updatePresentationViewport();
 
     function renderAppearanceSettings() {
       const design = getDesignPref(), motion = getMotionPref();
@@ -2667,12 +3421,19 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
         <div id="prof-theme">${segmented("theme", themePref, [["auto", t("themeAuto"), "setProfileTheme('auto')"], ["light", t("themeLight"), "setProfileTheme('light')"], ["dark", t("themeDark"), "setProfileTheme('dark')"]])}</div>
         <h5 id="prof-motion-label" class="appearance-label">${escHtml(t("motionLabel"))}</h5>
         <div id="prof-motion" class="motion-picker" role="radiogroup" aria-labelledby="prof-motion-label" aria-describedby="prof-motion-help">
-          ${[["auto", "motionAuto"], ["reduced", "motionReduced"]].map(function(choice) {
+          ${[["expressive", "motionExpressive"], ["standard", "motionStandard"], ["reduced", "motionReduced"]].map(function(choice) {
             const on = motion === choice[0];
             return `<button type="button" class="motion-choice" role="radio" aria-checked="${on}" tabindex="${on ? 0 : -1}" data-motion-choice="${choice[0]}" onclick="setMotionPref('${choice[0]}')">${escHtml(t(choice[1]))}</button>`;
           }).join("")}
         </div>
         <p id="prof-motion-help" class="appearance-help">${escHtml(presentationMotionHelp())}</p>
+        <div id="prof-motion-demo" class="motion-demo" aria-hidden="true">
+          <div data-motion-demo-piece>${ic("calendar", "w-4 h-4")}<span>${escHtml(t("previewMatchDetails"))}</span></div>
+          <div data-motion-demo-piece>${ic("checkCircle", "w-4 h-4")}<span>${escHtml(t("previewYourAnswer"))}</span><b data-motion-demo-cue>${escHtml(t("replyNeeded"))}</b></div>
+          <div data-motion-demo-piece>${ic("users", "w-4 h-4")}<span>${escHtml(t("previewRoster"))}</span></div>
+        </div>
+        <button type="button" id="prof-motion-preview" class="motion-preview-btn tap" onclick="previewPresentationMotion()" ${motionAllowed() ? "" : "disabled"}>${ic("pulse", "w-4 h-4")}${escHtml(t("previewMotion"))}</button>
+        <p id="prof-motion-demo-note" class="appearance-help">${escHtml(t("previewMotionHelp"))}</p>
         <p id="prof-appearance-note" class="appearance-help" role="status">${escHtml(t(presentationSessionOnly.has(presentationAccount()) ? "appearanceSessionOnly" : "appearanceLocalNote"))}</p>
       </section>`;
     }
@@ -2785,6 +3546,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
     }
 
     function renderCurrentTab() {
+      cancelPresentationAnimations();
       disconnectRsvpAttention();
       if (!currentUser) { renderLockedGateView(); return; }
       if (activeTab === "history" && !standingsOn()) { activeTab = "upcoming"; highlightDock(); updateViewTitle(); }
@@ -2892,7 +3654,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       if (!shown.length) shown = upcoming.slice(0, 1); // the next match always shows, even if it's weeks away
       const more = upcoming.length - shown.length;
       const firstActive = shown.find(function(g) { return g.Status !== "Cancelled" && !isGameDisplayFinished(g); });
-      container.innerHTML = '<div class="space-y-3.5">' + shown.map(function(g) {
+      container.innerHTML = '<div class="games-list space-y-3.5">' + shown.map(function(g) {
         const id = String(g.GameID);
         const isOpen = expandedGames[id] !== undefined ? !!expandedGames[id] : !!(firstActive && String(firstActive.GameID) === id);
         const earlier = isGameDisplayFinished(g) && !shown.slice(0,shown.indexOf(g)).some(isGameDisplayFinished);
@@ -2900,7 +3662,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       }).join("") +
       (more > 0 ? `<button type="button" id="show-more-btn" onclick="showMoreMatches()" class="tap-lg press w-full rounded-2xl bg-[#111c16] border border-emerald-900/60 text-emerald-300 font-bold text-sm inline-flex items-center justify-center gap-1.5">${escHtml(t("showMore", { n: more }))}${ic("chevDown", "w-4 h-4", 2.4)}</button>` : "") +
       "</div>";
-      scheduleRsvpAttention();
+      settleUpcomingPresentation(container);
     }
     function showMoreMatches() { triggerHaptic(); upcomingDays += 7; renderCurrentTab(); }
     function toggleGameExpanded(gameId) {
@@ -2955,7 +3717,13 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       const captainLine = gf(game, "captains")
         ? `<p class="text-sm text-slate-400 mt-0.5 flex items-center gap-1.5">${ic("shield", "w-4 h-4")}${escHtml(game.captainName ? t("captainIs", { name: game.captainName }) : t("managedByAdmins"))}</p>` : "";
 
+      let sideHtml = "";
+      if (!m.isCancelled && game.teams && (game.teams.white.length + game.teams.dark.length) > 0) sideHtml += renderTeamsPanel(game, m);
+      sideHtml += renderAnnouncements(game, m);
+      if (!m.isCancelled) sideHtml += renderRosterTabs(game, m);
+
       let html = `<article id="game-${escHtml(id)}" class="match-card glass-card rounded-[28px] p-4 sm:p-5 ${isToday && !m.isCancelled ? "ring-2 ring-[#00f59b]/40" : ""} ${m.isCancelled ? "opacity-90" : ""}">
+        <div class="match-layout" data-has-side="${!!sideHtml}"><div class="match-main">
         <div class="match-primary-info flex items-start justify-between gap-3">
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-1.5 mb-2">${statusPill(game, m)}${game.SeriesID ? `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-bold bg-emerald-950 text-emerald-300">${ic("repeat", "w-3.5 h-3.5")}${escHtml(t("weekly"))}</span>` : ""}</div>
@@ -2964,9 +3732,9 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
             <button type="button" onclick="openDirectionsSheet('${escJsArg(id)}')" class="match-venue tap text-sm text-emerald-300 font-semibold flex items-center gap-1.5 min-w-0" aria-label="${escHtml(t("directions"))}: ${escHtml(game.LocationName)}">${ic("pin", "w-4 h-4")}<span class="truncate">${escHtml(game.LocationName)}</span>${ic("chevRight","w-4 h-4")}</button>
             ${captainLine}
           </div>
-          <div class="shrink-0 flex flex-col items-end gap-2">
-            ${collapsible ? `<button type="button" onclick="toggleGameExpanded('${escJsArg(id)}')" aria-expanded="true" class="tap w-11 rounded-full bg-slate-800 text-slate-300 inline-flex items-center justify-center" aria-label="${escHtml(t("collapse"))}">${ic("chevUp", "w-5 h-5", 2.4)}</button>` : ""}
-            ${w && !m.isCancelled ? `<div class="text-right bg-emerald-950/50 border border-emerald-800/40 rounded-2xl px-2.5 py-1.5">
+          <div class="match-header-tools shrink-0 flex flex-col items-end gap-2">
+            ${collapsible ? `<button type="button" onclick="toggleGameExpanded('${escJsArg(id)}')" aria-expanded="true" class="match-collapse tap w-11 rounded-full bg-slate-800 text-slate-300 inline-flex items-center justify-center" aria-label="${escHtml(t("collapse"))}">${ic("chevUp", "w-5 h-5", 2.4)}</button>` : ""}
+            ${w && !m.isCancelled ? `<div class="match-weather text-right bg-emerald-950/50 border border-emerald-800/40 rounded-2xl px-2.5 py-1.5">
               <div class="text-sm font-extrabold text-white whitespace-nowrap">${w.icon} ${escHtml(w.text)}</div>
               ${w.sub ? `<div class="text-[11px] text-emerald-300 whitespace-nowrap">${escHtml(w.sub)}</div>` : ""}
               ${w.heat ? `<div class="text-[11px] font-bold text-amber-300">${escHtml(t("heatAlert"))}</div>` : ""}
@@ -3001,9 +3769,6 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
         html += renderRsvpBlock(game, m);
       }
 
-      if (!m.isCancelled && game.teams && (game.teams.white.length + game.teams.dark.length) > 0) html += renderTeamsPanel(game, m);
-      html += renderAnnouncements(game, m);
-      if (!m.isCancelled) html += renderRosterTabs(game, m);
 
       const cal = F("featCalendar");
       html += `<div class="match-secondary-actions mt-4 grid ${cal ? "grid-cols-2" : "grid-cols-1"} gap-2">
@@ -3019,7 +3784,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
           <div class="mt-1 space-y-1.5 pl-3 border-l-2 border-emerald-900 text-[13px]">${game.adminActivity.map(function(a) { return `<div><b>${escHtml(a.actor)}:</b> ${escHtml(a.summary)} <span class="text-slate-500">(${escHtml(a.timestamp)})</span></div>`; }).join("")}</div>
         </details>`;
       }
-      html += `</article>`;
+      html += `</div><div class="match-side">${sideHtml}</div></div></article>`;
       return html;
     }
 
@@ -3132,16 +3897,16 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
           }).join("") || `<li class="text-[13px] text-slate-500 italic">—</li>`}</ul></div>`;
       };
       const score = game.hasScore ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-950 text-[#00f59b] text-xs font-extrabold">${ic("trophy", "w-3.5 h-3.5")}${escHtml(game.ScoreWhite)} – ${escHtml(game.ScoreDark)}</span>` : "";
-      return `<section class="mt-4">
+      return `<section class="teams-panel mt-4">
         <div class="flex items-center justify-between gap-2 mb-2">
           <h3 class="text-sm font-extrabold uppercase tracking-wide text-[#00f59b] inline-flex items-center gap-1.5">${ic("shirt", "w-4 h-4")}${escHtml(t("teamsTitle"))}</h3>
           <div class="flex items-center gap-2">${score}<button type="button" onclick="togglePitch('${escJsArg(id)}')" class="tap px-3 rounded-xl bg-[#111c16] border border-emerald-900/60 text-xs font-bold text-emerald-300 inline-flex items-center gap-1.5">${ic("field", "w-4 h-4")}${escHtml(openPitchByGame[id] ? t("hidePitch") : t("pitchView"))}</button></div>
         </div>
-        ${openPitchByGame[id] ? render2dPitch(game) : `<div class="grid grid-cols-2 gap-2">${col("white")}${col("dark")}</div>`}
+        ${openPitchByGame[id] ? render2dPitch(game) : `<div class="teams-list grid grid-cols-2 gap-2">${col("white")}${col("dark")}</div>`}
         ${m.canManage && game.teamsStale ? `<div class="mt-2 text-xs font-semibold text-amber-300">${escHtml(t("teamsChangedHint"))}</div>` : ""}
       </section>`;
     }
-    function togglePitch(id) { openPitchByGame[id] = !openPitchByGame[id]; renderCurrentTab(); }
+    function togglePitch(id) { openPitchByGame[id] = !openPitchByGame[id]; renderCurrentTab(); const card=byId("game-"+id); if(card)animateNavigationSurface(card.querySelector(".teams-panel"), "filter"); }
     function render2dPitch(game) {
       const pills = function(list) {
         return list.map(function(p) {
@@ -3179,8 +3944,8 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
 
     // Player cards open when there's something to show: standings, or an admin looking.
     function playerCardsOpen() { return standingsOn() || !!(currentUser && currentUser.isAdmin); }
-    function toggleRosterExpanded(gameId) { expandedRosterByGame[gameId]=!expandedRosterByGame[gameId];renderCurrentTab(); }
-    function setRosterSubTab(gameId, sub) { triggerHaptic(); rosterSubTabByGame[gameId] = sub; renderCurrentTab(); }
+    function toggleRosterExpanded(gameId) { expandedRosterByGame[gameId]=!expandedRosterByGame[gameId];renderCurrentTab(); animateNavigationSurface(byId("roster-panel-" + gameId), "filter"); }
+    function setRosterSubTab(gameId, sub) { triggerHaptic(); rosterSubTabByGame[gameId] = sub; renderCurrentTab(); animateNavigationSurface(byId("roster-panel-" + gameId), "filter"); }
     function renderRosterTabs(game, m) {
       const id = String(game.GameID);
       const active = rosterSubTabByGame[id] || "yes";
@@ -3206,7 +3971,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       };
       const list = active==="yes" ? m.yesList : active==="waitlist" ? m.waitlist : active==="maybe" ? m.maybeList : m.noList;
       const expanded=!!expandedRosterByGame[id], visible=expanded ? list : list.slice(0,6);
-      const body = list.length ? `<div class="${active==="yes" ? "grid grid-cols-1 sm:grid-cols-2 gap-1.5" : "space-y-1.5"}">${visible.map(function(r,i){return row(r,active==="yes"||active==="waitlist"?i:undefined);}).join("")}</div>` : `<p class="text-sm text-slate-500 italic">${escHtml(t(active==="yes"?"noneYet":"noneWord"))}</p>`;
+      const body = list.length ? `<div class="roster-list ${active==="yes" ? "grid grid-cols-1 sm:grid-cols-2 gap-1.5" : "space-y-1.5"}">${visible.map(function(r,i){return row(r,active==="yes"||active==="waitlist"?i:undefined);}).join("")}</div>` : `<p class="text-sm text-slate-500 italic">${escHtml(t(active==="yes"?"noneYet":"noneWord"))}</p>`;
       return `<section class="roster-section mt-4">
         <h3 class="text-sm font-bold text-white mb-1.5">${escHtml(t("rosterHeading"))}</h3>
         <div class="grid ${showWait ? "grid-cols-4" : "grid-cols-3"} gap-1.5 mb-2" role="tablist" aria-label="${escHtml(t("rosterHeading"))}">
@@ -3598,7 +4363,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       const id = escJsArg(gameId);
       const sw = g.ScoreWhite !== "" ? Number(g.ScoreWhite) : 0, sd = g.ScoreDark !== "" ? Number(g.ScoreDark) : 0;
       const stepper = function(side, val) {
-        return `<div class="flex-1 min-w-0 text-center">
+        return `<div class="score-team flex-1 min-w-0 text-center">
           <div class="flex items-center justify-center gap-1.5 mb-2">${shirtDot(teamShirt(side))}<span class="text-sm font-extrabold text-white truncate">${escHtml(teamLabel(side))}</span></div>
           <div class="flex items-center justify-center gap-2">
             <button type="button" onclick="bumpScore('${side}',-1)" class="tap-lg w-12 rounded-2xl bg-slate-800 text-slate-200 inline-flex items-center justify-center" aria-label="−1">${ic("minus", "w-5 h-5", 2.8)}</button>
@@ -3608,7 +4373,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       };
       renderSheetModal(`
         ${sheetHeader(escHtml(t("toolScore")), escHtml(g.Title) + " · " + escHtml(fmtDate(g.Date)), "trophy")}
-        <div class="flex items-start gap-3 mb-4">${stepper("white", sw)}<div class="pt-10 text-xl font-extrabold text-slate-400">–</div>${stepper("dark", sd)}</div>
+        <div class="score-entry flex items-start gap-3 mb-4">${stepper("white", sw)}<div class="score-divider pt-10 text-xl font-extrabold text-slate-400">–</div>${stepper("dark", sd)}</div>
         ${!g.teams ? `<p class="text-xs text-amber-300 mb-3">${escHtml(t("scoreNoLineup"))}</p>` : ""}
         <p class="text-xs text-slate-400 mb-3">${escHtml(t("scoreLocksRsvp"))}</p>
         <button type="button" id="sc-save" onclick="submitFinalScore('${id}')" class="tap-lg w-full rounded-2xl neon-btn text-base">${escHtml(t("saveScoreBtn"))}</button>
@@ -4101,6 +4866,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
       triggerHaptic();
       renderAdminView();
       window.scrollTo(0, 0);
+      animateNavigationSurface(byId("view-container"));
     }
     function renderAdminView() {
       if (ADMIN_SECTIONS.indexOf(adminSection) === -1) adminSection = "games";
@@ -4202,7 +4968,7 @@ body[data-design="android"] .toast-ok { background: #123d2a !important; color: #
         <div class="space-y-3 mb-4">
           ${fieldInput("g-title", t("titleLbl"), g ? g.Title : t("defaultMatchTitle"), { attrs: 'maxlength="60" autocapitalize="words" placeholder="' + escHtml(t("titlePh")) + '"' })}
           <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("fieldLbl"))}</span>${fieldSelect("g-loc", g ? g.LocationName : preferredFieldName())}</label>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="match-date-time grid grid-cols-2 gap-2">
             ${fieldInput("g-date", t("dateLbl"), g ? g.Date : nextWeekdayIso(), { type: "date" })}
             <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("kickoffLbl"))}</span>${timeSelects("g-time", g ? g.Time : "12:15 PM")}</label>
           </div>
