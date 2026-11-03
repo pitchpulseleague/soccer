@@ -47,6 +47,13 @@
     img { -webkit-user-drag: none; }
     button:disabled { cursor: not-allowed; }
     :focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    .roster-filter { min-height:44px; padding:8px 6px; border-radius:10px; font-size:13px; font-weight:600; color:#94a3b8; background:transparent; }
+    .roster-filter[aria-selected="true"] { color:#d1fae5; background:#1e293b; box-shadow:inset 0 -2px #10b981; }
+    body.light-mode .roster-filter { color:#475569; }
+    body.light-mode .roster-filter[aria-selected="true"] { color:#065f46; background:#e8f1ec; }
+    .save-pending { opacity:.75; }
+    .pin-box { min-width:0; flex:1 1 0; max-width:46px; }
     .tap { min-height: 44px; }
     .tap-lg { min-height: 48px; }
     .ic { width: 1.25em; height: 1.25em; flex-shrink: 0; display: inline-block; vertical-align: -0.22em; }
@@ -281,7 +288,7 @@
   </header>
 
   <!-- Main Content Container -->
-  <div class="max-w-5xl mx-auto px-3 sm:px-4 mt-4" style="padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right));">
+  <div id="app-main" class="max-w-5xl mx-auto px-3 sm:px-4 mt-4" style="padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right));">
     <div id="nav-tabs-bar" class="hidden items-center justify-between gap-2 mb-3">
       <h2 id="mobile-active-view-title" class="view-title text-white truncate min-w-0"></h2>
       <div class="flex items-center gap-1.5 shrink-0">
@@ -301,7 +308,8 @@
     </div>
 
     <!-- Dynamic View Container -->
-    <main id="view-container" aria-live="polite"></main>
+    <main id="view-container"></main>
+    <div id="app-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
 
   <!-- Toasts (bottom, above the dock, always visible) -->
@@ -696,6 +704,17 @@
       }
     };
 
+    Object.assign(I18N.en, {"upcomingTitle": "Games", "defaultMatchTitle": "Lunch soccer", "yourAnswer": "Your answer", "rosterHeading": "Who’s coming", "rosterGoing": "Going", "seeAllRoster": "See everyone ({n})", "showLessRoster": "Show fewer", "spotsReserved": "spots reserved", "confirmedN": "{n} confirmed", "pendingReconfirmN": "{n} awaiting reconfirmation", "awaitingReconfirm": "Awaiting reconfirmation", "reconfirmChip": "Please reconfirm", "reservedReconfirm": "Your spot is reserved. Please confirm the changed time or place.", "spotsLeft": "{n} spots left", "pillFullNoWait": "Full", "pillNotConfirmed": "Not confirmed", "pillFinished": "Finished", "earlierToday": "Earlier today", "finishedAnswers": "The scheduled playing time is over. You can still correct today’s answer until a final score is saved or the day ends.", "correctAnswer": "Correct your answer for today", "savingAnswer": "Saving your answer…", "savingDetails": "Saving your changes…", "saveUncertain": "We couldn’t confirm whether this change saved. Check the refreshed status before trying again.", "checkingSave": "Connection interrupted. Checking the saved status…", "saveVerified": "Your saved answer is {status}.", "refreshUnavailable": "We couldn’t check the saved status yet. Refresh before trying again.", "errNetwork": "We couldn’t reach the server. Please try again.", "errTimeout": "The server is taking longer than expected. Check the latest status before trying again.", "errDeploy": "The service is temporarily unavailable. Please try again shortly.", "unsavedSettings": "You have unsaved settings. Save them before refreshing.", "settingsDraftKept": "Your unsaved settings are still here.", "noReliability": "Not enough attendance history", "reliabilityMeasured": "Reliability {n}% · {count} recorded matches", "reliabilityNoHistory": "Reliability starts after attendance has been recorded.", "noShowLabel": "No-show", "attendanceUnverified": "Answer recorded · attendance not verified", "noShowsN": "{n} no-shows", "existingGuests": "Existing guests", "removeGuestsOnly": "New guests are disabled. You can still remove guests already on this match.", "remainingGuestSpots": "{n} additional guest spot(s) available right now.", "keepGuest": "Keep {name}", "guestsChangedHelp": "Each guest takes a spot. Availability is checked again when you save.", "phoneNotify": "Phone notifications", "notifyBoth": "Phone notifications and email", "notifyPush": "Phone notifications only", "notifyEmail": "Email only", "pushReady": "Enabled on this device", "pushNotReady": "Not enabled on this device", "pushChecking": "Checking this device…", "pushDeniedShort": "Blocked in browser settings", "pushNeedsInstall": "Add to Home Screen first", "pushUnavailableShort": "Unavailable on this device", "pushServerNotReady": "Phone notifications are not configured yet. Use email for now.", "pushPreferenceWarning": "Phone notifications are not enabled here. Choose email or enable notifications to receive updates.", "enablePushHere": "Enable phone notifications", "pushPermissionOnly": "Permission is allowed; subscription setup is still pending.", "pushOn": "Phone notifications are enabled on this device.", "pushDenied": "Phone notifications are blocked. Allow them in your browser settings.", "pushHelp": "Important updates follow your saved preference. Delivery can depend on browser permissions and email availability.", "notificationStatus": "Notification status", "notifyPending": "Awaiting send", "notifyAccepted": "Accepted by provider", "notifyNeedsReview": "Needs attention", "notifyExpired": "Expired", "notifyStatusHelp": "Accepted means the provider accepted the request. It does not confirm the player received or read it.", "notifyRetry": "Retry pending notifications", "notifyLastRun": "Last attempt: {time}", "notifyLastError": "Latest issue: {message}", "f_msgMatchDay": "Match-day update", "fd_msgMatchDay": "Around 8:30 AM: game on or players needed.", "fi_msgMatchDay": "Around 8:30 AM on match day, before the 9:15 AM late-drop cutoff for a 12:15 PM game. Important updates respect each player’s notification preference.", "fi_msgMaybeMorning": "Around 8:30 AM, asks players still on Maybe to decide. Email and phone delivery follow their saved preference and available capacity.", "fd_msgConfirm": "Optional phone confirmation after joining.", "featuresAlways": "Important changes, invitations and PIN codes are handled separately from optional reminders. Delivery respects the applicable preferences and available channels; check Notification status for queued or failed sends.", "alsoEmailHelp": "Include email for this announcement. Delivery follows each player’s saved preferences and the available email allowance.", "blastWillNotify": "Posts on the match and queues an update for {n} player(s).", "noGamesSub": "Check back soon, or ask an organizer when the first game will be posted.", "eaConfirmTitle": "Confirm your answer", "eaConfirmSub": "This link has not changed your answer yet.", "eaConfirmAction": "Confirm: {status}", "eaConfirmFor": "Answering for {name} ({email}).", "eaPreviewLoading": "Checking this answer link…", "eaPreviewFailed": "We couldn’t check this link. Try again, or open the app.", "eaReleaseGuests": "Changing from In releases your spot and any guest spots.", "eaLateWarning": "If this is within the late-drop window, it may count as a late drop.", "eaChangeConfirm": "Confirm changing your answer to {status}?", "eaCancel": "Keep my current answer", "emailAnswerSaved": "Answer saved", "calendarCancelled": "This match was cancelled. You can share its status, but it cannot be added as a new calendar event.", "calendarOneTime": "This adds one event. Later changes in the app do not automatically update your calendar.", "timeZoneNote": "Game times use the league’s time zone.", "rulesFallback": "• Weekday kickoff is 12:15 PM.\n• Bring a white shirt and a dark shirt (or use league pinnies if available).\n• Friendly pickup play: call your own fouls and take turns in goal.\n• Update your answer at least 3 hours before kickoff: 9:15 AM for a 12:15 PM game.\n• Each guest takes a spot. A waitlist is used when the game is full."});
+    Object.assign(I18N.es, {"upcomingTitle": "Partidos", "defaultMatchTitle": "Fútbol al mediodía", "yourAnswer": "Tu respuesta", "rosterHeading": "Quién viene", "rosterGoing": "Van", "seeAllRoster": "Ver a todos ({n})", "showLessRoster": "Ver menos", "spotsReserved": "lugares reservados", "confirmedN": "{n} confirmados", "pendingReconfirmN": "{n} por reconfirmar", "awaitingReconfirm": "Falta reconfirmar", "reconfirmChip": "Vuelve a confirmar", "reservedReconfirm": "Tu lugar está reservado. Confirma la nueva hora o cancha.", "spotsLeft": "Quedan {n} lugares", "pillFullNoWait": "Lleno", "pillNotConfirmed": "Sin confirmar", "pillFinished": "Terminado", "earlierToday": "Más temprano hoy", "finishedAnswers": "El horario de juego ya terminó. Todavía puedes corregir tu respuesta de hoy hasta que se guarde el marcador final o termine el día.", "correctAnswer": "Corrige tu respuesta de hoy", "savingAnswer": "Guardando tu respuesta…", "savingDetails": "Guardando tus cambios…", "saveUncertain": "No pudimos confirmar si se guardó el cambio. Revisa el estado actualizado antes de intentarlo otra vez.", "checkingSave": "Se interrumpió la conexión. Comprobando el estado guardado…", "saveVerified": "Tu respuesta guardada es {status}.", "refreshUnavailable": "Aún no pudimos comprobar el estado. Actualiza antes de volver a intentarlo.", "errNetwork": "No pudimos conectar con el servidor. Inténtalo otra vez.", "errTimeout": "El servidor está tardando. Revisa el estado más reciente antes de intentarlo otra vez.", "errDeploy": "El servicio no está disponible por el momento. Vuelve a intentarlo en breve.", "unsavedSettings": "Tienes ajustes sin guardar. Guárdalos antes de actualizar.", "settingsDraftKept": "Tus ajustes sin guardar siguen aquí.", "noReliability": "Todavía no hay suficiente historial", "reliabilityMeasured": "Confiabilidad {n}% · {count} partidos registrados", "reliabilityNoHistory": "La confiabilidad empieza cuando se registra la asistencia.", "noShowLabel": "No vino", "attendanceUnverified": "Respuesta registrada · asistencia sin verificar", "noShowsN": "{n} ausencias", "existingGuests": "Invitados actuales", "removeGuestsOnly": "No se admiten invitados nuevos. Puedes quitar los que ya estaban anotados.", "remainingGuestSpots": "Ahora quedan {n} lugar(es) adicional(es) para invitados.", "keepGuest": "Mantener a {name}", "guestsChangedHelp": "Cada invitado ocupa un lugar. Se vuelve a comprobar el cupo al guardar.", "phoneNotify": "Notificaciones del teléfono", "notifyBoth": "Notificaciones del teléfono y correo", "notifyPush": "Solo notificaciones del teléfono", "notifyEmail": "Solo correo", "pushReady": "Activadas en este dispositivo", "pushNotReady": "Sin activar en este dispositivo", "pushChecking": "Comprobando este dispositivo…", "pushDeniedShort": "Bloqueadas en el navegador", "pushNeedsInstall": "Primero agrega la app a inicio", "pushUnavailableShort": "No disponibles en este dispositivo", "pushServerNotReady": "Las notificaciones del teléfono aún no están configuradas. Por ahora usa correo.", "pushPreferenceWarning": "Las notificaciones no están activadas aquí. Elige correo o actívalas para recibir avisos.", "enablePushHere": "Activar notificaciones del teléfono", "pushPermissionOnly": "El permiso está concedido; falta completar la suscripción.", "pushOn": "Las notificaciones están activadas en este dispositivo.", "pushDenied": "Las notificaciones están bloqueadas. Permítelas en los ajustes del navegador.", "pushHelp": "Los avisos importantes respetan tu preferencia guardada. La entrega depende de los permisos del navegador y la disponibilidad del correo.", "notificationStatus": "Estado de los avisos", "notifyPending": "Por enviar", "notifyAccepted": "Aceptados por el proveedor", "notifyNeedsReview": "Necesitan atención", "notifyExpired": "Vencidos", "notifyStatusHelp": "Aceptado significa que el proveedor aceptó la solicitud. No confirma que el jugador recibió o leyó el mensaje.", "notifyRetry": "Reintentar avisos pendientes", "notifyLastRun": "Último intento: {time}", "notifyLastError": "Último problema: {message}", "f_msgMatchDay": "Aviso del día del partido", "fd_msgMatchDay": "Sobre las 8:30 AM: hay partido o faltan jugadores.", "fi_msgMatchDay": "Sobre las 8:30 AM, antes del límite de las 9:15 AM para un partido a las 12:15 PM. Los avisos importantes respetan la preferencia de cada jugador.", "fi_msgMaybeMorning": "Sobre las 8:30 AM pide una decisión a quienes siguen en Tal vez. El correo y las notificaciones respetan sus preferencias y el cupo disponible.", "fd_msgConfirm": "Confirmación opcional al responder Voy.", "featuresAlways": "Los cambios importantes, invitaciones y códigos de PIN se gestionan aparte de los recordatorios opcionales. La entrega respeta las preferencias aplicables y los canales disponibles. Revisa Estado de los avisos para ver pendientes y fallos.", "alsoEmailHelp": "Incluye correo en este aviso. La entrega respeta las preferencias de cada jugador y el límite disponible de correos.", "blastWillNotify": "Se publica en el partido y prepara un aviso para {n} jugador(es).", "noGamesSub": "Vuelve pronto o pregunta a un organizador cuándo se publicará el primer partido.", "eaConfirmTitle": "Confirma tu respuesta", "eaConfirmSub": "Este enlace todavía no ha cambiado tu respuesta.", "eaConfirmAction": "Confirmar: {status}", "eaConfirmFor": "Respuesta de {name} ({email}).", "eaPreviewLoading": "Comprobando este enlace…", "eaPreviewFailed": "No pudimos comprobar el enlace. Inténtalo otra vez o abre la app.", "eaReleaseGuests": "Al cambiar de Voy se liberan tu lugar y los de tus invitados.", "eaLateWarning": "Si estás dentro del plazo de baja tardía, puede contar como tal.", "eaChangeConfirm": "¿Confirmas cambiar tu respuesta a {status}?", "eaCancel": "Mantener mi respuesta actual", "emailAnswerSaved": "Respuesta guardada", "calendarCancelled": "Este partido fue cancelado. Puedes compartir su estado, pero no agregarlo como un evento nuevo.", "calendarOneTime": "Se agrega un solo evento. Los cambios posteriores en la app no actualizan tu calendario automáticamente.", "timeZoneNote": "Los horarios usan la zona horaria de la liga.", "rulesFallback": "• El inicio entre semana es a las 12:15 PM.\n• Trae una camiseta blanca y una oscura (o usa chalecos si hay).\n• Juego amistoso: cada quien marca sus faltas y nos turnamos en la portería.\n• Actualiza tu respuesta al menos 3 horas antes: 9:15 AM para un partido a las 12:15 PM.\n• Cada invitado ocupa un lugar. Si se llena, se usa una lista de espera."});
+
+    Object.assign(I18N.en,{"notificationStatus": "Notification attempts · last 7 days", "notifyChannelHelp": "Counts are recipient channels: one person can have an email attempt and a phone-notification attempt.", "notifyRetryHelp": "Queues retryable pending items for the next check, normally within five minutes. Accepted items are not resent.", "stopSeriesBody": "Cancels this series’ matches from the chosen date and notifies anyone who answered. Earlier matches stay as they are.", "fi_featMotm": "Players who participated can vote after the scheduled end or after a final score is saved. They cannot vote for themselves.", "signedUpN": "{n} signed up", "verifiedN": "{n} attendance records", "eaLegacyConfirm": "Confirm this answer for {name}. Opening the link has not changed it.", "timeZoneShort": "League time: {zone}"});
+    Object.assign(I18N.es,{"notificationStatus": "Intentos de aviso · últimos 7 días", "notifyChannelHelp": "Se cuentan canales por destinatario: una persona puede tener un intento de correo y otro de notificación.", "notifyRetryHelp": "Prepara pendientes para la próxima comprobación, normalmente en cinco minutos. No reenvía los ya aceptados.", "stopSeriesBody": "Cancela los partidos de esta serie desde la fecha elegida y avisa a quienes respondieron. Los partidos anteriores no cambian.", "fi_featMotm": "Quienes participaron pueden votar después del final previsto o de guardar el marcador. No pueden votar por sí mismos.", "signedUpN": "{n} anotados", "verifiedN": "{n} registros de asistencia", "eaLegacyConfirm": "Confirma esta respuesta de {name}. Abrir el enlace no la ha cambiado.", "timeZoneShort": "Hora de la liga: {zone}"});
+    Object.assign(I18N.en,{"markPresent": "Mark present", "present": "Present", "noShowsTitle": "No-shows", "restorePresent": "Mark present instead", "attendanceNotStarted": "No-shows can be marked after kickoff.", "attendanceHelp": "Mark players who actually arrived as present. Correct a mistaken no-show by marking that player present."});
+    Object.assign(I18N.es,{"markPresent": "Marcar presente", "present": "Presente", "noShowsTitle": "Ausencias", "restorePresent": "Marcar presente", "attendanceNotStarted": "Las ausencias se marcan después del inicio.", "attendanceHelp": "Marca como presentes a quienes llegaron. Para corregir una ausencia equivocada, marca presente a ese jugador."});
+    Object.assign(I18N.en,{"scheduledFrom": "Scheduled from {date}", "editingScheduledFrom": "Editing the schedule from {date}.", "applyFromHelp": "Earlier matches stay as they are. Choosing an earlier date replaces later scheduled changes.", "verifiedN": "{n} confirmed present", "verifiedPresentShort": "Present", "signedUpShort": "Signups", "verifiedMatchesN": "{n} verified matches", "signupsN": "{n} signups", "playedLbl": "Past answers"});
+    Object.assign(I18N.es,{"scheduledFrom": "Programado desde {date}", "editingScheduledFrom": "Editando el horario desde {date}.", "applyFromHelp": "Los partidos anteriores no cambian. Una fecha anterior reemplaza los cambios programados posteriores.", "verifiedN": "{n} presentes confirmados", "verifiedPresentShort": "Presente", "signedUpShort": "Inscripciones", "verifiedMatchesN": "{n} partidos verificados", "signupsN": "{n} inscripciones", "playedLbl": "Respuestas anteriores"});
+    Object.assign(I18N.en,{"eaConfirmSub": "Review your choice. Tap Confirm to save this answer.", "playingNow": "Roster ({n})", "notifyPush": "Phone notifications first", "pushHelp": "Important updates follow your saved preference. Email can be used as a fallback when phone notifications are unavailable.", "pushPreferenceWarning": "Phone notifications are not enabled here. Enable them, or choose email. Important updates may fall back to email when available.", "fd_msgDayBefore": "Day-before check when more players are needed.", "fi_msgDayBefore": "Around 10 AM the day before, reminds players who have not answered if the match is short of its confirmed minimum. Away players are skipped. Links open a confirmation screen before changing an answer.", "fd_msgGameOn": "An update when enough players have confirmed.", "fi_msgGameOn": "Notifies players when the match reaches its confirmed minimum. Organizers are alerted if it drops below that minimum. Delivery uses the available channels and applicable preferences, with email fallback when needed.", "fd_msgConfirm": "Optional confirmation after joining.", "fi_msgConfirm": "Adds an optional notification after a player joins. The app still shows whether the answer was saved. Delivery follows the applicable channel settings and available services.", "fd_msgMaybeMorning": "Around 8:30 AM: ask undecided players to choose.", "fi_msgMaybeMorning": "Around 8:30 AM on match day, asks players still on Maybe to decide. Links require confirmation. If the match fills before they answer, they may join its waitlist. Delivery follows preferences and available channels.", "fd_msgTwoHour": "An optional reminder before kickoff.", "fi_msgTwoHour": "About two hours before kickoff, reminds confirmed players about a match that is on. Delivery follows the applicable channel settings and available services.", "fi_featAnnouncements": "Posts an organizer message on the match and queues an update. The email option requests email when permitted by preferences. Email may also be used when phone delivery is unavailable.", "alsoEmailHelp": "Request email as well, where preferences allow. Email may also be used as a fallback when phone notifications are unavailable.", "dmSub": "Uses the player’s notification preference, with email fallback when phone notifications are unavailable. Replies to an email come to you.", "featuresAlways": "Cancellations, schedule changes, invitations, PIN codes and other important updates are handled separately from optional reminders. Delivery uses applicable preferences and available channels, with email fallback when needed. Notification status shows queued and unsuccessful attempts."});
+    Object.assign(I18N.es,{"eaConfirmSub": "Revisa tu elección. Toca Confirmar para guardar esta respuesta.", "playingNow": "Lista ({n})", "notifyPush": "Primero notificaciones del teléfono", "pushHelp": "Los avisos importantes respetan tu preferencia. Se puede usar correo como respaldo cuando no estén disponibles las notificaciones del teléfono.", "pushPreferenceWarning": "Las notificaciones no están activadas aquí. Actívalas o elige correo. Los avisos importantes pueden usar correo como respaldo cuando sea posible.", "fd_msgDayBefore": "Aviso del día anterior si faltan jugadores.", "fi_msgDayBefore": "Sobre las 10 AM del día anterior avisa a quienes no han respondido si el partido no llega al mínimo confirmado. Omite a quienes están fuera. Los enlaces piden confirmación antes de cambiar una respuesta.", "fd_msgGameOn": "Un aviso cuando hay suficientes confirmados.", "fi_msgGameOn": "Avisa cuando el partido alcanza el mínimo confirmado. Se alerta a los organizadores si vuelve a bajar. La entrega usa las preferencias y canales disponibles, con correo de respaldo cuando haga falta.", "fd_msgConfirm": "Confirmación opcional después de unirse.", "fi_msgConfirm": "Agrega un aviso opcional cuando alguien se une. La app sigue mostrando si se guardó la respuesta. La entrega depende de las preferencias aplicables y los servicios disponibles.", "fd_msgMaybeMorning": "Sobre las 8:30 AM: pedir una decisión.", "fi_msgMaybeMorning": "Sobre las 8:30 AM del día del partido pide una decisión a quienes siguen en Tal vez. Los enlaces requieren confirmación. Si el partido se llena antes de responder, pueden entrar en espera. La entrega respeta las preferencias y los canales disponibles.", "fd_msgTwoHour": "Recordatorio opcional antes del partido.", "fi_msgTwoHour": "Unas dos horas antes del inicio recuerda el partido a los confirmados si está en pie. La entrega depende de las preferencias aplicables y los servicios disponibles.", "fi_featAnnouncements": "Publica un aviso del organizador en el partido y prepara su envío. La opción de correo lo solicita cuando las preferencias lo permiten. También se puede usar correo si las notificaciones no están disponibles.", "alsoEmailHelp": "Solicita correo también cuando las preferencias lo permiten. Se puede usar correo de respaldo si las notificaciones del teléfono no están disponibles.", "dmSub": "Usa la preferencia del jugador, con correo de respaldo cuando las notificaciones no están disponibles. Las respuestas por correo te llegan a ti.", "featuresAlways": "Las cancelaciones, cambios de horario, invitaciones, códigos de PIN y otros avisos importantes se gestionan aparte de los recordatorios opcionales. Usan las preferencias y canales disponibles, con correo de respaldo cuando haga falta. Estado de los avisos muestra intentos pendientes y fallidos."});
     function t(key, params) {
       const dict = I18N[currentLang] || I18N.en;
       let s = dict[key] !== undefined ? dict[key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
@@ -710,7 +729,7 @@
     const SITE_URL = "https://pitchpulseleague.github.io/soccer/";
     const SYSTEM_ADMIN_EMAIL = "pitchpulseleague@gmail.com";
     const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "ralph@me.com"];
-    const APP_VERSION = "5.3.1";
+    const APP_VERSION = "5.4.0";
 
     const ASSET_VERSION = "5.0";
     const ICON_192_FILE = "pitch-pulse-01-classic-stitched-192.png?v=" + ASSET_VERSION;
@@ -732,9 +751,13 @@
     }
     // For values placed inside onclick="fn('…')" handlers (HTML attribute + JS string).
     function escJsArg(str) {
-      return String(str === undefined || str === null ? "" : str)
-        .replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/</g, "\\x3c").replace(/>/g, "\\x3e").replace(/\n/g, " ").replace(/\r/g, "");
+      // Encode the JavaScript string first, then the surrounding HTML attribute.
+      // Encoding ampersands prevents entities from becoming executable quotes after HTML parsing.
+      return escHtml(String(str === undefined || str === null ? "" : str)
+        .replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n")
+        .replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029"));
     }
+
     function triggerHaptic() { try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {} }
     function byId(id) { return document.getElementById(id); }
     function lsGet(k, fallback) { try { const v = localStorage.getItem(k); return v === null ? fallback : v; } catch (e) { return fallback; } }
@@ -835,6 +858,8 @@
     const darkQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
     function effectiveTheme() { return themePref === "auto" ? (darkQuery && darkQuery.matches ? "dark" : "light") : themePref; }
     try { if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener("change", function() { if (themePref === "auto") applyThemeAndLanguageUI(); }); } catch (e) {}
+    let authEpoch = 0;
+    let serverClockOffsetMs = 0;
     let currentUser = null;
     try {
       const saved = JSON.parse(lsGet("soccer_user", "null"));
@@ -847,6 +872,10 @@
     let expandedGames = {};
     try { expandedGames = JSON.parse(sessionStorage.getItem("soccer_expanded") || "{}") || {}; } catch (e) {}
     let openPitchByGame = {};
+    let expandedRosterByGame = {};
+    const pendingGameChanges = {};
+    let adminSettingsDraft = {};
+    let mutationTail = Promise.resolve();
     let upcomingDays = 7;
     let weatherCache = {};
     try {
@@ -865,7 +894,7 @@
       settings: { teamAName: "White", teamAShirt: "white", teamBName: "Dark", teamBShirt: "black", defaultMin: 14, defaultMax: 18, maxGuests: 3,
         featTeams: false, featScores: false, featMotm: false, featAttendance: false, featLateDrops: false, trackBall: false, trackPinnies: false, trackGK: false,
         featArrival: false, featCaptains: false, featAnnouncements: true, featWeather: true, featCalendar: true, featRules: true,
-        msgDayBefore: true, msgMatchDay: true, msgGameOn: true, msgConfirm: true, msgMaybeMorning: true, msgTwoHour: false },
+        msgDayBefore: true, msgMatchDay: true, msgGameOn: true, msgConfirm: false, msgMaybeMorning: true, msgTwoHour: false },
       requirePinnies: false, howWePlayRules: "", oneSignalAppId: "", pushConfigured: false,
       rivalryStats: { whiteWins: 0, darkWins: 0, draws: 0, whiteGoals: 0, darkGoals: 0, totalMatchesScored: 0 },
       games: [], locations: [], profiles: {}, invites: [], recurring: []
@@ -873,7 +902,7 @@
     let appData = JSON.parse(JSON.stringify(EMPTY_APP));
     if (currentUser) {
       try {
-        const cached = JSON.parse(lsGet("soccer_cached_data_v51", "null"));
+        const cached = JSON.parse(lsGet("soccer_cached_data_v54", "null"));
         if (cached && cached.games) appData = normalizeAppData(cached);
       } catch (e) {}
     }
@@ -887,13 +916,17 @@
       return d;
     }
     function setAppData(d) {
+      if (!d || (d._clientAuthEpoch !== undefined && d._clientAuthEpoch !== authEpoch)) return false;
       appData = normalizeAppData(d);
-      if (d && d.user) {
-        currentUser = Object.assign({}, currentUser || {}, d.user);
+      if (Number.isFinite(Number(d.serverNowMs)) && Number(d.serverNowMs) > 0) serverClockOffsetMs = Number(d.serverNowMs) - Date.now();
+      if (d.user && currentUser && String(d.user.email || "").toLowerCase() === myEmail()) {
+        currentUser = Object.assign({}, currentUser, d.user);
         lsSet("soccer_user", JSON.stringify(currentUser));
       }
-      try { const copy = Object.assign({}, appData); delete copy.user; lsSet("soccer_cached_data_v51", JSON.stringify(copy)); } catch (e) {}
+      try { const copy = Object.assign({}, appData); delete copy.user; delete copy._clientAuthEpoch; lsSet("soccer_cached_data_v54", JSON.stringify(copy)); } catch (e) {}
+      return true;
     }
+
     function S() { return appData.settings || EMPTY_APP.settings; }
     // League-wide switch (Admin → Features).
     function F(key) { return !!S()[key]; }
@@ -927,21 +960,20 @@
     // Other players' cards are keyed by a private id (not their email); look them up as given.
     function profileFor(key) { const k = String(key || "").trim(); return (appData.profiles || {})[k] || (appData.profiles || {})[k.toLowerCase()] || null; }
 
+    function leagueTimeZone() { return appData.leagueTimeZone || "America/Los_Angeles"; }
+    function leagueNowMs() { return Date.now() + serverClockOffsetMs; }
     function getTodayIso() {
-      if (appData.serverToday) {
-        // keep server's date unless the device has rolled past midnight since the last sync
-        const d = new Date();
-        const dev = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-        return dev > appData.serverToday ? dev : appData.serverToday;
-      }
-      const d = new Date();
-      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      try {
+        const parts = new Intl.DateTimeFormat("en-US", { timeZone: leagueTimeZone(), year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(new Date(leagueNowMs()));
+        const value = function(k) { return parts.find(function(x) { return x.type === k; }).value; };
+        return value("year") + "-" + value("month") + "-" + value("day");
+      } catch (e) { return appData.serverToday || new Date(leagueNowMs()).toISOString().slice(0,10); }
     }
+
     function addDaysIso(iso, n) {
-      const p = String(iso).split("-");
-      const d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]) + n);
-      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      const d=new Date(String(iso)+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);
     }
+
 
     function parseTimeParts(timeStr) {
       const raw = String(timeStr || "12:00 PM").trim().toUpperCase();
@@ -963,25 +995,42 @@
       if (isAM && hrs === 12) hrs = 0;
       return hrs * 60 + mins;
     }
-    function gameStartDate(g) {
-      const p = String(g.Date).split("-");
-      const m = parseTimeMinutes(g.Time);
-      return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]), Math.floor(m / 60), m % 60, 0);
+    function wallTimeToUtcMs(dateIso, timeStr, zone) {
+      const p = String(dateIso).split("-").map(Number), mins = parseTimeMinutes(timeStr);
+      const wanted = Date.UTC(p[0], p[1]-1, p[2], Math.floor(mins/60), mins%60);
+      let guess = wanted;
+      for (let i=0; i<3; i++) {
+        const parts = new Intl.DateTimeFormat("en-US", {timeZone:zone || leagueTimeZone(),year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(new Date(guess));
+        const v = function(k) { return Number(parts.find(function(x){return x.type===k;}).value); };
+        const actual = Date.UTC(v("year"),v("month")-1,v("day"),v("hour"),v("minute"),v("second"));
+        const delta = wanted-actual; guess += delta; if (!delta) break;
+      }
+      return guess;
     }
-    function hasKickedOff(g) { return !!g.hasStartedOrPassed || Date.now() >= gameStartDate(g).getTime(); }
+    function gameStartDate(g) {
+      const stamp = Number(g.startAtMs);
+      return new Date(Number.isFinite(stamp) && stamp > 0 ? stamp : wallTimeToUtcMs(g.Date, g.Time, leagueTimeZone()));
+    }
+    function gameEndDate(g) {
+      const end = Number(g.endAtMs), start = gameStartDate(g).getTime();
+      return new Date(Number.isFinite(end) && end > start ? end : start + 75*60000);
+    }
+    function hasKickedOff(g) { return !!g.hasStartedOrPassed || leagueNowMs() >= gameStartDate(g).getTime(); }
+    function isGameDisplayFinished(g) { return !!g.hasScore || leagueNowMs() >= gameEndDate(g).getTime(); }
+
     function locale() { return currentLang === "es" ? "es-MX" : "en-US"; }
     function fmtDate(iso, opts) {
       try {
         const p = String(iso).split("-");
-        const d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]), 12);
-        return d.toLocaleDateString(locale(), opts || { weekday: "short", month: "short", day: "numeric" });
+        const d = new Date(Date.UTC(Number(p[0]), Number(p[1]) - 1, Number(p[2]), 12));
+        return d.toLocaleDateString(locale(), Object.assign({timeZone:"UTC"}, opts || { weekday: "short", month: "short", day: "numeric" }));
       } catch (e) { return String(iso); }
     }
     function fmtTime(timeStr) {
       try {
         const m = parseTimeMinutes(timeStr);
-        const d = new Date(2000, 0, 1, Math.floor(m / 60), m % 60);
-        return d.toLocaleTimeString(locale(), { hour: "numeric", minute: "2-digit" });
+        const d = new Date(Date.UTC(2000, 0, 1, Math.floor(m / 60), m % 60));
+        return d.toLocaleTimeString(locale(), { timeZone:"UTC", hour: "numeric", minute: "2-digit" });
       } catch (e) { return String(timeStr); }
     }
     function whenLabel(g) {
@@ -1013,66 +1062,104 @@
     const SLOW_ACTIONS = { adminNudgeUnresponded: 60000, adminSendGameBlast: 60000, adminSaveRecurringSeries: 60000, adminStopRecurringSeries: 60000, adminSendInvite: 45000, adminSendInvites: 90000, adminMessagePlayer: 45000, adminCancelGame: 45000, adminRestoreGame: 45000, requestPinReset: 45000 };
 
     async function apiPost(payload, opts) {
-      opts = opts || {};
+      opts = opts || {}; payload = Object.assign({}, payload);
+      const requestEpoch = authEpoch, requestEmail = myEmail();
       if (currentUser && !opts.noAuth) {
         if (!payload.requesterEmail) payload.requesterEmail = currentUser.email;
         if (!payload.requesterPin) payload.requesterPin = currentUser.pin;
       }
       payload.lang = currentLang;
-      const isRead = payload.action === "getLeagueData";
+      const isRead = payload.action === "getLeagueData" || payload.action === "previewEmailAnswer";
+      const uncertainWrite = !isRead && (!opts.noAuth || payload.action === "emailAnswer");
       const controller = new AbortController();
-      const timeoutMs = SLOW_ACTIONS[payload.action] || 30000;
-      const timer = setTimeout(function() { controller.abort(); }, timeoutMs);
+      const timer = setTimeout(function(){ controller.abort(); }, SLOW_ACTIONS[payload.action] || 30000);
       try {
-        const res = await fetch(API_URL, { method: "POST", redirect: "follow", signal: controller.signal, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
-        const text = await res.text();
-        let parsed = null;
-        try { parsed = JSON.parse(text); } catch (je) {
-          if (!opts.silent) showToast(t("errDeploy"), true);
-          return null;
+        const response = await fetch(API_URL, {method:"POST",redirect:"follow",signal:controller.signal,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+        const raw = await response.text();
+        if (requestEpoch !== authEpoch || (!opts.noAuth && requestEmail !== myEmail())) return {success:false,staleAuth:true};
+        let parsed;
+        try { parsed = JSON.parse(raw); } catch (e) {
+          if (!opts.silent) showToast(!uncertainWrite ? t("errDeploy") : t("saveUncertain"),true);
+          return {success:false,uncertain:uncertainWrite,error:!uncertainWrite ? t("errDeploy") : t("saveUncertain")};
         }
+        parsed._clientAuthEpoch = requestEpoch;
         if (!isRead) lastMutationDoneAt = Date.now();
-        if (parsed && parsed.success === false && parsed.authError && !isRead && !opts.noAuth) { logout(true); showToast(parsed.error || t("errSession"), true); }
+        if (parsed.success === false && parsed.authError && !isRead && !opts.noAuth) { logout(true); showToast(parsed.error || t("errSession"),true); }
         return parsed;
       } catch (err) {
-        if (!opts.silent) showToast(err && err.name === "AbortError" ? t("errTimeout") : t("errNetwork"), true);
+        if (requestEpoch !== authEpoch || (!opts.noAuth && requestEmail !== myEmail())) return {success:false,staleAuth:true};
         if (!isRead) lastMutationDoneAt = Date.now();
-        return null;
-      } finally {
-        clearTimeout(timer);
-      }
+        const uncertain = uncertainWrite;
+        const msg = uncertain ? t("saveUncertain") : (err && err.name === "AbortError" ? t("errTimeout") : t("errNetwork"));
+        if (!opts.silent) showToast(msg,true);
+        return {success:false,uncertain:uncertain,error:msg};
+      } finally { clearTimeout(timer); }
     }
 
-    // Runs one action at a time per key; ignores repeat taps while it's in flight.
+    // All writes are serialized. A queued action from an old login is discarded.
     async function runAction(key, fn) {
       if (inFlight[key]) return null;
-      inFlight[key] = true;
-      document.body.classList.add("cursor-progress");
-      try { return await fn(); }
-      finally { delete inFlight[key]; document.body.classList.remove("cursor-progress"); }
+      const queuedEpoch = authEpoch;
+      inFlight[key] = true; document.body.classList.add("cursor-progress");
+      const work = mutationTail.then(async function(){
+        if (queuedEpoch !== authEpoch) return {success:false,staleAuth:true};
+        return fn();
+      });
+      mutationTail = work.catch(function(){});
+      try { return await work; }
+      finally { delete inFlight[key]; if (!Object.keys(inFlight).length) document.body.classList.remove("cursor-progress"); }
     }
-
-    // Standard handling for "save something then show the new state".
+    async function reconcileUncertainSave() {
+      showToast(t("checkingSave"));
+      const fresh = await apiPost({action:"getLeagueData"},{silent:true});
+      if (fresh && fresh.success && setAppData(fresh)) { renderCurrentTab(); return true; }
+      if (!(fresh && fresh.staleAuth)) showToast(t("refreshUnavailable"),true);
+      return false;
+    }
     async function mutate(key, payload, opts) {
       opts = opts || {};
-      return runAction(key, async function() {
-        if (opts.button) setBusyButton(opts.button, true);
-        const res = await apiPost(payload);
-        if (opts.button) setBusyButton(opts.button, false);
-        if (res && res.success) {
-          setAppData(res);
-          if (opts.closeSheet !== false) closeModal();
-          if (opts.okMessage) showToast(opts.okMessage);
-          else if (res.message) showToast(res.message);
-          renderCurrentTab();
-          if (opts.after) opts.after(res);
-        } else if (res && res.error) {
-          showToast(res.error, true);
-          if (opts.onError) opts.onError(res);
-        } else if (opts.onError) opts.onError(res);
-        return res;
-      });
+      if (inFlight[key]) return null;
+      if (opts.button) setBusyButton(opts.button,true);
+      try {
+        return await runAction(key,async function(){
+          const res = await apiPost(payload);
+          if (res && res.staleAuth) return res;
+          if (res && res.success && setAppData(res)) {
+            if (opts.clearDraft) clearAdminDraft(opts.clearDraft);
+            if (opts.closeSheet !== false) closeModal();
+            if (opts.okMessage || res.message) showToast(opts.okMessage || res.message);
+            renderCurrentTab();
+            if (opts.after) opts.after(res);
+          } else if (res && res.uncertain) {
+            await reconcileUncertainSave(); showToast(t("saveUncertain"),true);
+          } else {
+            if (res && res.error) showToast(res.error,true);
+            if (opts.onError) opts.onError(res);
+          }
+          return res;
+        });
+      } finally { if (opts.button) setBusyButton(opts.button,false); }
     }
+    function hasUnsavedSettings() { return Object.keys(adminSettingsDraft).length > 0; }
+    function captureAdminDraft(target) {
+      if(activeTab!=="admin" || adminSection!=="settings" || !target)return;
+      const map={"st-a-name":"teamAName","st-a-shirt":"teamAShirt","st-b-name":"teamBName","st-b-shirt":"teamBShirt","st-min":"defaultMin","st-max":"defaultMax"};
+      const id=target.id;if(id!=="admin-rules-textarea"&&!map[id])return;
+      const baseline=id==="admin-rules-textarea"?String(appData.howWePlayRules||""):String(S()[map[id]]);
+      if(target.value===baseline)delete adminSettingsDraft[id];else adminSettingsDraft[id]=target.value;
+    }
+
+    function restoreAdminDraft() { Object.keys(adminSettingsDraft).forEach(function(id){const el=byId(id);if(el)el.value=adminSettingsDraft[id];}); }
+    function clearAdminDraft(group) {
+      Object.keys(adminSettingsDraft).forEach(function(id){if(group==="all" || (group==="rules" ? id==="admin-rules-textarea" : id!=="admin-rules-textarea"))delete adminSettingsDraft[id];});
+    }
+    function editingSurfaceBusy() {
+      const active=document.activeElement;
+      return hasUnsavedSettings() || !!byId("modal-root").innerHTML || !!(active && ["INPUT","TEXTAREA","SELECT"].indexOf(active.tagName)!==-1);
+    }
+    document.addEventListener("input",function(e){if(e.target && /^(st-|admin-rules-textarea$)/.test(e.target.id || ""))captureAdminDraft(e.target);});
+    document.addEventListener("change",function(e){if(e.target && /^(st-|admin-rules-textarea$)/.test(e.target.id || ""))captureAdminDraft(e.target);});
+
     function setBusyButton(el, busy) {
       try {
         const b = typeof el === "string" ? byId(el) : el;
@@ -1084,43 +1171,23 @@
 
     async function syncFromBackend(isManual) {
       if (!currentUser || !currentUser.email || !currentUser.pin) { renderAuthBar(); renderCurrentTab(); return; }
-      if (isSyncInFlight) return;
-      if (!isManual) {
-        const modalOpen = byId("modal-root") && byId("modal-root").innerHTML !== "";
-        const activeTag = document.activeElement ? document.activeElement.tagName : "";
-        if (modalOpen || Object.keys(inFlight).length || ["INPUT", "TEXTAREA", "SELECT"].indexOf(activeTag) !== -1) return;
-      }
-      isSyncInFlight = true;
-      const startedAt = Date.now();
-      const ind = byId("sync-indicator");
-      const btn = byId("manual-refresh-btn");
-      if (ind) ind.textContent = t("syncing");
-      if (btn) btn.classList.add("animate-spin");
-      const data = await apiPost({ action: "getLeagueData" }, { silent: !isManual });
-      isSyncInFlight = false;
-      if (btn) btn.classList.remove("animate-spin");
-      if (data && data.success) {
-        if (lastMutationDoneAt > startedAt || Object.keys(inFlight).length) {
-          if (ind) ind.textContent = ""; // a newer change landed while we were loading — keep the fresher data
-          return;
-        }
-        setAppData(data);
-        if (ind) ind.textContent = "";
-        const hwpBody = byId("how-we-play-body");
-        if (hwpBody) hwpBody.textContent = rulesText();
-        initOneSignalSdkIfConfigured();
-        applyThemeAndLanguageUI();
-        renderAuthBar();
-        renderCurrentTab();
-        fetchWeatherForAllGamesAsync();
-        applyEmailRsvpIfReady();
-      } else if (data && data.authError) {
-        logout(true);
-        showToast(data.error || t("errSession"), true);
-      } else if (ind) {
-        ind.textContent = t("offline");
-      }
+      if (isSyncInFlight || Object.keys(inFlight).length) return;
+      if (hasUnsavedSettings()) { if(isManual)showToast(t("unsavedSettings")); return; }
+      if (!isManual && editingSurfaceBusy()) return;
+      isSyncInFlight=true;
+      const startedAt=Date.now(), epoch=authEpoch, ind=byId("sync-indicator"), btn=byId("manual-refresh-btn");
+      if(ind)ind.textContent=t("syncing"); if(btn)btn.classList.add("animate-spin");
+      const data=await apiPost({action:"getLeagueData"},{silent:!isManual});
+      isSyncInFlight=false; if(btn)btn.classList.remove("animate-spin");
+      if(epoch!==authEpoch || (data && data.staleAuth))return;
+      if(data && data.success){
+        if(lastMutationDoneAt>startedAt || Object.keys(inFlight).length || editingSurfaceBusy()){if(ind)ind.textContent="";return;}
+        setAppData(data);if(ind)ind.textContent="";
+        initOneSignalSdkIfConfigured();applyThemeAndLanguageUI();renderAuthBar();renderCurrentTab();fetchWeatherForAllGamesAsync();applyEmailRsvpIfReady();
+      }else if(data && data.authError){logout(true);showToast(data.error||t("errSession"),true);}
+      else if(ind)ind.textContent=t("offline");
     }
+
 
     document.addEventListener("visibilitychange", function() {
       if (document.visibilityState === "visible" && currentUser) syncFromBackend(false);
@@ -1162,6 +1229,24 @@
     });
 
     let lastFocusBeforeModal = null;
+    let modalBackgroundState = [];
+    function isolateModalBackground(on) {
+      if(on && !modalBackgroundState.length){
+        ["app-header","app-main","mobile-bottom-dock"].forEach(function(id){const el=byId(id);if(!el)return;modalBackgroundState.push({el:el,inert:el.inert,hidden:el.getAttribute("aria-hidden")});el.inert=true;el.setAttribute("aria-hidden","true");});
+      }else if(!on){modalBackgroundState.forEach(function(x){x.el.inert=x.inert;if(x.hidden===null)x.el.removeAttribute("aria-hidden");else x.el.setAttribute("aria-hidden",x.hidden);});modalBackgroundState=[];}
+    }
+    function modalFocusable(panel) {
+      return Array.from(panel.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+        .filter(function(el){return !el.closest('[hidden], [inert]') && el.getClientRects().length>0;});
+    }
+    document.addEventListener("keydown",function(e){
+      if(e.key!=="Tab")return;const panel=byId("sheet-panel");if(!panel)return;
+      const items=modalFocusable(panel),first=items[0],last=items[items.length-1],active=document.activeElement;
+      if(!items.length){e.preventDefault();panel.focus();return;}
+      if(e.shiftKey && (active===first || !panel.contains(active) || active===panel)){e.preventDefault();last.focus();}
+      else if(!e.shiftKey && (active===last || !panel.contains(active))){e.preventDefault();first.focus();}
+    });
+    document.addEventListener("focusin",function(e){const panel=byId("sheet-panel");if(panel && !panel.contains(e.target))panel.focus({preventScroll:true});});
     function renderSheetModal(innerHtml, maxWidthClass) {
       const mw = maxWidthClass || "max-w-md";
       const root = byId("modal-root");
@@ -1175,6 +1260,9 @@
           </div>
         </div>`;
       document.documentElement.classList.add("sheet-open");
+      isolateModalBackground(true);
+      const dialog = root.querySelector('[role="dialog"]'), heading = root.querySelector('h1,h2,h3');
+      if(heading){heading.id="sheet-dialog-title";dialog.setAttribute("aria-labelledby",heading.id);}else dialog.setAttribute("aria-label",t("working"));
       armSheetHistory();
       const panel = byId("sheet-panel");
       attachSheetDrag(panel);
@@ -1229,12 +1317,14 @@
     function closeModal(fromPop) {
       hideInfoPop();
       byId("modal-root").innerHTML = "";
+      destroyCardMaps();
       document.documentElement.classList.remove("sheet-open");
+      isolateModalBackground(false);
       if (fromPop !== true && sheetHistoryArmed) {
         sheetHistoryArmed = false; skipNextPop = true;
         try { history.back(); } catch (e) { skipNextPop = false; }
       }
-      if (lastFocusBeforeModal && lastFocusBeforeModal.focus) try { lastFocusBeforeModal.focus({ preventScroll: true }); } catch (e) {}
+      if (lastFocusBeforeModal && lastFocusBeforeModal.isConnected && lastFocusBeforeModal.focus) try { lastFocusBeforeModal.focus({ preventScroll: true }); } catch (e) {}
       lastFocusBeforeModal = null;
     }
     function closeBtn() {
@@ -1273,6 +1363,17 @@
       if (e.key !== "Escape") return;
       if (byId("info-pop")) { hideInfoPop(); return; }
       if (byId("modal-root").innerHTML !== "") closeModal();
+    });
+
+    document.addEventListener("keydown",function(e){
+      if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"].indexOf(e.key)===-1)return;
+      const target=e.target, role=target&&target.getAttribute&&target.getAttribute("role");
+      if(role!=="tab"&&role!=="radio")return;
+      const group=target.closest(role==="tab"?'[role="tablist"]':'[role="radiogroup"]');if(!group)return;
+      const items=Array.from(group.querySelectorAll('[role="'+role+'"]')).filter(function(x){return !x.disabled;});
+      const at=items.indexOf(target);if(at<0)return;
+      const next=e.key==="Home"?0:e.key==="End"?items.length-1:(at+(["ArrowRight","ArrowDown"].indexOf(e.key)!==-1?1:-1)+items.length)%items.length;
+      e.preventDefault();items[next].focus();items[next].click();
     });
 
     // =========================================================================
@@ -1334,6 +1435,23 @@
     let deferredPwaPrompt = null;
     let oneSignalInitialized = false;
     let oneSignalLinkedAs = "";
+    let oneSignalSdk = null;
+    function pushDeviceState() {
+      if(!appData.pushConfigured || !appData.oneSignalAppId)return "server";
+      if(devicePlatform()==="ios"&&!isStandalone())return "install";
+      if(typeof Notification==="undefined")return "unavailable";
+      if(Notification.permission==="denied")return "blocked";
+      const sub=oneSignalSdk&&oneSignalSdk.User&&oneSignalSdk.User.PushSubscription;
+      if(sub && sub.id && sub.optedIn===true && oneSignalLinkedAs===myEmail() && Notification.permission==="granted")return "ready";
+      if(Notification.permission==="granted")return "pending";
+      return "off";
+    }
+    function profilePushStateHtml(pref) {
+      const state=pushDeviceState(),key={server:"pushServerNotReady",install:"pushNeedsInstall",unavailable:"pushUnavailableShort",blocked:"pushDeniedShort",ready:"pushReady",pending:"pushPermissionOnly",off:"pushNotReady"}[state];
+      return `<p class="text-sm font-semibold ${state==="ready"?"text-emerald-300":"text-slate-300"}">${escHtml(t(key))}</p><p class="text-xs text-slate-400 mt-1">${escHtml(t("pushHelp"))}</p>${pref==="Push"&&state!=="ready"?`<p class="text-xs text-amber-300 mt-1">${escHtml(t("pushPreferenceWarning"))}</p>`:""}`;
+    }
+    function renderProfilePushState() {const el=byId("profile-push-state"),select=byId("prof-notify-pref");if(el)el.innerHTML=profilePushStateHtml(select?select.value:(currentUser&&currentUser.notifyPref)||"Both");}
+
     (function initPwaManifest() {
       try {
         const basePath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "/");
@@ -1360,7 +1478,7 @@
     // (switching accounts re-links it; logging out unlinks it).
     let oneSignalStarting = false;
     function initOneSignalSdkIfConfigured() {
-      const appId = appData.oneSignalAppId || "b9d3784f-0006-4f17-88d8-5354ff7d760b";
+      const appId = appData.pushConfigured ? appData.oneSignalAppId : "";
       const who = currentUser && currentUser.email ? currentUser.email.toLowerCase().trim() : "";
       if (!appId || !who || (oneSignalInitialized && oneSignalLinkedAs === who) || oneSignalStarting) return;
       oneSignalStarting = true;
@@ -1370,10 +1488,13 @@
           try {
             if (!oneSignalInitialized) {
               await OneSignal.init({ appId: appId, serviceWorkerPath: "/soccer/OneSignalSDKWorker.js", serviceWorkerParam: { scope: "/soccer/" }, allowLocalhostAsSecureOrigin: true });
-              oneSignalInitialized = true;
+              oneSignalInitialized = true; oneSignalSdk = OneSignal;
+              OneSignal.User.PushSubscription.addEventListener("change",renderProfilePushState);
+              OneSignal.Notifications.addEventListener("permissionChange",renderProfilePushState);
             }
             const now = currentUser && currentUser.email ? currentUser.email.toLowerCase().trim() : "";
-            if (now && now !== oneSignalLinkedAs) { await OneSignal.login(now); oneSignalLinkedAs = now; }
+            if (now && now !== oneSignalLinkedAs) { const epoch=authEpoch; await OneSignal.login(now); if(epoch===authEpoch && myEmail()===now)oneSignalLinkedAs=now; else {await OneSignal.logout();oneSignalLinkedAs="";} }
+            renderProfilePushState();
           } finally { oneSignalStarting = false; }
         });
       } catch (e) { oneSignalStarting = false; }
@@ -1398,19 +1519,20 @@
       subscribeCurrentDeviceToPush();
     }
     async function subscribeCurrentDeviceToPush() {
+      if(!appData.pushConfigured || !appData.oneSignalAppId){showToast(t("pushServerNotReady"));return;}
+      if(!oneSignalSdk || !oneSignalInitialized){initOneSignalSdkIfConfigured();showToast(t("pushChecking"));return;}
       try {
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        window.OneSignalDeferred.push(async function(OneSignal) {
-          if (currentUser && currentUser.email) { await OneSignal.login(currentUser.email.toLowerCase().trim()); oneSignalLinkedAs = currentUser.email.toLowerCase().trim(); }
-          await OneSignal.Notifications.requestPermission();
-          const granted = OneSignal.Notifications.permission === true || (typeof Notification !== "undefined" && Notification.permission === "granted");
-          showToast(granted ? t("pushOn") : t("pushDenied"), !granted);
-        });
-        setTimeout(function() { if (!window.OneSignal) showToast(t("pushUnavailable"), true); }, 4000);
-      } catch (e) {
-        showToast(t("pushUnavailable"), true);
-      }
+        const sdk=oneSignalSdk, epoch=authEpoch, who=myEmail();
+        if(!sdk.Notifications.isPushSupported()){showToast(t("pushUnavailable"),true);return;}
+        if(who && oneSignalLinkedAs!==who){await sdk.login(who);if(epoch!==authEpoch)return;oneSignalLinkedAs=who;}
+        await sdk.Notifications.requestPermission();
+        if(epoch!==authEpoch)return;
+        if(sdk.Notifications.permission===true)await sdk.User.PushSubscription.optIn();
+        renderProfilePushState();
+        const state=pushDeviceState();showToast(t(state==="ready"?"pushOn":state==="blocked"?"pushDenied":"pushPermissionOnly"),state==="blocked");
+      }catch(e){showToast(t("pushUnavailable"),true);renderProfilePushState();}
     }
+
 
     function installStepsBlock(which, open) {
       const steps = which === "ios" ? ["installIos1", "installIos2", "installIos3"] : ["installAnd1", "installAnd2", "installAnd3"];
@@ -1468,7 +1590,7 @@
         } catch (e) { weatherCache[key] = { failed: true }; }
       }));
       try { weatherCache._ts = Date.now(); sessionStorage.setItem("soccer_weather_v51", JSON.stringify(weatherCache)); } catch (e) {}
-      if (activeTab === "upcoming" && !byId("modal-root").innerHTML) renderUpcomingGamesView();
+      if (activeTab === "upcoming" && !editingSurfaceBusy() && !Object.keys(inFlight).length) renderUpcomingGamesView();
     }
 
     function weatherInfo(game) {
@@ -1613,6 +1735,14 @@
     // =========================================================================
     // MATCH STATE HELPERS
     // =========================================================================
+    function profileParticipationText(profile) {
+      return F("featAttendance") ? t("verifiedMatchesN",{n:Number(profile.verifiedGamesPlayed)||0}) : t("signupsN",{n:Number(profile.rsvpGamesCount)||0});
+    }
+    function reliabilityText(profile) {
+      const n=profile && profile.reliability, count=Number(profile && profile.reliabilitySampleCount || 0);
+      return n===null || n===undefined || !count ? t("noReliability") : t("reliabilityMeasured",{n:n,count:count});
+    }
+    function isGameSaving(id) { return !!pendingGameChanges[String(id)]; }
     function gameMeta(game) {
       const roster = game.roster || [];
       const me = myEmail();
@@ -1627,12 +1757,14 @@
       const canManage = !!(currentUser && (currentUser.isAdmin || isGameCaptain));
       const locked = !!game.rsvpLocked;
       const kickedOff = hasKickedOff(game);
+      const pendingReconfirmCount = Number(game.pendingReconfirmCount !== undefined ? game.pendingReconfirmCount : yesList.reduce(function(n,r){return n+(r.needsReconfirm?1+(r.guestNames||[]).length:0);},0));
+      const confirmedCount = Number(game.confirmedCount !== undefined ? game.confirmedCount : Math.max(0,yesCount-pendingReconfirmCount));
       return {
         roster, myEntry, myStatus: myEntry ? myEntry.status : "", yesList, waitlist, maybeList, noList, isCancelled,
-        yesCount, maxCap, minThreshold, isFull: yesCount >= maxCap, isConfirmed: !isCancelled && yesCount >= minThreshold,
+        yesCount, confirmedCount, pendingReconfirmCount, maxCap, minThreshold, isFull: yesCount >= maxCap, isConfirmed: !isCancelled && confirmedCount >= minThreshold,
         myWaitPos: myEntry && myEntry.status === "Waitlist" ? waitlist.findIndex(function(r) { return r.email === me; }) + 1 : 0,
         isGameCaptain, canManage, locked, lockReason: game.lockReason || "", kickedOff,
-        ended: kickedOff && (String(game.Date) < getTodayIso() || Date.now() > gameStartDate(game).getTime() + 75 * 60000),
+        ended: isGameDisplayFinished(game),
         isSysAdmin: currentUser && isSystemAdminOnly(currentUser.email),
         mySide: myTeamSide(game, me)
       };
@@ -1644,17 +1776,18 @@
       return "";
     }
     function statusPill(game, m) {
-      let cls = "bg-amber-500/20 text-amber-300 border border-amber-500/40", txt = t("pillNeeds", { n: Math.max(0, m.minThreshold - m.yesCount) });
+      let cls = "bg-amber-500/20 text-amber-300 border border-amber-500/40", txt = t("pillNeeds", { n: Math.max(0, m.minThreshold - m.confirmedCount) });
       if (m.isCancelled) { cls = "bg-rose-500/20 text-rose-300 border border-rose-500/40"; txt = t("pillCancelled"); }
       else if (game.hasScore) { cls = "bg-slate-800 text-slate-200"; txt = t("pillFinal"); }
-      else if (m.kickedOff && m.ended) { cls = "bg-slate-800 text-slate-200"; txt = t("pillPlayed"); }
-      else if (m.kickedOff) { cls = "bg-rose-500/20 text-rose-300 border border-rose-500/40"; txt = t("pillLive"); }
-      else if (m.isFull) { cls = "bg-sky-500/20 text-sky-300 border border-sky-500/40"; txt = t("pillFull", { n: m.waitlist.length }); }
+      else if (m.kickedOff && m.ended) { cls = "bg-slate-800 text-slate-200"; txt = t("pillFinished"); }
+      else if (m.kickedOff) { cls = m.isConfirmed ? "bg-rose-500/20 text-rose-300 border border-rose-500/40" : "bg-amber-500/20 text-amber-300 border border-amber-500/40"; txt = m.isConfirmed ? t("pillLive") : t("pillNotConfirmed"); }
+      else if (m.isFull) { cls = "bg-sky-500/20 text-sky-300 border border-sky-500/40"; txt = m.waitlist.length ? t("pillFull", { n: m.waitlist.length }) : t("pillFullNoWait"); }
       else if (m.isConfirmed) { cls = "bg-[#00f59b]/20 text-[#00f59b] border border-[#00f59b]/40"; txt = t("pillOn"); }
       return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide ${cls}"><span class="status-dot"></span>${escHtml(txt)}</span>`;
     }
     function myStatusChip(m) {
       if (m.isSysAdmin) return "";
+      if(m.myEntry && m.myEntry.needsReconfirm)return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300">${ic("help","w-3.5 h-3.5")}${escHtml(t("reconfirmChip"))}</span>`;
       const map = {
         Yes: ["bg-[#00f59b]/20 text-[#00f59b] border border-[#00f59b]/40", "check", t("chipIn")],
         Waitlist: ["bg-sky-500/20 text-sky-300 border border-sky-500/40", "hourglass", t("chipWaitlist", { n: m.myWaitPos })],
@@ -1670,7 +1803,10 @@
     // =========================================================================
     function upcomingGames() {
       const today = getTodayIso();
-      return (appData.games || []).filter(function(g) { return String(g.Date) >= today; });
+      return (appData.games || []).filter(function(g) { return String(g.Date) >= today; }).slice().sort(function(a,b){
+        const doneA=isGameDisplayFinished(a),doneB=isGameDisplayFinished(b);
+        return Number(doneA)-Number(doneB) || gameStartDate(a)-gameStartDate(b);
+      });
     }
     function renderUpcomingGamesView() {
       const container = byId("view-container");
@@ -1689,11 +1825,12 @@
       let shown = upcoming.filter(function(g) { return String(g.Date) < limit; });
       if (!shown.length) shown = upcoming.slice(0, 1); // the next match always shows, even if it's weeks away
       const more = upcoming.length - shown.length;
-      const firstActive = shown.find(function(g) { return g.Status !== "Cancelled"; });
+      const firstActive = shown.find(function(g) { return g.Status !== "Cancelled" && !isGameDisplayFinished(g); });
       container.innerHTML = '<div class="space-y-3.5">' + shown.map(function(g) {
         const id = String(g.GameID);
         const isOpen = expandedGames[id] !== undefined ? !!expandedGames[id] : !!(firstActive && String(firstActive.GameID) === id);
-        return isOpen ? renderGameCard(g, shown.length > 1) : renderCompactGameCard(g);
+        const earlier = isGameDisplayFinished(g) && !shown.slice(0,shown.indexOf(g)).some(isGameDisplayFinished);
+        return (earlier ? `<h3 class="text-sm font-bold text-slate-400 mt-4">${escHtml(t("earlierToday"))}</h3>` : "") + (isOpen ? renderGameCard(g, shown.length > 1) : renderCompactGameCard(g));
       }).join("") +
       (more > 0 ? `<button type="button" id="show-more-btn" onclick="showMoreMatches()" class="tap-lg press w-full rounded-2xl bg-[#111c16] border border-emerald-900/60 text-emerald-300 font-bold text-sm inline-flex items-center justify-center gap-1.5">${escHtml(t("showMore", { n: more }))}${ic("chevDown", "w-4 h-4", 2.4)}</button>` : "") +
       "</div>";
@@ -1709,7 +1846,7 @@
         upcomingDays = Math.max(upcomingDays, Math.ceil((days + 1) / 7) * 7);
       }
       const shown = upcomingGames().filter(function(x) { return String(x.Date) < addDaysIso(getTodayIso(), upcomingDays); });
-      const firstActive = shown.find(function(x) { return x.Status !== "Cancelled"; });
+      const firstActive = shown.find(function(x) { return x.Status !== "Cancelled" && !isGameDisplayFinished(x); });
       const cur = expandedGames[gameId] !== undefined ? !!expandedGames[gameId] : !!(firstActive && String(firstActive.GameID) === String(gameId));
       expandedGames[gameId] = !cur;
       try { sessionStorage.setItem("soccer_expanded", JSON.stringify(expandedGames)); } catch (e) {}
@@ -1725,8 +1862,8 @@
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-1.5 mb-1.5">${statusPill(game, m)}${m.isCancelled ? "" : myStatusChip(m)}</div>
-            <div class="text-base font-extrabold text-white truncate ${m.isCancelled ? "line-through" : ""}">${escHtml(game.Title)}</div>
-            <div class="text-sm text-slate-400 mt-0.5 flex items-center gap-1.5 min-w-0">${ic("calendar", "w-4 h-4")}<span class="truncate">${escHtml(whenLabel(game))}</span></div>
+            <div class="text-base font-extrabold text-white truncate ${m.isCancelled ? "line-through" : ""}">${escHtml(whenLabel(game))}</div>
+            <div class="text-sm text-slate-400 mt-0.5 truncate">${escHtml(game.Title)}</div>
             <div class="text-sm text-slate-400 flex items-center gap-1.5 min-w-0">${ic("pin", "w-4 h-4")}<span class="truncate">${escHtml(game.LocationName)}</span></div>
           </div>
           <div class="text-right shrink-0">
@@ -1746,7 +1883,7 @@
 
       const capPct = Math.min(100, Math.round((m.yesCount / Math.max(1, m.maxCap)) * 100));
       const minPct = Math.min(100, Math.round((m.minThreshold / Math.max(1, m.maxCap)) * 100));
-      const need = Math.max(0, m.minThreshold - m.yesCount);
+      const need = Math.max(0, m.minThreshold - m.confirmedCount);
       const captainLine = gf(game, "captains")
         ? `<p class="text-sm text-slate-400 mt-0.5 flex items-center gap-1.5">${ic("shield", "w-4 h-4")}${escHtml(game.captainName ? t("captainIs", { name: game.captainName }) : t("managedByAdmins"))}</p>` : "";
 
@@ -1754,9 +1891,9 @@
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-1.5 mb-2">${statusPill(game, m)}${game.SeriesID ? `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-bold bg-emerald-950 text-emerald-300">${ic("repeat", "w-3.5 h-3.5")}${escHtml(t("weekly"))}</span>` : ""}</div>
-            <h2 class="text-[22px] font-extrabold text-white leading-tight ${m.isCancelled ? "line-through" : ""}">${escHtml(game.Title)}</h2>
-            <p class="text-sm text-slate-300 mt-1.5 flex items-center gap-1.5">${ic("calendar", "w-4 h-4 text-slate-400")}<b>${escHtml(whenLabel(game))}</b></p>
-            <p class="text-sm text-slate-300 mt-0.5 flex items-center gap-1.5 min-w-0">${ic("pin", "w-4 h-4 text-slate-400")}<span class="truncate">${escHtml(game.LocationName)}</span></p>
+            <h2 class="text-[22px] font-extrabold text-white leading-tight ${m.isCancelled ? "line-through" : ""}">${escHtml(whenLabel(game))}</h2>
+            <p class="text-sm text-slate-400 mt-0.5">${escHtml(game.Title)}</p>
+            <button type="button" onclick="openDirectionsSheet('${escJsArg(id)}')" class="tap text-sm text-emerald-300 font-semibold flex items-center gap-1.5 min-w-0" aria-label="${escHtml(t("directions"))}: ${escHtml(game.LocationName)}">${ic("pin", "w-4 h-4")}<span class="truncate">${escHtml(game.LocationName)}</span>${ic("chevRight","w-4 h-4")}</button>
             ${captainLine}
           </div>
           <div class="shrink-0 flex flex-col items-end gap-2">
@@ -1784,14 +1921,14 @@
         }
         html += `<div class="mt-4">
             <div class="flex items-end justify-between gap-2 mb-1.5">
-              <div class="text-base font-extrabold text-white">${m.yesCount}/${m.maxCap} <span class="text-sm font-semibold text-slate-400">${escHtml(t("playersIn"))}</span></div>
-              <div class="text-sm font-bold ${m.isConfirmed ? "text-[#00f59b]" : "text-amber-300"}">${escHtml(m.isConfirmed ? t("minReached") : t("needMore", { n: need }))}</div>
+              <div class="text-base font-extrabold text-white">${m.yesCount}/${m.maxCap} <span class="text-sm font-semibold text-slate-400">${escHtml(t(m.pendingReconfirmCount ? "spotsReserved" : "playersIn"))}</span></div>
+              <div class="text-sm font-semibold text-slate-400">${escHtml(t("spotsLeft",{n:Math.max(0,m.maxCap-m.yesCount)}))}</div>
             </div>
             <div class="relative h-2.5 rounded-full bg-slate-800 overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="${m.maxCap}" aria-valuenow="${m.yesCount}" aria-label="${escHtml(t("playersIn"))}">
               <div class="h-full rounded-full bg-[#00f59b]" style="width:${capPct}%"></div>
               <div class="absolute top-0 bottom-0 w-1 bg-amber-400" style="left:calc(${minPct}% - 2px)"></div>
             </div>
-            <div class="text-xs text-slate-400 mt-1.5">${escHtml(t("capLine", { min: m.minThreshold, max: m.maxCap }))}${m.waitlist.length ? " · " + escHtml(t("waitlistN", { n: m.waitlist.length })) : ""}</div>
+            <div class="text-xs text-slate-400 mt-1.5">${m.pendingReconfirmCount ? escHtml(t("confirmedN",{n:m.confirmedCount}))+" · "+escHtml(t("pendingReconfirmN",{n:m.pendingReconfirmCount}))+" · " : ""}${escHtml(t("capLine", { min: m.minThreshold, max: m.maxCap }))}${m.waitlist.length ? " · " + escHtml(t("waitlistN", { n: m.waitlist.length })) : ""}</div>
           </div>`;
         html += renderRsvpBlock(game, m);
       }
@@ -1841,7 +1978,8 @@
             <button type="button" onclick="onRsvpTap('${escJsArg(id)}','No')" class="tap rounded-xl bg-rose-950 text-rose-300 font-bold text-sm">${escHtml(t("cantMakeIt"))}</button>
           </div></div>`;
       }
-      if (m.kickedOff && !(m.ended && !gf(game, "scores"))) {
+      if(m.ended && !m.locked) html += `<div class="mb-3 p-3 rounded-2xl bg-slate-800 text-sm text-slate-300">${escHtml(t("finishedAnswers"))}</div>`;
+      if (m.kickedOff && !m.ended) {
         html += `<div class="mb-3 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-sm text-rose-300 font-semibold flex gap-2">${ic("pulse", "w-5 h-5 shrink-0")}<span>${escHtml(gf(game, "scores") ? t("liveNotice") : t("liveNoticeOpen"))}</span></div>`;
       }
       // Waiting but a spot is free (it can happen once the match has started): offer "I'm in".
@@ -1849,16 +1987,16 @@
       const yesLabel = m.myStatus === "Yes" ? t("rsvpIn") : (waitingFull ? t("rsvpWaitPos", { n: m.myWaitPos }) : (m.isFull && m.myStatus !== "Waitlist" ? t("rsvpJoinWait") : t("rsvpIn")));
       const btn = function(status, icon, label, count, onCls) {
         const on = m.myStatus === status || (status === "Yes" && waitingFull);
-        return `<button type="button" onclick="onRsvpTap('${escJsArg(id)}','${status}')" aria-pressed="${on}" class="tap-lg press rounded-2xl font-extrabold flex flex-col items-center justify-center gap-0.5 px-1 py-2 border ${on ? onCls : "seg-off"}">
-          <span class="inline-flex items-center justify-center gap-1.5 text-[15px] leading-tight text-center">${ic(icon, "w-[18px] h-[18px]", 2.6)}<span>${escHtml(label)}</span></span><span class="text-xs font-semibold opacity-80">${count}</span></button>`;
+        return `<button type="button" onclick="onRsvpTap('${escJsArg(id)}','${status}')" aria-pressed="${on}" ${isGameSaving(id) ? "disabled" : ""} class="tap-lg press rounded-2xl font-extrabold flex flex-col items-center justify-center gap-0.5 px-1 py-2 border ${on ? onCls : "seg-off"}">
+          <span class="inline-flex items-center justify-center gap-1.5 text-[15px] leading-tight text-center">${ic(icon, "w-[18px] h-[18px]", 2.6)}<span>${escHtml(label)}</span></span></button>`;
       };
-      html += `<div class="text-sm font-bold text-white mb-2">${escHtml(t("rsvpPrompt"))}</div>
+      html += `<div class="text-sm font-bold text-white mb-2">${escHtml(t(m.ended ? "correctAnswer" : "yourAnswer"))}</div>
         <div class="grid grid-cols-3 gap-2" role="group" aria-label="${escHtml(t("rsvpPrompt"))}">
           ${btn("Yes", waitingFull || (m.isFull && m.myStatus !== "Yes") ? "hourglass" : "check", yesLabel, m.yesCount + "/" + m.maxCap, m.myStatus === "Waitlist" ? "bg-sky-500 text-white border-sky-400" : "bg-[#00f59b] text-[#070b09] border-[#00f59b]")}
           ${btn("Maybe", "help", t("rsvpMaybe"), m.maybeList.length, "bg-amber-400 text-[#070b09] border-amber-400")}
           ${btn("No", "x", t("rsvpOut"), m.noList.length, "bg-rose-500 text-white border-rose-500")}
         </div>
-        <p class="text-sm text-slate-300 mt-2">${escHtml(myStatusSentence(m))}</p>`;
+        <p class="text-sm text-slate-300 mt-2" role="status">${escHtml(isGameSaving(id) ? t("savingAnswer") : myStatusSentence(m))}</p>`;
       if (m.myStatus === "Yes" && m.myEntry) html += renderMyExtras(game, m);
       html += `</div>`;
       return html;
@@ -1867,6 +2005,7 @@
       return { Yes: t("statusYes"), Maybe: t("statusMaybe"), No: t("statusNo"), Waitlist: t("statusWaitlist") }[st] || t("statusNone");
     }
     function myStatusSentence(m) {
+      if(m.myStatus === "Yes" && m.myEntry && m.myEntry.needsReconfirm) return t("reservedReconfirm");
       if (m.myStatus === "Yes") return m.mySide ? t("sentInTeam", { team: teamLabel(m.mySide) }) : t("sentIn");
       if (m.myStatus === "Waitlist") return m.isFull ? t("sentWaitlist", { n: m.myWaitPos }) : t("spotOpenWaitlist");
       if (m.myStatus === "Maybe") return t("sentMaybe");
@@ -1883,7 +2022,7 @@
       const id = String(game.GameID), e = m.myEntry;
       const ball = gf(game, "ball"), pinnies = gf(game, "pinnies"), gk = gf(game, "gk"), arrival = gf(game, "arrival");
       const guestsAllowed = myGuestsAllowed();
-      if (!ball && !pinnies && !gk && !arrival && !guestsAllowed) return "";
+      if (!ball && !pinnies && !gk && !arrival && !guestsAllowed && !(e.guestNames||[]).length) return "";
       const pill = function(field, on, icon, label) {
         return `<button type="button" onclick="toggleSignupExtra('${escJsArg(id)}','${field}',${!on})" aria-pressed="${on}" class="tap press px-3.5 rounded-full border font-bold text-sm inline-flex items-center gap-1.5 ${on ? "bg-emerald-950 text-[#00f59b] border-[#00f59b]/60" : "seg-off"}">${ic(on ? "check" : icon, "w-4 h-4", on ? 2.8 : 2)}${escHtml(label)}</button>`;
       };
@@ -1896,11 +2035,11 @@
         if (gk) html += pill("playGK", !!e.playGK, "glove", t("gearGK"));
         html += `</div>`;
       }
-      if (arrival || guestsAllowed) {
+      if (arrival || guestsAllowed || guests.length) {
         const left = arrival
           ? `${ic("clock", "w-[18px] h-[18px] text-emerald-300")}<span class="truncate">${escHtml(timingLabel(e.availabilityNote || ""))}</span>`
-          : `${ic("users", "w-[18px] h-[18px] text-emerald-300")}<span class="truncate">${escHtml(guests.length ? t("guestsCount", { n: guests.length, max: maxGuests() }) : t("addGuestsBtn"))}</span>`;
-        const right = arrival && guestsAllowed ? `${ic("users", "w-4 h-4")}${escHtml(t("guestsCount", { n: guests.length, max: maxGuests() }))}` : "";
+          : `${ic("users", "w-[18px] h-[18px] text-emerald-300")}<span class="truncate">${escHtml(guests.length ? (maxGuests() >= guests.length ? t("guestsCount", { n: guests.length, max: maxGuests() }) : t("existingGuests")+" ("+guests.length+")") : t("addGuestsBtn"))}</span>`;
+        const right = arrival && guestsAllowed ? `${ic("users", "w-4 h-4")}${escHtml((maxGuests() >= guests.length ? t("guestsCount", { n: guests.length, max: maxGuests() }) : t("existingGuests")+" ("+guests.length+")"))}` : "";
         html += `<button type="button" onclick="openMyMatchSheet('${escJsArg(id)}')" class="tap-lg press w-full ${ball || pinnies || gk ? "mt-2.5" : ""} px-4 rounded-2xl bg-[#111c16] border border-emerald-900/60 flex items-center justify-between gap-3 text-left">
           <span class="text-sm font-bold text-white min-w-0 flex items-center gap-2">${left}</span>
           <span class="text-sm font-bold text-emerald-300 whitespace-nowrap inline-flex items-center gap-1">${right}${ic("chevRight", "w-4 h-4 text-slate-400", 2.4)}</span>
@@ -1971,6 +2110,7 @@
 
     // Player cards open when there's something to show: standings, or an admin looking.
     function playerCardsOpen() { return standingsOn() || !!(currentUser && currentUser.isAdmin); }
+    function toggleRosterExpanded(gameId) { expandedRosterByGame[gameId]=!expandedRosterByGame[gameId];renderCurrentTab(); }
     function setRosterSubTab(gameId, sub) { triggerHaptic(); rosterSubTabByGame[gameId] = sub; renderCurrentTab(); }
     function renderRosterTabs(game, m) {
       const id = String(game.GameID);
@@ -1980,34 +2120,33 @@
       const cards = playerCardsOpen();
       // the waitlist tab only appears when someone is actually waiting
       const showWait = m.waitlist.length > 0 || active === "waitlist";
-      const tab = function(key, icon, label, n, onCls) {
-        const on = active === key;
-        return `<button type="button" role="tab" onclick="setRosterSubTab('${escJsArg(id)}','${key}')" aria-selected="${on}" class="tap-lg press min-w-0 px-1 rounded-xl border flex flex-col items-center justify-center leading-tight ${on ? onCls : "seg-off"}">
-          <span class="inline-flex items-center gap-1 text-base font-extrabold">${ic(icon, "w-4 h-4", 2.6)}${n}</span><span class="block max-w-full truncate text-[11px] font-bold uppercase tracking-wide">${escHtml(label)}</span></button>`;
+      const tab = function(key, icon, label, n) {
+        return `<button type="button" role="tab" id="roster-tab-${escHtml(id)}-${key}" aria-controls="roster-panel-${escHtml(id)}" onclick="setRosterSubTab('${escJsArg(id)}','${key}')" aria-selected="${active===key}" class="roster-filter">${escHtml(label)} <b>${n}</b></button>`;
       };
       const row = function(r, i) {
         const pos = r.playPosition || effectivePos(r.position, r.playGK, game);
         const gear = (fBall && r.bringBall ? ic("ball", "w-3.5 h-3.5 text-emerald-300") : "") + (fPin && r.bringPinnies ? ic("vest", "w-3.5 h-3.5 text-emerald-300") : "") + (fGk && r.playGK ? ic("glove", "w-3.5 h-3.5 text-amber-300") : "");
         const inner = `${renderAvatarBadge(r.fullName, teamsOn ? pos : "")}
           <span class="min-w-0 flex-1"><span class="flex items-center gap-1 text-sm font-bold text-white min-w-0"><span class="truncate">${i !== undefined ? (i + 1) + ". " : ""}${escHtml(r.fullName)}</span>${teamsOn ? ` <span class="text-[11px] font-mono text-slate-400 shrink-0">${escHtml(pos)}</span>` : ""}${gear ? `<span class="inline-flex gap-0.5 shrink-0">${gear}</span>` : ""}</span>
-          ${r.guestNames && r.guestNames.length ? `<span class="block text-xs text-emerald-300 truncate">+${r.guestNames.length}: ${escHtml(r.guestNames.join(", "))}</span>` : ""}
+          ${r.needsReconfirm ? `<span class="block text-xs text-amber-300">${escHtml(t("awaitingReconfirm"))}</span>` : ""}${r.attendanceStatus === "NoShow" ? `<span class="block text-xs text-rose-300">${escHtml(t("noShowLabel"))}</span>` : ""}
+          ${r.guestNames && r.guestNames.length ? `<span class="block text-xs text-emerald-300">+${r.guestNames.length}: ${escHtml(r.guestNames.join(", "))}</span>` : ""}
           ${arrival && r.availabilityNote ? `<span class="block text-xs text-amber-300 truncate">${escHtml(timingLabel(r.availabilityNote))}</span>` : ""}</span>`;
         return cards
           ? `<button type="button" onclick="openPlayerCareerModal('${escJsArg(r.email)}')" class="tap w-full text-left p-2 rounded-xl bg-[#111c16] border border-emerald-950 flex items-center gap-2.5">${inner}</button>`
           : `<div class="w-full p-2 min-h-[44px] rounded-xl bg-[#111c16] border border-emerald-950 flex items-center gap-2.5">${inner}</div>`;
       };
-      let body = "";
-      if (active === "yes") body = m.yesList.length ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">${m.yesList.map(row).join("")}</div>` : `<p class="text-sm text-slate-500 italic">${escHtml(t("noneYet"))}</p>`;
-      else if (active === "waitlist") body = m.waitlist.length ? `<div class="space-y-1.5">${m.waitlist.map(row).join("")}</div><p class="text-xs text-sky-300 mt-2">${escHtml(t("waitlistHint"))}</p>` : `<p class="text-sm text-slate-500 italic">${escHtml(t("noneWord"))}</p>`;
-      else if (active === "maybe") body = m.maybeList.length ? `<div class="space-y-1.5">${m.maybeList.map(function(r) { return row(r); }).join("")}</div>` : `<p class="text-sm text-slate-500 italic">${escHtml(t("noneWord"))}</p>`;
-      else body = m.noList.length ? `<div class="space-y-1.5">${m.noList.map(function(r) { return row(r); }).join("")}</div>` : `<p class="text-sm text-slate-500 italic">${escHtml(t("noneWord"))}</p>`;
+      const list = active==="yes" ? m.yesList : active==="waitlist" ? m.waitlist : active==="maybe" ? m.maybeList : m.noList;
+      const expanded=!!expandedRosterByGame[id], visible=expanded ? list : list.slice(0,6);
+      const body = list.length ? `<div class="${active==="yes" ? "grid grid-cols-1 sm:grid-cols-2 gap-1.5" : "space-y-1.5"}">${visible.map(function(r,i){return row(r,active==="yes"||active==="waitlist"?i:undefined);}).join("")}</div>` : `<p class="text-sm text-slate-500 italic">${escHtml(t(active==="yes"?"noneYet":"noneWord"))}</p>`;
       return `<section class="mt-4">
-        <div class="grid ${showWait ? "grid-cols-4" : "grid-cols-3"} gap-1.5 mb-2" role="tablist" aria-label="${escHtml(t("rosterTitle"))}">
-          ${tab("yes", "check", t("tabYes"), m.yesCount, "bg-[#00f59b] text-[#070b09] border-[#00f59b]")}
-          ${showWait ? tab("waitlist", "hourglass", t("tabWaitlist"), m.waitlist.length, "bg-sky-500 text-white border-sky-500") : ""}
-          ${tab("maybe", "help", t("tabMaybe"), m.maybeList.length, "bg-amber-400 text-[#070b09] border-amber-400")}
-          ${tab("no", "x", t("tabNo"), m.noList.length, "bg-rose-500 text-white border-rose-500")}
-        </div>${body}</section>`;
+        <h3 class="text-sm font-bold text-white mb-1.5">${escHtml(t("rosterHeading"))}</h3>
+        <div class="grid ${showWait ? "grid-cols-4" : "grid-cols-3"} gap-1.5 mb-2" role="tablist" aria-label="${escHtml(t("rosterHeading"))}">
+          ${tab("yes","check",t("rosterGoing"),m.yesCount)}${showWait?tab("waitlist","hourglass",t("tabWaitlist"),m.waitlist.length):""}${tab("maybe","help",t("tabMaybe"),m.maybeList.length)}${tab("no","x",t("tabNo"),m.noList.length)}
+        </div>
+        <div id="roster-panel-${escHtml(id)}" role="tabpanel" aria-labelledby="roster-tab-${escHtml(id)}-${active}">${body}</div>
+        ${active==="waitlist"&&list.length?`<p class="text-xs text-sky-300 mt-2">${escHtml(t("waitlistHint"))}</p>`:""}
+        ${list.length>6?`<button type="button" onclick="toggleRosterExpanded('${escJsArg(id)}')" aria-expanded="${expanded}" class="tap w-full mt-2 text-sm font-bold text-emerald-300">${escHtml(expanded?t("showLessRoster"):t("seeAllRoster",{n:active==="yes"?m.yesCount:list.length}))}</button>`:""}
+      </section>`;
     }
 
     // =========================================================================
@@ -2031,9 +2170,11 @@
       return leafletPromise;
     }
     function destroyCardMaps() {
-      liveMaps.forEach(function(m) { try { m.remove(); } catch (e) {} });
-      liveMaps = [];
+      const modal=byId("modal-root"),keep=[];
+      liveMaps.forEach(function(map){try{const el=map.getContainer();if(el&&el.isConnected&&modal.contains(el)){keep.push(map);return;}map.remove();}catch(e){}});
+      liveMaps=keep;
     }
+
 
     // Street map or satellite photo (Esri World Imagery, with place names on top). The choice is
     // remembered on this phone: players start on the street map, the admin field picker on satellite.
@@ -2089,71 +2230,46 @@
     // MY MATCH DETAILS: arrival timing + named guests (each only when switched on)
     // =========================================================================
     function openMyMatchSheet(gameId) {
-      const g = findGame(gameId);
-      if (!g || !currentUser) return;
-      const m = gameMeta(g);
-      if (!m.myEntry || m.myStatus !== "Yes") return;
-      const arrival = gf(g, "arrival"), guestsAllowed = myGuestsAllowed();
-      const cur = m.myEntry.availabilityNote || "";
-      const opts = TIMING_OPTIONS.slice();
-      if (opts.indexOf(cur) === -1) opts.push(cur);
-      const guests = m.myEntry.guestNames || [];
-      const maxG = maxGuests();
-      const title = arrival && (guestsAllowed || maxG > 0) ? t("myMatchTitle") : (arrival ? t("myArrivalTitle") : t("myGuestsTitle"));
-      renderSheetModal(`
-        ${sheetHeader(escHtml(title), escHtml(g.Title) + " · " + escHtml(whenLabel(g)), arrival ? "clock" : "users")}
-        ${arrival ? `<fieldset class="mb-5">
-          <legend class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">${escHtml(t("timingTitle"))}</legend>
-          <div class="space-y-1.5">${opts.map(function(o) {
-            return `<label class="tap flex items-center gap-3 px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-950 cursor-pointer">
-              <input type="radio" name="mm-timing" value="${escHtml(o)}" ${o === cur ? "checked" : ""} class="w-5 h-5 accent-[#00f59b]">
-              <span class="text-sm font-semibold text-white">${escHtml(timingLabel(o))}</span></label>`;
-          }).join("")}</div>
-        </fieldset>` : ""}
-        ${guestsAllowed ? `<fieldset class="mb-5">
-          <legend class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">${escHtml(t("guestsTitle", { max: maxG }))}</legend>
-          <p class="text-xs text-slate-400 mb-2">${escHtml(t("guestsHelp"))}</p>
-          <div class="space-y-2">${Array.from({ length: maxG }).map(function(_, i) {
-            return `<input id="mm-guest-${i}" type="text" maxlength="40" autocomplete="off" autocapitalize="words" enterkeyhint="${i + 1 < maxG ? "next" : "done"}" value="${escHtml(guests[i] || "")}" placeholder="${escHtml(t("guestPh", { n: i + 1 }))}" class="tap w-full px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">`;
-          }).join("")}</div>
-          ${guests.length ? `<button type="button" onclick="clearMyGuests('${escJsArg(gameId)}')" class="tap mt-2 px-4 rounded-xl bg-rose-950 text-rose-300 text-sm font-bold">${escHtml(t("removeAllGuests"))}</button>` : ""}
-        </fieldset>` : (maxG > 0 ? `<p class="mb-5 text-sm text-slate-400">${escHtml(t("guestsDisabled"))}</p>` : "")}
-        <button type="button" id="mm-save" onclick="saveMyMatchSheet('${escJsArg(gameId)}')" class="tap-lg w-full rounded-2xl neon-btn text-base">${escHtml(t("saveBtn"))}</button>
-      `);
+      const g=findGame(gameId);if(!g||!currentUser)return;const m=gameMeta(g);
+      if(!m.myEntry||m.myStatus!=="Yes")return;
+      const arrival=gf(g,"arrival"), guests=m.myEntry.guestNames||[], maxG=maxGuests(), addAllowed=myGuestsAllowed()&&guests.length<=maxG;
+      const cur=m.myEntry.availabilityNote||"",options=TIMING_OPTIONS.slice();if(options.indexOf(cur)===-1)options.push(cur);
+      const title=arrival&&(addAllowed||guests.length)?t("myMatchTitle"):arrival?t("myArrivalTitle"):t("myGuestsTitle");
+      const available=Math.max(0,Math.min(maxG-guests.length,m.maxCap-m.yesCount));
+      renderSheetModal(`${sheetHeader(escHtml(title),escHtml(g.Title)+" · "+escHtml(whenLabel(g)),arrival?"clock":"users")}
+        ${arrival?`<fieldset class="mb-5"><legend class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">${escHtml(t("timingTitle"))}</legend><div class="space-y-1.5">${options.map(function(o){return `<label class="tap flex items-center gap-3 px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-950"><input type="radio" name="mm-timing" value="${escHtml(o)}" ${o===cur?"checked":""} class="w-5 h-5 accent-[#00f59b]"><span class="text-sm text-white">${escHtml(timingLabel(o))}</span></label>`;}).join("")}</div></fieldset>`:""}
+        ${addAllowed?`<fieldset class="mb-5"><legend class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">${escHtml(t("guestsTitle",{max:maxG}))}</legend>
+          <p class="text-xs text-slate-400 mb-1">${escHtml(t("guestsChangedHelp"))}</p><p class="text-sm text-emerald-300 mb-2">${escHtml(t("remainingGuestSpots",{n:available}))}</p>
+          <div class="space-y-2">${Array.from({length:maxG}).map(function(_,i){return `<label class="block"><span class="sr-only">${escHtml(t("guestPh",{n:i+1}))}</span><input id="mm-guest-${i}" type="text" maxlength="40" autocomplete="off" value="${escHtml(guests[i]||"")}" placeholder="${escHtml(t("guestPh",{n:i+1}))}" class="tap w-full px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"></label>`;}).join("")}</div></fieldset>`:
+          guests.length?`<fieldset class="mb-5"><legend class="text-sm font-bold text-white">${escHtml(t("existingGuests"))}</legend><p class="text-sm text-slate-400 mb-2">${escHtml(t("removeGuestsOnly"))}</p>${guests.map(function(name,i){return `<label class="tap flex items-center gap-3"><input type="checkbox" name="mm-keep-guest" value="${i}" checked class="w-5 h-5 accent-[#00f59b]"><span class="text-sm text-white">${escHtml(t("keepGuest",{name:name}))}</span></label>`;}).join("")}</fieldset>`:""}
+        ${guests.length?`<button type="button" onclick="clearMyGuests('${escJsArg(gameId)}')" class="tap w-full mb-3 rounded-xl bg-rose-950 text-rose-300 text-sm font-bold">${escHtml(t("removeAllGuests"))}</button>`:""}
+        <button type="button" id="mm-save" onclick="saveMyMatchSheet('${escJsArg(gameId)}')" class="tap-lg w-full rounded-2xl neon-btn text-base">${escHtml(t("saveBtn"))}</button>`);
     }
     async function saveMyMatchSheet(gameId) {
-      const g = findGame(gameId); if (!g) return;
-      const m = gameMeta(g);
-      const checked = document.querySelector('input[name="mm-timing"]:checked');
-      const noteEditable = !!document.querySelector('input[name="mm-timing"]');
-      const newNote = checked ? checked.value : "";
-      const maxG = maxGuests();
-      const inputs = Array.from({ length: maxG }).map(function(_, i) { const el = byId("mm-guest-" + i); return el ? el.value.replace(/,/g, " ").trim() : null; });
-      const guestsEditable = inputs.some(function(v) { return v !== null; });
-      const newGuests = inputs.filter(Boolean);
-      const oldGuests = (m.myEntry && m.myEntry.guestNames) || [];
-      const noteChanged = noteEditable && newNote !== ((m.myEntry && m.myEntry.availabilityNote) || "");
-      const guestsChanged = guestsEditable && JSON.stringify(newGuests) !== JSON.stringify(oldGuests);
-      if (!noteChanged && !guestsChanged) { closeModal(); return; }
-      await runAction("mm-" + gameId, async function() {
-        setBusyButton("mm-save", true);
-        let last = null;
-        if (guestsChanged) {
-          last = await apiPost({ action: "updateSignupExtras", gameId: gameId, field: "guestNames", value: newGuests });
-          if (!last || !last.success) { setBusyButton("mm-save", false); if (last && last.error) showToast(last.error, true); return; }
-          setAppData(last);
+      const g=findGame(gameId);if(!g)return;const m=gameMeta(g),oldGuests=m.myEntry.guestNames||[];
+      const checked=document.querySelector('input[name="mm-timing"]:checked'),noteEditable=!!document.querySelector('input[name="mm-timing"]');
+      const newNote=checked?checked.value:"";
+      const inputs=Array.from(document.querySelectorAll('[id^="mm-guest-"]'));
+      const keep=Array.from(document.querySelectorAll('input[name="mm-keep-guest"]'));
+      const guestsEditable=inputs.length>0||keep.length>0;
+      const newGuests=inputs.length?inputs.map(function(el){return el.value.replace(/,/g," ").trim();}).filter(Boolean):keep.filter(function(el){return el.checked;}).map(function(el){return oldGuests[Number(el.value)];});
+      const guestsChanged=guestsEditable&&JSON.stringify(newGuests)!==JSON.stringify(oldGuests),noteChanged=noteEditable&&newNote!==(m.myEntry.availabilityNote||"");
+      if(!guestsChanged&&!noteChanged){closeModal();return;}
+      if(inFlight["mm-"+gameId])return;
+      setBusyButton("mm-save",true);
+      await runAction("mm-"+gameId,async function(){
+        const updates=[];if(guestsChanged)updates.push(["guestNames",newGuests]);if(noteChanged)updates.push(["availabilityNote",newNote]);
+        for(const update of updates){
+          const res=await apiPost({action:"updateSignupExtras",gameId:gameId,field:update[0],value:update[1]});
+          if(res&&res.staleAuth)return;
+          if(!res||!res.success){if(res&&res.uncertain)await reconcileUncertainSave();showToast(res&&res.error||t("errNetwork"),true);return;}
+          setAppData(res);
         }
-        if (noteChanged) {
-          last = await apiPost({ action: "updateSignupExtras", gameId: gameId, field: "availabilityNote", value: newNote });
-          if (!last || !last.success) { setBusyButton("mm-save", false); if (last && last.error) showToast(last.error, true); return; }
-          setAppData(last);
-        }
-        closeModal(); showToast((last && last.message) || t("saved")); renderCurrentTab();
-      });
+        closeModal();showToast(t("saved"));renderCurrentTab();
+      }).finally(function(){setBusyButton("mm-save",false);});
     }
-    function clearMyGuests(gameId) {
-      mutate("mm-" + gameId, { action: "updateSignupExtras", gameId: gameId, field: "guestNames", value: [] });
-    }
+    function clearMyGuests(gameId) { mutate("mm-"+gameId,{action:"updateSignupExtras",gameId:gameId,field:"guestNames",value:[]}); }
+
 
     // =========================================================================
     // DIRECTIONS & MAP
@@ -2204,38 +2320,27 @@
     // =========================================================================
     // CALENDAR & SHARE
     // =========================================================================
-    function calTimes(game) {
-      const start = gameStartDate(game);
-      const end = new Date(start.getTime() + 75 * 60000);
-      const fmt = function(d) { return d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0") + "T" + String(d.getHours()).padStart(2, "0") + String(d.getMinutes()).padStart(2, "0") + "00"; };
-      return { start: fmt(start), end: fmt(end) };
-    }
+    function calendarUtcStamp(date) { return date.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}Z$/,"Z"); }
+    function calTimes(game) { return {start:calendarUtcStamp(gameStartDate(game)),end:calendarUtcStamp(gameEndDate(game))}; }
     function buildGoogleCalendarUrl(game) {
-      const c = calTimes(game);
-      const addr = (game.locationDetails && game.locationDetails.address) || game.LocationName;
-      return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent("⚽ " + game.Title) +
-        "&dates=" + c.start + "/" + c.end + "&location=" + encodeURIComponent(game.LocationName + " - " + addr) + "&details=" + encodeURIComponent(t("calDetails") + " " + SITE_URL);
+      const c=calTimes(game),addr=(game.locationDetails&&game.locationDetails.address)||game.LocationName;
+      return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("⚽ "+game.Title)+"&dates="+c.start+"/"+c.end+"&ctz="+encodeURIComponent(leagueTimeZone())+"&location="+encodeURIComponent(game.LocationName+" - "+addr)+"&details="+encodeURIComponent(t("calDetails")+" "+SITE_URL);
+    }
+    function icsEscapeText(value) { return String(value).replace(/\\/g,"\\\\").replace(/\r\n|\r|\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;"); }
+    function buildIcsCalendar(game) {
+      const c=calTimes(game),addr=(game.locationDetails&&game.locationDetails.address)||game.LocationName;
+      return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Pitch Pulse League//Soccer Hub//EN","BEGIN:VEVENT","UID:"+game.GameID+"@pitchpulseleague.github.io","DTSTAMP:"+calendarUtcStamp(new Date()),"DTSTART:"+c.start,"DTEND:"+c.end,"SUMMARY:"+icsEscapeText("⚽ "+game.Title),"LOCATION:"+icsEscapeText(game.LocationName+" ("+addr+")"),"DESCRIPTION:"+icsEscapeText(t("calDetails")+" "+SITE_URL),"END:VEVENT","END:VCALENDAR"].join("\r\n");
     }
     function downloadIcsCalendar(gameId) {
-      const game = findGame(gameId); if (!game) return;
-      const c = calTimes(game);
-      const addr = (game.locationDetails && game.locationDetails.address) || game.LocationName;
-      const esc = function(s) { return String(s).replace(/([,;\\])/g, "\\$1"); };
-      const now = new Date();
-      const stamp = now.getUTCFullYear() + String(now.getUTCMonth() + 1).padStart(2, "0") + String(now.getUTCDate()).padStart(2, "0") + "T" + String(now.getUTCHours()).padStart(2, "0") + String(now.getUTCMinutes()).padStart(2, "0") + "00Z";
-      const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Pitch Pulse League//Soccer Hub//EN", "BEGIN:VEVENT",
-        "UID:" + game.GameID + "@pitchpulseleague.github.io", "DTSTAMP:" + stamp, "DTSTART:" + c.start, "DTEND:" + c.end,
-        "SUMMARY:" + esc("⚽ " + game.Title), "LOCATION:" + esc(game.LocationName + " (" + addr + ")"), "DESCRIPTION:" + esc(t("calDetails") + " " + SITE_URL),
-        "END:VEVENT", "END:VCALENDAR"].join("\r\n");
-      const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
-      const a = document.createElement("a"); a.href = url; a.download = "pitch-pulse-" + game.Date + ".ics";
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(function() { URL.revokeObjectURL(url); }, 2000);
+      const game=findGame(gameId);if(!game)return;if(game.Status==="Cancelled"){showToast(t("calendarCancelled"));return;}
+      const url=URL.createObjectURL(new Blob([buildIcsCalendar(game)],{type:"text/calendar;charset=utf-8"}));
+      const a=document.createElement("a");a.href=url;a.download="pitch-pulse-"+game.Date+".ics";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},2000);
     }
+
     function matchSummaryText(game) {
       const m = gameMeta(game);
       const names = m.yesList.map(function(r) { return r.fullName + (r.guestNames && r.guestNames.length ? " (+" + r.guestNames.length + ")" : ""); }).join(", ") || t("noneYet");
-      const status = m.isCancelled ? t("pillCancelled") : (m.isConfirmed ? t("pillOn") : t("pillNeeds", { n: Math.max(0, m.minThreshold - m.yesCount) }));
+      const status = m.isCancelled ? t("pillCancelled") : (m.isConfirmed ? t("pillOn") : t("pillNeeds", { n: Math.max(0, m.minThreshold - m.confirmedCount) }));
       return "⚽ *" + game.Title + "*\n🗓️ " + whenLabel(game) + "\n📍 " + game.LocationName + "\n📊 " + status + " (" + m.yesCount + "/" + m.maxCap + ")\n✅ " + names + "\n👉 " + SITE_URL;
     }
     function openCalendarShareSheet(gameId) {
@@ -2255,8 +2360,8 @@
       renderSheetModal(`
         ${sheetHeader(escHtml(t("calendarShare")), escHtml(g.Title) + " · " + escHtml(whenLabel(g)), "calendar")}
         <div class="space-y-2">
-          ${row("calendar", t("addToCal"), android ? { href: buildGoogleCalendarUrl(g) } : { onclick: icsCall })}
-          ${altLink}
+          ${g.Status === "Cancelled" ? `<p class="text-sm text-slate-400">${escHtml(t("calendarCancelled"))}</p>` : row("calendar", t("addToCal"), android ? { href: buildGoogleCalendarUrl(g) } : { onclick: icsCall })}
+          ${g.Status === "Cancelled" ? "" : altLink + `<p class="text-xs text-slate-400">${escHtml(t("calendarOneTime"))}</p>`}
           ${row("chat", t("copyForChat"), { onclick: "copyText(matchSummaryText(findGame('" + escJsArg(gameId) + "')), t('summaryCopied'))" })}
           ${canShare ? row("share", t("shareEllipsis"), { onclick: "nativeShare('" + escJsArg(gameId) + "')" }, true) : ""}
         </div>
@@ -2304,7 +2409,7 @@
         if (gf(g, "announcements")) rows.push(toolRow("megaphone", t("toolBlast"), t("toolBlastSub"), `openBlastSheet('${id}')`));
         if (gf(g, "attendance")) rows.push(toolRow("clipboard", t("toolAttendance"), t("toolAttendanceSub"), `openAttendanceSheet('${id}')`, { disabledReason: g.Date > today ? t("reasonMatchDay") : "" }));
         if (gf(g, "scores")) rows.push(toolRow("trophy", g.hasScore ? t("toolScoreEdit") : t("toolScore"), t("toolScoreSub"), `openScoreSheet('${id}')`, { disabledReason: !m.kickedOff ? t("reasonAfterKickoff") : "" }));
-        if (F("featSmallSided") && !m.isConfirmed && !m.locked) rows.push(toolRow("bolt", t("toolSmallSided"), t("toolSmallSidedSub", { n: m.yesCount }), `confirmSmallSided('${id}')`, { disabledReason: m.yesCount < SMALL_SIDED_MIN_PLAYERS ? t("reasonNeedSmall", { n: SMALL_SIDED_MIN_PLAYERS }) : "" }));
+        if (F("featSmallSided") && !m.isConfirmed && !m.locked) rows.push(toolRow("bolt", t("toolSmallSided"), t("toolSmallSidedSub", { n: m.confirmedCount }), `confirmSmallSided('${id}')`, { disabledReason: m.confirmedCount < SMALL_SIDED_MIN_PLAYERS ? t("reasonNeedSmall", { n: SMALL_SIDED_MIN_PLAYERS }) : "" }));
         if (isAdmin) {
           rows.push(toolRow("pencil", t("toolEdit"), editSub, `closeModal(); openGameForm('${id}')`));
           rows.push(toolRow("ban", t("toolCancel"), t("toolCancelSub"), `confirmCancelGame('${id}')`, { danger: true, disabledReason: g.isPast ? t("reasonPast") : "" }));
@@ -2390,32 +2495,25 @@
 
     // ---- Attendance sheet ----------------------------------------------------
     function openAttendanceSheet(gameId) {
-      const g = findGame(gameId); if (!g) return;
-      const id = escJsArg(gameId);
-      const yes = (g.roster || []).filter(function(r) { return r.status === "Yes"; });
-      const yesEmails = yes.map(function(r) { return r.email; });
-      const others = Object.keys(appData.profiles || {}).map(function(k) { return Object.assign({ key: k }, appData.profiles[k]); }).filter(function(p) {
-        return !p.isSystemAdminOnly && String(p.status).toLowerCase() !== "suspended" && yesEmails.indexOf(p.key) === -1 && yesEmails.indexOf(p.email) === -1;
-      }).sort(function(a, b) { return String(a.fullName).localeCompare(String(b.fullName)); });
-      renderSheetModal(`
-        ${sheetHeader(escHtml(t("toolAttendance")), escHtml(g.Title) + " · " + escHtml(fmtDate(g.Date)), "clipboard")}
+      const g=findGame(gameId);if(!g)return;const id=escJsArg(gameId),started=hasKickedOff(g);
+      const roster=g.roster||[],playing=roster.filter(function(r){return r.attendanceStatus==="Attended" || (r.status==="Yes"&&r.attendanceStatus!=="NoShow");});
+      const noShows=roster.filter(function(r){return r.attendanceStatus==="NoShow";});
+      const seen=playing.concat(noShows).map(function(r){return r.email;});
+      const others=Object.keys(appData.profiles||{}).map(function(k){return Object.assign({key:k},appData.profiles[k]);}).filter(function(p){return !p.isSystemAdminOnly&&String(p.status).toLowerCase()!=="suspended"&&seen.indexOf(p.key)===-1&&seen.indexOf(p.email)===-1;}).sort(function(a,b){return String(a.fullName).localeCompare(String(b.fullName));});
+      const row=function(r,noShow){const present=r.attendanceStatus==="Attended";return `<div class="p-2.5 rounded-2xl bg-[#0b130f] border border-emerald-950">
+        <div class="flex items-center gap-2.5 mb-1.5">${renderAvatarBadge(r.fullName,gf(g,"teams")?r.position:"")}<span class="min-w-0 flex-1 text-sm font-bold text-white truncate">${escHtml(r.fullName)}${r.guestNames&&r.guestNames.length?` <span class="text-xs text-emerald-300">+${r.guestNames.length}</span>`:""}</span>${present?`<span class="text-xs font-bold text-emerald-300">${escHtml(t("present"))}</span>`:""}</div>
+        <div class="grid ${noShow?"grid-cols-1":"grid-cols-2"} gap-2"><button type="button" ${present?"disabled":""} onclick="submitAttendanceChange('${id}','${escJsArg(r.email)}','Yes','')" class="tap rounded-xl ${present?"bg-slate-800 text-slate-400":"bg-emerald-950 text-emerald-300"} text-sm font-bold">${escHtml(present?t("present"):noShow?t("restorePresent"):t("markPresent"))}</button>
+        ${noShow?"":`<button type="button" ${started?"":"disabled"} onclick="confirmNoShow('${id}','${escJsArg(r.email)}','${escJsArg(r.fullName)}')" class="tap rounded-xl bg-rose-950 text-rose-300 text-sm font-bold ${started?"":"opacity-50"}" ${started?"":`title="${escHtml(t("reasonAfterKickoff"))}"`}>${escHtml(t("noShowBtn"))}</button>`}</div></div>`;};
+      renderSheetModal(`${sheetHeader(escHtml(t("toolAttendance")),escHtml(g.Title)+" · "+escHtml(fmtDate(g.Date)),"clipboard")}
+        <p class="text-sm text-slate-400 mb-3">${escHtml(t("attendanceHelp"))}</p>
         <label class="text-xs font-bold uppercase tracking-wide text-slate-400 block mb-1.5" for="walkin-select">${escHtml(t("addWalkIn"))}</label>
-        <div class="flex gap-2 mb-1">
-          <select id="walkin-select" class="tap flex-1 min-w-0 px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
-            <option value="">${escHtml(t("pickPlayer"))}</option>
-            ${others.map(function(p) { return `<option value="${escHtml(p.key)}">${escHtml(p.fullName)}</option>`; }).join("")}
-          </select>
-          <button type="button" id="walkin-add" onclick="submitAttendanceChange('${id}', byId('walkin-select').value, 'Yes', 'walkin-add')" class="tap px-5 rounded-2xl neon-btn text-base">${escHtml(t("addBtn"))}</button>
-        </div>
-        ${g.yesCount >= g.MaxCap ? `<p class="text-xs text-amber-300 mb-2">${escHtml(t("walkInOverCap"))}</p>` : ""}
-        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mt-4 mb-1.5">${escHtml(t("playingNow", { n: yes.length }))}</p>
-        <div class="space-y-1.5">${yes.map(function(r) {
-          return `<div class="flex items-center gap-2.5 p-2 rounded-2xl bg-[#0b130f] border border-emerald-950">
-            ${renderAvatarBadge(r.fullName, gf(g, "teams") ? r.position : "")}<span class="min-w-0 flex-1 text-sm font-bold text-white truncate">${escHtml(r.fullName)}${r.guestNames && r.guestNames.length ? ` <span class="text-xs text-emerald-300">+${r.guestNames.length}</span>` : ""}</span>
-            <button type="button" onclick="confirmNoShow('${id}','${escJsArg(r.email)}','${escJsArg(r.fullName)}')" class="tap px-3.5 rounded-xl bg-rose-950 text-rose-300 text-sm font-bold">${escHtml(t("noShowBtn"))}</button></div>`;
-        }).join("") || `<p class="text-sm text-slate-500 italic">${escHtml(t("noneYet"))}</p>`}</div>
-      `, "max-w-lg");
+        <div class="flex gap-2 mb-1"><select id="walkin-select" class="tap flex-1 min-w-0 px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"><option value="">${escHtml(t("pickPlayer"))}</option>${others.map(function(p){return `<option value="${escHtml(p.key)}">${escHtml(p.fullName)}</option>`;}).join("")}</select><button type="button" id="walkin-add" onclick="submitAttendanceChange('${id}',byId('walkin-select').value,'Yes','walkin-add')" class="tap px-5 rounded-2xl neon-btn text-base">${escHtml(t("addBtn"))}</button></div>
+        ${g.yesCount>=g.MaxCap?`<p class="text-xs text-amber-300 mb-2">${escHtml(t("walkInOverCap"))}</p>`:""}
+        ${!started?`<p class="text-xs text-slate-400 mt-2">${escHtml(t("attendanceNotStarted"))}</p>`:""}
+        <h4 class="text-xs font-bold uppercase tracking-wide text-slate-400 mt-4 mb-2">${escHtml(t("playingNow",{n:playing.length}))}</h4><div class="space-y-2">${playing.map(function(r){return row(r,false);}).join("")||`<p class="text-sm text-slate-500">${escHtml(t("noneYet"))}</p>`}</div>
+        ${noShows.length?`<h4 class="text-xs font-bold uppercase tracking-wide text-slate-400 mt-4 mb-2">${escHtml(t("noShowsTitle"))} (${noShows.length})</h4><div class="space-y-2">${noShows.map(function(r){return row(r,true);}).join("")}</div>`:""}`,"max-w-lg");
     }
+
     function confirmNoShow(gameId, email, name) {
       confirmDialog({ icon: "xCircle", danger: true, title: t("noShowConfirm", { name: name }), body: t("noShowBody"), okLabel: t("noShowBtn"),
         onOk: function() { submitAttendanceChange(gameId, email, "No", "confirm-ok-btn"); } });
@@ -2453,11 +2551,16 @@
       el.value = Math.max(0, Math.min(99, (parseInt(el.value, 10) || 0) + d));
       triggerHaptic();
     }
-    function submitFinalScore(gameId) {
-      const a = parseInt(byId("sc-white").value, 10), b = parseInt(byId("sc-dark").value, 10);
-      if (isNaN(a) || isNaN(b) || a < 0 || b < 0) { showToast(t("errScoreValue"), true); return; }
-      mutate("score-" + gameId, { action: "adminSaveScore", gameId: gameId, scoreWhite: a, scoreDark: b }, { button: "sc-save" });
+    function readScoreValue(value) {
+      const raw=String(value).trim();if(!/^\d+$/.test(raw))return null;
+      const n=Number(raw);return Number.isInteger(n)&&n>=0&&n<=99?n:null;
     }
+    function submitFinalScore(gameId) {
+      const a=readScoreValue(byId("sc-white").value),b=readScoreValue(byId("sc-dark").value);
+      if(a===null||b===null){showToast(t("errScoreValue"),true);return;}
+      mutate("score-"+gameId,{action:"adminSaveScore",gameId:gameId,scoreWhite:a,scoreDark:b},{button:"sc-save"});
+    }
+
 
     // ---- Announcement sheet --------------------------------------------------
     function openBlastSheet(gameId) {
@@ -2491,7 +2594,7 @@
       const profilesList = Object.keys(appData.profiles || {}).map(function(k) { return Object.assign({ key: k }, appData.profiles[k]); })
         .filter(function(p) { return !p.isSystemAdminOnly && String(p.status).toLowerCase() !== "suspended"; });
       profilesList.sort(function(a, b) { return (b.points || 0) - (a.points || 0) || (b.wins || 0) - (a.wins || 0) || (b.gamesPlayed || 0) - (a.gamesPlayed || 0) || String(a.fullName).localeCompare(String(b.fullName)); });
-      const completed = (appData.games || []).filter(function(g) { return !!g.hasStartedOrPassed && g.Status !== "Cancelled"; }).slice().reverse();
+      const completed = (appData.games || []).filter(function(g) { return isGameDisplayFinished(g) && g.Status !== "Cancelled"; }).slice().reverse();
       const riv = appData.rivalryStats || EMPTY_APP.rivalryStats;
       const me = myEmail();
       const rel = reliabilityOn();
@@ -2527,7 +2630,7 @@
               <span class="w-7 text-center text-sm font-extrabold ${i < 3 ? "text-amber-300" : "text-slate-400"}">${i + 1}</span>
               ${renderAvatarBadge(p.fullName, p.position)}
               <span class="min-w-0 flex-1"><span class="block text-sm font-bold text-white truncate">${escHtml(p.fullName)}</span>
-              <span class="block text-xs text-slate-400">${escHtml(wdl)} · ${escHtml(t("gpN", { n: p.gamesPlayed || 0 }))}${rel ? " · " + (p.reliability !== undefined ? p.reliability : 100) + "%" : ""}${F("featMotm") && p.motmCount ? " · ★" + p.motmCount : ""}</span></span>
+              <span class="block text-xs text-slate-400">${escHtml(wdl)} · ${escHtml(profileParticipationText(p))}${rel ? " · " + escHtml(reliabilityText(p)) : ""}${F("featMotm") && p.motmCount ? " · ★" + p.motmCount : ""}</span></span>
               <span class="text-right shrink-0"><span class="block text-lg font-extrabold text-[#00f59b] leading-none">${p.points || 0}</span><span class="block text-[10px] font-bold text-slate-400 uppercase">${escHtml(t("ptsShort"))}</span></span>
             </button></li>`;
           }).join("")}</ol>
@@ -2547,10 +2650,11 @@
       container.innerHTML = html;
     }
 
+    function isRecordedParticipant(r) { return r.attendanceStatus === "Attended" || (r.status === "Yes" && r.attendanceStatus !== "NoShow"); }
     function renderHistoryItem(g) {
       const id = escJsArg(g.GameID);
       const me = myEmail();
-      const yes = (g.roster || []).filter(function(r) { return r.status === "Yes"; });
+      const yes = (g.roster || []).filter(isRecordedParticipant);
       const myEntry = (g.roster || []).find(function(r) { return r.email === me; });
       const canManage = !!(currentUser && (currentUser.isAdmin || (gf(g, "captains") && g.captainEmail && g.captainEmail === me)));
       const candidates = yes.filter(function(p) { return p.email !== me; });
@@ -2562,14 +2666,14 @@
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="text-sm font-extrabold text-white truncate">${escHtml(g.Title)}</div>
-            <div class="text-xs text-slate-400">${escHtml(fmtDate(g.Date))} · ${escHtml(fmtTime(g.Time))} · ${escHtml(t("nPlayed", { n: g.yesCount || yes.length }))}</div>
+            <div class="text-xs text-slate-400">${escHtml(fmtDate(g.Date))} · ${escHtml(fmtTime(g.Time))} · ${escHtml(t(g.attendanceRecorded ? "verifiedN" : "signedUpN", { n: g.attendanceRecorded ? (g.verifiedAttendeeCount || 0) : (g.yesCount || yes.length) }))}</div>
           </div>
           ${g.hasScore ? `<div class="shrink-0 text-right"><div class="text-base font-extrabold text-white whitespace-nowrap">${escHtml(g.ScoreWhite)} – ${escHtml(g.ScoreDark)}</div><div class="text-[11px] text-slate-400 whitespace-nowrap">${escHtml(teamLabel("white"))} · ${escHtml(teamLabel("dark"))}</div></div>` : (scores ? `<span class="shrink-0 text-xs font-bold text-slate-400">${escHtml(t("noScore"))}</span>` : "")}
         </div>
         <details class="mt-1.5"><summary class="tap flex items-center text-sm font-semibold text-emerald-300 cursor-pointer">${escHtml(t("whoPlayed"))}</summary>
           <p class="text-sm text-slate-300 pb-1">${escHtml(yes.map(function(r) { return r.fullName; }).join(", ")) || escHtml(t("noneWord"))}</p></details>
         ${gf(g, "motm") && g.motmWinnerName ? `<div class="mt-1 text-sm font-bold text-amber-300 flex items-center gap-1.5">${ic("star", "w-4 h-4")}${escHtml(t("motmIs", { name: g.motmWinnerName, n: g.motmWinnerVotes }))}</div>` : ""}
-        ${gf(g, "motm") && myEntry && myEntry.status === "Yes" && candidates.length && !(currentUser && isSystemAdminOnly(currentUser.email)) ? `
+        ${gf(g, "motm") && myEntry && isRecordedParticipant(myEntry) && candidates.length && !(currentUser && isSystemAdminOnly(currentUser.email)) ? `
           <label class="block mt-2"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("voteMotm"))}</span>
             <select onchange="submitMotmVote('${id}', this.value)" class="tap mt-1 w-full px-3 rounded-2xl bg-[#111c16] border border-emerald-900 text-base text-white">
               <option value="">${escHtml(t("pickPlayer"))}</option>
@@ -2593,7 +2697,7 @@
       const isAdmin = !!(currentUser && currentUser.isAdmin);
       const scores = F("featScores"), teams = F("featTeams");
       const completed = (appData.games || []).filter(function(g) {
-        return !!g.hasStartedOrPassed && g.Status !== "Cancelled" && (g.roster || []).some(function(r) { return r.email === em && r.status === "Yes"; });
+        return isGameDisplayFinished(g) && g.Status !== "Cancelled" && (g.roster || []).some(function(r) { return r.email === em && isRecordedParticipant(r); });
       }).slice().reverse();
       const pills = completed.slice(0, 5).map(function(g) {
         if (!g.hasScore || !g.teams) return `<span class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 text-xs font-extrabold">✓</span>`;
@@ -2619,12 +2723,12 @@
           ${closeBtn()}
         </div>
         ${scores ? `<div class="grid grid-cols-4 gap-2 mb-3">
-          ${stat(t("ptsShort"), prof.points || 0, "text-[#00f59b]")}${stat(t("playedShort"), prof.gamesPlayed || 0)}${stat(t("winPct"), winRate + "%")}${stat("★", prof.motmCount || 0, "text-amber-300")}
+          ${stat(t("ptsShort"), prof.points || 0, "text-[#00f59b]")}${stat(t(F("featAttendance") ? "verifiedPresentShort" : "signedUpShort"), F("featAttendance") ? (prof.verifiedGamesPlayed || 0) : (prof.rsvpGamesCount || 0))}${stat(t("winPct"), winRate + "%")}${stat("★", prof.motmCount || 0, "text-amber-300")}
         </div>
         <div class="bg-[#0b130f] p-3 rounded-2xl border border-emerald-950 mb-2 flex items-center justify-between gap-2">
           <span class="text-sm font-bold text-slate-300">${escHtml(t("last5"))}</span><div class="flex gap-1">${pills || `<span class="text-sm text-slate-500 italic">${escHtml(t("noMatchesYet"))}</span>`}</div>
         </div>` : ""}
-        ${reliabilityOn() ? `<div class="text-sm text-slate-400 px-1">${escHtml(t("reliabilityLine", { n: prof.reliability !== undefined ? prof.reliability : 100 }))}</div>` : ""}
+        ${reliabilityOn() ? `<div class="text-sm text-slate-400 px-1">${escHtml(reliabilityText(prof))}</div>` : ""}
       `);
     }
 
@@ -2632,10 +2736,15 @@
     // MY PROFILE
     // =========================================================================
     function segmented(name, value, options) {
-      return `<div class="grid grid-cols-${options.length} gap-1.5" role="radiogroup">${options.map(function(o) {
+      return `<div class="grid grid-cols-${options.length} gap-1.5" role="radiogroup" aria-label="${escHtml(name === "theme" ? t("appearance") : name)}">${options.map(function(o) {
         const on = o[0] === value;
         return `<button type="button" role="radio" aria-checked="${on}" onclick="${o[2]}" class="tap rounded-xl border text-sm font-bold ${on ? "bg-emerald-950 text-[#00f59b] border-[#00f59b]/60" : "seg-off"}">${escHtml(o[1])}</button>`;
       }).join("")}</div>`;
+    }
+    function setProfileTheme(p) {
+      setThemePref(p);
+      const el=byId("prof-theme");
+      if(el)el.innerHTML=segmented("theme",themePref,[["auto",t("themeAuto"),"setProfileTheme('auto')"],["light",t("themeLight"),"setProfileTheme('light')"],["dark",t("themeDark"),"setProfileTheme('dark')"]]);
     }
     function openMyProfileModal() {
       if (!currentUser) { showLoginModal(); return; }
@@ -2665,7 +2774,7 @@
       };
       const isSys = isSystemAdminOnly(me);
       const statsBits = [];
-      if (reliabilityOn()) statsBits.push(t("reliabilityLine", { n: prof.reliability !== undefined ? prof.reliability : 100 }));
+      if (reliabilityOn()) statsBits.push(reliabilityText(prof));
       if (F("featScores")) statsBits.push(t("ptsN", { n: prof.points || 0 }));
       renderSheetModal(`
         <div class="flex items-start gap-3 mb-4">
@@ -2684,11 +2793,12 @@
             </select></label>`}
           ${teams && dt ? `<div class="px-3.5 py-2.5 rounded-2xl bg-[#0b130f] border border-emerald-950 text-sm text-slate-300 flex items-center gap-2">${shirtDot(teamShirt(dt))} ${escHtml(t("defaultTeamIs", { team: teamLabel(dt) }))}</div>` : ""}
           <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("prefNotify"))}</span>
-            <select id="prof-notify-pref" class="tap mt-1 w-full px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
+            <select id="prof-notify-pref" onchange="renderProfilePushState()" class="tap mt-1 w-full px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
               <option value="Both" ${curPref === "Both" ? "selected" : ""}>${escHtml(t("notifyBoth"))}</option>
               <option value="Push" ${curPref === "Push" ? "selected" : ""}>${escHtml(t("notifyPush"))}</option>
               <option value="Email" ${curPref === "Email" ? "selected" : ""}>${escHtml(t("notifyEmail"))}</option>
             </select></label>
+          <div id="profile-push-state">${profilePushStateHtml(curPref)}</div>
           <button type="button" onclick="enablePushTapped()" class="tap w-full px-4 rounded-2xl bg-emerald-950 border border-[#00f59b]/40 text-[#00f59b] text-sm font-bold text-left inline-flex items-center gap-2">${ic("bell", "w-5 h-5")}${escHtml(t("enablePushHere"))}</button>
           ${isSys ? "" : `<label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("awayUntil"))}</span>
             <input id="prof-away-input" type="date" min="${getTodayIso()}" value="${escHtml(currentUser.awayUntil || "")}" class="tap mt-1 w-full px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
@@ -2696,7 +2806,7 @@
         </div>
         <button type="button" id="prof-save" onclick="saveMyProfilePreferences()" class="tap-lg w-full rounded-2xl neon-btn text-base mb-4">${escHtml(t("saveBtn"))}</button>
         <div class="mb-4"><div class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">${escHtml(t("appearance"))}</div>
-          <div id="prof-theme">${segmented("theme", themePref, [["auto", t("themeAuto"), "setThemePref('auto'); openMyProfileModal()"], ["light", t("themeLight"), "setThemePref('light'); openMyProfileModal()"], ["dark", t("themeDark"), "setThemePref('dark'); openMyProfileModal()"]])}</div></div>
+          <div id="prof-theme">${segmented("theme", themePref, [["auto", t("themeAuto"), "setProfileTheme('auto')"], ["light", t("themeLight"), "setProfileTheme('light')"], ["dark", t("themeDark"), "setProfileTheme('dark')"]])}</div></div>
         ${nextGame ? `<h4 class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">${escHtml(t("myHistory"))}</h4>
         <div id="my-matches" class="space-y-1.5 mb-4">${matchRow(nextGame, true)}
           ${restCount ? `<div id="my-matches-rest" class="hidden space-y-1.5">${restUpcoming.map(function(g) { return matchRow(g, false); }).join("")}
@@ -2726,9 +2836,10 @@
     }
     function logout(silent) {
       const u = currentUser;
+      authEpoch++; pushVaultState=null; adminSettingsDraft={}; Object.keys(pendingGameChanges).forEach(function(k){delete pendingGameChanges[k];});
       if (u && !silent) apiPost({ action: "logout", requesterEmail: u.email, requesterPin: u.pin }, { silent: true, noAuth: true });
       unlinkOneSignal(); // this phone stops getting that player's pushes
-      lsDel("soccer_user"); lsDel("soccer_cached_data_v51");
+      lsDel("soccer_user"); lsDel("soccer_cached_data_v54"); lsDel("soccer_cached_data_v51");
       currentUser = null;
       appData = JSON.parse(JSON.stringify(EMPTY_APP));
       closeModal();
@@ -2792,7 +2903,7 @@
         const res = await apiPost({ action: "login", email: email, pin: pin }, { noAuth: true });
         setBusyButton("l-btn", false);
         if (res && res.success) {
-          currentUser = res.user;
+          authEpoch++; currentUser = res.user;
           lsSet("soccer_user", JSON.stringify(currentUser));
           setAppData(res.appData || {});
           closeModal(); applyThemeAndLanguageUI(); renderAuthBar(); switchTab("upcoming");
@@ -2842,7 +2953,7 @@
         if (res && res.success) {
           pendingInvite = null;
           try { history.replaceState(history.state, "", location.pathname); } catch (e) {}
-          currentUser = res.user; lsSet("soccer_user", JSON.stringify(currentUser));
+          authEpoch++; currentUser = res.user; lsSet("soccer_user", JSON.stringify(currentUser));
           setAppData(res.appData || {});
           closeModal(); applyThemeAndLanguageUI(); renderAuthBar(); switchTab("upcoming");
           showToast(t("welcome", { name: fullName.split(" ")[0] }));
@@ -2945,6 +3056,7 @@
       byId("view-container").innerHTML = `<div class="space-y-3">
         <nav class="grid grid-cols-4 sm:grid-cols-7 gap-1.5" aria-label="${escHtml(t("navAdmin"))}">${tabs}</nav>
         ${body}</div>`;
+      if(adminSection === "settings")restoreAdminDraft();
     }
     function adminCard(icon, title, inner, action, infoKey) {
       return `<section class="glass-card rounded-[28px] p-4 sm:p-5">
@@ -3004,6 +3116,12 @@
         <p class="text-xs text-slate-400 mt-3">${escHtml(t("tapMatchHint"))}</p>
       `, "", "hi_games");
     }
+    function nextWeekdayIso() {
+      let iso=getTodayIso();
+      for(let i=0;i<3;i++){const d=new Date(iso+"T12:00:00Z").getUTCDay();if(d!==0&&d!==6)return iso;iso=addDaysIso(iso,1);}
+      return iso;
+    }
+    function preferredFieldName() { const g=upcomingGames().find(function(x){return x.Status!=="Cancelled";});return g ? g.LocationName : ((activeFields()[0]||{}).Name||""); }
     function openGameForm(gameId) {
       const g = gameId ? findGame(gameId) : null;
       const s = S();
@@ -3014,11 +3132,11 @@
       renderSheetModal(`
         ${sheetHeader(g ? escHtml(t("editMatch")) : escHtml(t("newMatch")), g ? escHtml(g.Title) : "", g ? "pencil" : "plus")}
         <div class="space-y-3 mb-4">
-          ${fieldInput("g-title", t("titleLbl"), g ? g.Title : "", { attrs: 'maxlength="60" autocapitalize="words" placeholder="' + escHtml(t("titlePh")) + '"' })}
-          <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("fieldLbl"))}</span>${fieldSelect("g-loc", g ? g.LocationName : "")}</label>
+          ${fieldInput("g-title", t("titleLbl"), g ? g.Title : t("defaultMatchTitle"), { attrs: 'maxlength="60" autocapitalize="words" placeholder="' + escHtml(t("titlePh")) + '"' })}
+          <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("fieldLbl"))}</span>${fieldSelect("g-loc", g ? g.LocationName : preferredFieldName())}</label>
           <div class="grid grid-cols-2 gap-2">
-            ${fieldInput("g-date", t("dateLbl"), g ? g.Date : "", { type: "date" })}
-            <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("kickoffLbl"))}</span>${timeSelects("g-time", g ? g.Time : "12:00 PM")}</label>
+            ${fieldInput("g-date", t("dateLbl"), g ? g.Date : nextWeekdayIso(), { type: "date" })}
+            <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("kickoffLbl"))}</span>${timeSelects("g-time", g ? g.Time : "12:15 PM")}</label>
           </div>
           <div class="grid grid-cols-2 gap-2">
             ${fieldInput("g-min", t("minPlayers"), g ? g.MinThreshold : s.defaultMin, { type: "number", attrs: 'inputmode="numeric" min="2" max="60"' })}
@@ -3048,6 +3166,14 @@
     }
 
     // ---- Series --------------------------------------------------------------
+    function seriesEditEffectiveDate(sr) {
+      const future=(sr&&sr.scheduledChanges||[]).filter(function(x){return x.effectiveDate>=getTodayIso();}).slice().sort(function(a,b){return String(a.effectiveDate).localeCompare(String(b.effectiveDate));});
+      return future.length ? future[future.length-1].effectiveDate : getTodayIso();
+    }
+    function renderSeriesScheduledChanges(sr) {
+      const changes=(sr.scheduledChanges||[]).slice().sort(function(a,b){return String(a.effectiveDate).localeCompare(String(b.effectiveDate));});
+      return changes.length?`<div class="mt-2 space-y-1">${changes.map(function(change){const c=change.config||{};return `<p class="text-xs text-amber-300"><b>${escHtml(t("scheduledFrom",{date:fmtDate(change.effectiveDate)}))}:</b> ${escHtml(formatDaysBadges(c.DaysOfWeek))} · ${escHtml(fmtTime(c.Time))} · ${escHtml(c.LocationName||"")}</p>`;}).join("")}</div>`:"";
+    }
     function renderAdminSeries() {
       const list = appData.recurring || [];
       return adminCard("repeat", escHtml(t("adm_series")), `
@@ -3058,6 +3184,7 @@
             <div class="text-sm font-extrabold text-white">${escHtml(sr.Title)}</div>
             <div class="text-xs text-slate-400 mt-0.5">${escHtml(formatDaysBadges(sr.DaysOfWeek))} · ${escHtml(fmtTime(sr.Time))} · ${escHtml(sr.LocationName)}</div>
             <div class="text-xs text-slate-400">${escHtml(fmtDate(sr.StartDate))} → ${escHtml(fmtDate(sr.EndDate))} · ${escHtml(t("minMaxShort", { min: sr.MinThreshold, max: sr.MaxCap }))}</div>
+            ${renderSeriesScheduledChanges(sr)}
             <div class="grid grid-cols-2 gap-2 mt-2.5">
               <button type="button" onclick="openSeriesForm('${escJsArg(sr.SeriesID)}')" class="tap rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-sm font-bold inline-flex items-center justify-center gap-1.5">${ic("pencil", "w-4 h-4")}${escHtml(t("editBtn"))}</button>
               <button type="button" onclick="openStopSeries('${escJsArg(sr.SeriesID)}')" class="tap rounded-xl bg-rose-950 text-rose-300 text-sm font-bold inline-flex items-center justify-center gap-1.5">${ic("ban", "w-4 h-4")}${escHtml(t("stopBtn"))}</button>
@@ -3073,29 +3200,29 @@
       const sr = seriesId ? (appData.recurring || []).find(function(x) { return String(x.SeriesID) === String(seriesId); }) : null;
       const s = S();
       if (!activeFields().length) { showToast(t("needFieldFirst"), true); return; }
-      const days = sr ? String(sr.DaysOfWeek).split(",").map(function(x) { return x.trim(); }) : ["2", "4"];
+      const days = sr ? String(sr.DaysOfWeek).split(",").map(function(x) { return x.trim(); }) : ["1", "2", "3", "4", "5"];
       const names = currentLang === "es" ? ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"] : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       const order = ["1", "2", "3", "4", "5", "6", "0"];
       renderSheetModal(`
         ${sheetHeader(sr ? escHtml(t("editSeries")) : escHtml(t("newSeries")), sr ? escHtml(sr.Title) : escHtml(t("seriesHelp")), "repeat")}
         <div class="space-y-3 mb-4">
-          ${fieldInput("rec-title", t("titleLbl"), sr ? sr.Title : "", { attrs: 'maxlength="60" autocapitalize="words" placeholder="' + escHtml(t("seriesTitlePh")) + '"' })}
-          <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("fieldLbl"))}</span>${fieldSelect("rec-loc", sr ? sr.LocationName : "")}</label>
+          ${fieldInput("rec-title", t("titleLbl"), sr ? sr.Title : t("defaultMatchTitle"), { attrs: 'maxlength="60" autocapitalize="words" placeholder="' + escHtml(t("seriesTitlePh")) + '"' })}
+          <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("fieldLbl"))}</span>${fieldSelect("rec-loc", sr ? sr.LocationName : preferredFieldName())}</label>
           <fieldset><legend class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">${escHtml(t("daysLbl"))}</legend>
             <div class="grid grid-cols-7 gap-1">${order.map(function(d) {
               return `<label class="tap flex flex-col items-center justify-center rounded-xl border border-emerald-900 bg-[#0b130f] cursor-pointer text-xs font-bold text-white has-[:checked]:bg-emerald-950 has-[:checked]:text-[#00f59b]">
                 <input type="checkbox" name="rec-day" value="${d}" ${days.indexOf(d) !== -1 ? "checked" : ""} class="w-4 h-4 accent-[#00f59b] mb-0.5">${names[Number(d)]}</label>`;
             }).join("")}</div></fieldset>
-          <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("kickoffLbl"))}</span>${timeSelects("rec-time", sr ? sr.Time : "12:00 PM")}</label>
+          <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("kickoffLbl"))}</span>${timeSelects("rec-time", sr ? sr.Time : "12:15 PM")}</label>
           <div class="grid grid-cols-2 gap-2">
-            ${fieldInput("rec-start", t("startDate"), sr ? sr.StartDate : getTodayIso(), { type: "date" })}
+            ${fieldInput("rec-start", t("startDate"), sr ? sr.StartDate : nextWeekdayIso(), { type: "date" })}
             ${fieldInput("rec-end", t("endDate"), sr ? sr.EndDate : addDaysIso(getTodayIso(), 90), { type: "date" })}
           </div>
           <div class="grid grid-cols-2 gap-2">
             ${fieldInput("rec-min", t("minPlayers"), sr ? sr.MinThreshold : s.defaultMin, { type: "number", attrs: 'inputmode="numeric" min="2" max="60"' })}
             ${fieldInput("rec-max", t("maxPlayers"), sr ? sr.MaxCap : s.defaultMax, { type: "number", attrs: 'inputmode="numeric" min="2" max="60"' })}
           </div>
-          ${sr ? fieldInput("rec-effective", t("applyFrom"), getTodayIso(), { type: "date", help: t("applyFromHelp") }) : ""}
+          ${sr ? `<p class="text-sm text-amber-300">${escHtml(t("editingScheduledFrom",{date:fmtDate(seriesEditEffectiveDate(sr))}))}</p>` + fieldInput("rec-effective", t("applyFrom"), seriesEditEffectiveDate(sr), { type: "date", help: t("applyFromHelp") }) : ""}
         </div>
         <button type="button" id="rec-save" onclick="submitSeriesForm('${escJsArg(seriesId || "")}')" class="tap-lg w-full rounded-2xl neon-btn text-base">${escHtml(sr ? t("saveBtn") : t("createMatches"))}</button>
       `);
@@ -3248,9 +3375,9 @@
       };
       const suspended = String(p.status) === "Suspended";
       const canMessage = !p.isSystemAdminOnly && String(p.email).toLowerCase() !== myEmail();
-      const stats = [t("gpN", { n: p.gamesPlayed || 0 })];
+      const stats = [profileParticipationText(p)];
       if (teams) stats.unshift(t("pos_" + (p.position || "MID")));
-      if (reliabilityOn()) stats.push(p.reliability + "%");
+      if (reliabilityOn()) stats.push(reliabilityText(p));
       renderSheetModal(`
         <div class="flex items-start gap-3 mb-4">
           ${renderAvatarBadge(p.fullName, p.position, "lg")}
@@ -3373,23 +3500,28 @@
       `, "", "hi_features");
     }
     async function setFeature(key, value, el) {
-      const k = "feat-" + key;
-      if (inFlight[k]) { if (el) el.checked = !value; return; }
-      triggerHaptic();
-      const prev = S()[key];
-      appData.settings[key] = value;
-      if (key === "featTeams" && !value) { appData.settings.featScores = false; appData.settings.featMotm = false; }
-      if (key === "featScores" && !value) appData.settings.featMotm = false;
-      renderAdminView();
-      const payload = { action: "adminSaveLeagueSettings" };
-      payload[key] = value;
-      await mutate(k, payload, { closeSheet: false, okMessage: t("featSaved"), onError: function() { appData.settings[key] = prev; renderAdminView(); } });
-      applyThemeAndLanguageUI(); renderAuthBar();
+      const k="feat-"+key;if(inFlight[k]){if(el)el.checked=!!S()[key];return;}
+      triggerHaptic();if(el)el.disabled=true;
+      const payload={action:"adminSaveLeagueSettings"};payload[key]=value;
+      await mutate(k,payload,{closeSheet:false,okMessage:t("featSaved")});
+      applyThemeAndLanguageUI();renderAuthBar();renderCurrentTab();
     }
+
 
     // ---- Settings ------------------------------------------------------------
     function shirtSelect(id, current) {
       return `<select id="${id}" class="tap mt-1 w-full px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">${Object.keys(SHIRT_HEX).map(function(k) { return `<option value="${k}" ${k === current ? "selected" : ""}>${escHtml(capFirst(shirtName(k)))}</option>`; }).join("")}</select>`;
+    }
+    function renderNotificationStatus() {
+      const n=appData.system&&appData.system.notifications;if(!n)return "";
+      const items=[["notifyPending",n.pending],["notifyAccepted",n.accepted],["notifyNeedsReview",n.needsReview],["notifyExpired",n.expired]];
+      return `${subHead("bell",t("notificationStatus"),"")}
+        <div class="grid grid-cols-2 gap-2">${items.map(function(x){return `<div class="p-3 rounded-2xl bg-[#0b130f] border border-emerald-950"><p class="text-xs text-slate-400">${escHtml(t(x[0]))}</p><p class="text-lg font-extrabold text-white">${Number(x[1])||0}</p></div>`;}).join("")}</div>
+        <p class="text-xs text-slate-400 mt-2">${escHtml(t("notifyStatusHelp"))} ${escHtml(t("notifyChannelHelp"))}</p>
+        ${n.lastRunAt?`<p class="text-xs text-slate-400 mt-1">${escHtml(t("notifyLastRun",{time:n.lastRunAt}))}</p>`:""}
+        ${n.lastError?`<p class="text-xs text-amber-300 mt-1">${escHtml(t("notifyLastError",{message:n.lastError}))}</p>`:""}
+        <button type="button" id="notify-retry" onclick="mutate('retry-notify',{action:'adminRetryNotifications'},{button:'notify-retry',closeSheet:false})" class="tap w-full mt-2 rounded-xl bg-emerald-950 text-emerald-300 font-bold text-sm">${escHtml(t("notifyRetry"))}</button>
+        <p class="text-xs text-slate-400 mt-1">${escHtml(t("notifyRetryHelp"))}</p>`;
     }
     function renderAdminSettings() {
       const s = S(), sys = appData.system || {};
@@ -3415,12 +3547,13 @@
         ${subHead("book", t("rulesSetting"), "hi_rules")}
         ${rules ? `<textarea id="admin-rules-textarea" rows="5" maxlength="2000" placeholder="${escHtml(t("rulesFallback"))}" class="w-full p-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-sm text-white">${escHtml(appData.howWePlayRules || "")}</textarea>
         <p class="text-xs text-slate-400 mt-1 mb-2">${escHtml(t("rulesHelp"))}</p>
-        <button type="button" id="rules-save" onclick="mutate('rules', {action:'adminSaveHowWePlay', howWePlayRules: byId('admin-rules-textarea').value}, {button:'rules-save'})" class="tap w-full rounded-2xl bg-[#111c16] border border-emerald-900/60 text-white font-bold text-sm">${escHtml(t("saveRules"))}</button>`
+        <button type="button" id="rules-save" onclick="mutate('rules', {action:'adminSaveHowWePlay', howWePlayRules: byId('admin-rules-textarea').value}, {button:'rules-save',clearDraft:'rules'})" class="tap w-full rounded-2xl bg-[#111c16] border border-emerald-900/60 text-white font-bold text-sm">${escHtml(t("saveRules"))}</button>`
         : `<p class="text-sm text-slate-400">${escHtml(t("rulesOffHint"))}</p>`}
 
         ${subHead("bell", t("pushVault"), "hi_push")}
         <div id="push-vault-container">${renderPushVault()}</div>
 
+        ${renderNotificationStatus()}
         ${subHead("pulse", t("systemStatus"), "hi_status")}
         <div class="grid grid-cols-2 gap-2 text-sm">
           <div class="p-3 rounded-2xl bg-[#0b130f] border border-emerald-950"><div class="text-xs text-slate-400">${escHtml(t("emailQuota"))}</div><div class="text-lg font-extrabold ${sys.emailQuotaLeft !== undefined && sys.emailQuotaLeft < 20 ? "text-amber-300" : "text-white"}">${sys.emailQuotaLeft === undefined || sys.emailQuotaLeft < 0 ? "—" : sys.emailQuotaLeft}</div></div>
@@ -3439,7 +3572,7 @@
         if (a.toLowerCase() === b.toLowerCase()) { showToast(t("errTeamNamesSame"), true); return; }
         payload.teamAName = a; payload.teamAShirt = byId("st-a-shirt").value; payload.teamBName = b; payload.teamBShirt = byId("st-b-shirt").value;
       }
-      mutate("settings", payload, { button: "st-save" });
+      mutate("settings", payload, { button: "st-save", clearDraft: "settings" });
     }
     function renderPushVault() {
       if (!pushVaultState) {
@@ -3474,9 +3607,9 @@
     }
 
     // =========================================================================
-    // RSVP & EXTRAS — instant UI, automatic rollback if the save fails
+    // RSVP & EXTRAS — pending feedback, authoritative saves and cautious timeout checks
     // =========================================================================
-    function minutesToKickoff(g) { return Math.round((gameStartDate(g).getTime() - Date.now()) / 60000); }
+    function minutesToKickoff(g) { return Math.round((gameStartDate(g).getTime() - leagueNowMs()) / 60000); }
 
     function onRsvpTap(gameId, status) {
       if (!currentUser) { showLoginModal(); return; }
@@ -3511,76 +3644,36 @@
     }
 
     async function submitRsvp(gameId, status) {
-      const key = "rsvp-" + gameId;
-      if (inFlight[key]) return;
-      triggerHaptic();
-      const g = findGame(gameId); if (!g) return;
-      const snapshot = JSON.parse(JSON.stringify(g));
-      const me = myEmail();
-      g.roster = g.roster || [];
-      let entry = g.roster.find(function(r) { return r.email === me; });
-      const wasYes = entry && entry.status === "Yes";
-      let optimistic = status;
-      if (status === "Yes" && !wasYes && Number(g.yesCount || 0) >= Number(g.MaxCap || 18)) optimistic = "Waitlist";
-      const startsAsGK = !!(gf(g, "gk") && currentUser.position === "GK");
-      if (entry) {
-        entry.status = optimistic; entry.needsReconfirm = false;
-        if (optimistic === "Yes" && !wasYes) entry.playGK = startsAsGK;
-        if (optimistic !== "Yes") { entry.guestNames = []; entry.guestCount = 0; entry.bringBall = false; entry.bringPinnies = false; entry.playGK = false; entry.availabilityNote = ""; }
-      } else {
-        entry = { email: me, fullName: currentUser.fullName, position: currentUser.position || "MID", status: optimistic, bringBall: false, bringPinnies: false, playGK: optimistic === "Yes" && startsAsGK, guestNames: [], availabilityNote: "", timestamp: "" };
-        g.roster.push(entry);
-      }
-      entry.playPosition = effectivePos(entry.position, entry.playGK, g);
-      if (g.teams && optimistic !== "Yes") {
-        ["white", "dark"].forEach(function(side) { g.teams[side] = (g.teams[side] || []).filter(function(p) { return p.email !== me && p.hostEmail !== me; }); });
-      }
-      g.yesCount = g.roster.reduce(function(n, r) { return n + (r.status === "Yes" ? 1 + (r.guestNames ? r.guestNames.length : 0) : 0); }, 0);
-      rosterSubTabByGame[gameId] = optimistic === "Waitlist" ? "waitlist" : (optimistic === "Maybe" ? "maybe" : (optimistic === "No" ? "no" : "yes"));
-      renderCurrentTab();
-
-      await runAction(key, async function() {
-        const res = await apiPost({ action: "updateSignup", gameId: gameId, email: currentUser.email, status: status });
-        if (res && res.success) {
-          setAppData(res);
-          renderCurrentTab();
-          const fin = res.finalStatus || status;
-          showToast(res.message || (fin === "Yes" ? t("toastIn") : (fin === "Waitlist" ? t("toastWaitlist") : (fin === "Maybe" ? t("toastMaybe") : t("toastOut")))));
-          if (res.captainLeft) {
-            setTimeout(function() {
-              confirmDialog({ icon: "flag", title: t("captainLeftTitle"), body: t("captainLeftBody"), okLabel: t("stepDownBtn"), cancelLabel: t("keepCaptain"),
-                onOk: function() { mutate("stepdown-" + gameId, { action: "captainStepDown", gameId: gameId }, { button: "confirm-ok-btn" }); } });
-            }, 400);
-          }
-        } else {
-          replaceGame(snapshot);
-          renderCurrentTab();
-          if (res && res.error) showToast(res.error, true);
-          if (res && res.locked) syncFromBackend(true);
-        }
-      });
+      const key="rsvp-"+gameId;if(inFlight[key]||isGameSaving(gameId))return;
+      triggerHaptic();pendingGameChanges[gameId]=true;renderCurrentTab();
+      try {
+        await runAction(key,async function(){
+          if(!currentUser)return;const res=await apiPost({action:"updateSignup",gameId:gameId,email:currentUser.email,status:status});
+          if(res&&res.staleAuth)return;
+          if(res&&res.success&&setAppData(res)){
+            const fin=res.finalStatus||status;rosterSubTabByGame[gameId]=fin==="Waitlist"?"waitlist":fin==="Maybe"?"maybe":fin==="No"?"no":"yes";
+            showToast(res.message||t(fin==="Yes"?"toastIn":fin==="Waitlist"?"toastWaitlist":fin==="Maybe"?"toastMaybe":"toastOut"));
+            if(res.captainLeft)setTimeout(function(){confirmDialog({icon:"flag",title:t("captainLeftTitle"),body:t("captainLeftBody"),okLabel:t("stepDownBtn"),cancelLabel:t("keepCaptain"),onOk:function(){mutate("stepdown-"+gameId,{action:"captainStepDown",gameId:gameId},{button:"confirm-ok-btn"});}});},400);
+          }else if(res&&res.uncertain){
+            const refreshed=await reconcileUncertainSave();const fresh=findGame(gameId),entry=fresh&&(fresh.roster||[]).find(function(r){return r.email===myEmail();});
+            if(refreshed&&entry&&((entry.status===status&&(["Yes","Maybe"].indexOf(status)===-1||entry.needsReconfirm===false))||(status==="Yes"&&entry.status==="Waitlist")))showToast(t("saveVerified",{status:statusWord(entry.status)}));
+            else showToast(t("saveUncertain"),true);
+          }else if(res&&res.error)showToast(res.error,true);
+        });
+      }finally{delete pendingGameChanges[gameId];renderCurrentTab();}
     }
-
     async function toggleSignupExtra(gameId, field, value) {
-      const key = "extra-" + gameId + "-" + field;
-      if (inFlight[key]) return;
-      triggerHaptic();
-      const g = findGame(gameId); if (!g) return;
-      const snapshot = JSON.parse(JSON.stringify(g));
-      const entry = (g.roster || []).find(function(r) { return r.email === myEmail(); });
-      if (entry) { entry[field] = value; if (field === "playGK") entry.playPosition = effectivePos(entry.position, value, g); }
-      renderCurrentTab();
-      await runAction(key, async function() {
-        const res = await apiPost({ action: "updateSignupExtras", gameId: gameId, field: field, value: value });
-        if (res && res.success) { setAppData(res); renderCurrentTab(); if (res.message) showToast(res.message); }
-        else { replaceGame(snapshot); renderCurrentTab(); if (res && res.error) showToast(res.error, true); }
-      });
+      const key="extra-"+gameId+"-"+field;if(inFlight[key]||isGameSaving(gameId))return;
+      pendingGameChanges[gameId]=true;triggerHaptic();renderCurrentTab();
+      try {await mutate(key,{action:"updateSignupExtras",gameId:gameId,field:field,value:value},{closeSheet:false});}
+      finally{delete pendingGameChanges[gameId];renderCurrentTab();}
     }
+
 
     // =========================================================================
     // ANSWER BUTTONS IN EMAILS (?rsvp=Yes|Maybe|No&game=…&email=…&sig=…)
-    // Signed links save the answer straight away — no login, on any phone or computer.
-    // Older links without a signature: applied after logging in once on this phone.
+    // Signed links preview first; an explicit confirmation button saves without a login.
+    // Older links without a signature: log in, then explicitly confirm the intended answer.
     // =========================================================================
     let pendingEmailRsvp = null, pendingEmailAnswer = null;
     function readEmailRsvpLink() {
@@ -3594,23 +3687,52 @@
       try { history.replaceState(null, "", location.pathname); } catch (e) {} // a refresh must not answer again
     }
 
-    async function submitEmailAnswer(status) {
-      const a = pendingEmailAnswer;
-      if (!a) return;
-      if (status) a.status = status;
-      if (!a.result) renderEmailAnswerSheet({ saving: true });
-      else setBusyButton("ea-" + a.status, true);
-      const res = await runAction("email-answer", function() {
-        return apiPost({ action: "emailAnswer", email: a.email, gameId: a.gameId, status: a.status, sig: a.sig }, { noAuth: true, silent: true });
-      });
-      if (res === null && inFlight["email-answer"]) return;
-      if (!res) { renderEmailAnswerSheet({ error: t("errNetwork"), retry: true }); return; }
-      if (!res.success) { renderEmailAnswerSheet({ error: res.badLink ? t("eaBadLink") : (res.error || t("rsvpLinkGone")) }); return; }
-      a.result = res;
-      renderEmailAnswerSheet({ res: res });
-      triggerHaptic();
-      if (currentUser && myEmail() === res.email) syncFromBackend(true);
+    async function loadEmailAnswerPreview() {
+      const a=pendingEmailAnswer;if(!a)return;
+      const previewSeq=(a.previewSeq||0)+1,requestedStatus=a.status;a.previewSeq=previewSeq;a.preview=null;
+      renderSheetModal(`${sheetHeader(escHtml(t("eaConfirmTitle")),escHtml(t("eaConfirmSub")),"mail")}<p class="text-sm text-slate-300">${escHtml(t("eaPreviewLoading"))}</p>`,"max-w-sm");
+      const res=await apiPost({action:"previewEmailAnswer",email:a.email,gameId:a.gameId,status:requestedStatus,sig:a.sig},{noAuth:true,silent:true});
+      if(pendingEmailAnswer!==a || a.previewSeq!==previewSeq || a.status!==requestedStatus || (res&&res.staleAuth))return;
+      if(!res||!res.success){
+        renderSheetModal(`${sheetHeader(escHtml(t("eaConfirmTitle")),"","mail")}<p class="text-sm text-slate-300 mb-3">${escHtml(res&&res.badLink?t("eaBadLink"):(res&&res.error)||t("eaPreviewFailed"))}</p>
+          ${res&&res.badLink?"":`<button type="button" onclick="loadEmailAnswerPreview()" class="tap-lg w-full mb-2 rounded-2xl bg-slate-800 text-slate-200 font-bold">${escHtml(t("eaRetry"))}</button>`}
+          <button type="button" onclick="closeEmailAnswer(false);${currentUser?"switchTab('upcoming')":"showLoginModal('"+escJsArg(a.email)+"')"}" class="tap-lg w-full rounded-2xl neon-btn">${escHtml(currentUser?t("eaOpenApp"):t("eaLoginToSee"))}</button>
+          <button type="button" onclick="closeEmailAnswer(false)" class="tap w-full mt-2 text-slate-300 font-bold">${escHtml(t("closeBtn"))}</button>`,"max-w-sm");return;
+      }
+      a.preview=res;showEmailAnswerConfirmation();
     }
+    function showEmailAnswerConfirmation(status) {
+      const a=pendingEmailAnswer;if(!a)return;if(status){if(["Yes","Maybe","No"].indexOf(status)===-1)return;a.status=status;loadEmailAnswerPreview();return;}
+      const p=a.preview||a.result;
+      if(!p){loadEmailAnswerPreview();return;}
+      const g=p.game||{},current=p.currentStatus||p.finalStatus||"",leaving=current==="Yes"&&a.status!=="Yes";
+      renderSheetModal(`${sheetHeader(escHtml(t("eaConfirmTitle")),escHtml(t("eaConfirmSub")),"mail")}
+        <p class="text-sm text-slate-300 mb-3">${escHtml(t("eaConfirmFor",{name:p.playerName||a.email,email:a.email}))}</p>
+        <div class="p-3 rounded-2xl bg-[#0b130f] border border-emerald-950 mb-3"><p class="text-base font-bold text-white">${escHtml(g.Title||"")}</p><p class="text-sm text-slate-300">${escHtml(whenLabel(g))}</p><p class="text-sm text-slate-400">${escHtml(g.LocationName||"")}</p></div>
+        ${leaving?`<p class="text-sm text-amber-300 mb-3">${escHtml(t("eaReleaseGuests"))}${p.lateDropApplies?" "+escHtml(t("eaLateWarning")):""}</p>`:""}
+        <button type="button" id="ea-confirm" onclick="submitEmailAnswer()" class="tap-lg w-full rounded-2xl neon-btn text-base">${escHtml(t("eaConfirmAction",{status:statusWord(a.status)}))}</button>
+        <button type="button" onclick="closeEmailAnswer(false)" class="tap w-full mt-2 rounded-xl text-slate-300 font-bold text-sm">${escHtml(t("eaCancel"))}</button>`,"max-w-sm");
+    }
+    async function submitEmailAnswer() {
+      const a=pendingEmailAnswer;if(!a||!a.preview||inFlight["email-answer"])return;
+      setBusyButton("ea-confirm",true);
+      const res=await runAction("email-answer",function(){return apiPost({action:"emailAnswer",email:a.email,gameId:a.gameId,status:a.status,sig:a.sig},{noAuth:true,silent:true});});
+      if(pendingEmailAnswer!==a || (res&&res.staleAuth))return;
+      if(res&&res.uncertain){
+        const check=await apiPost({action:"previewEmailAnswer",email:a.email,gameId:a.gameId,status:a.status,sig:a.sig},{noAuth:true,silent:true});
+        if(pendingEmailAnswer!==a)return;
+        if(check&&check.success&&((check.currentStatus===a.status&&(["Yes","Maybe"].indexOf(a.status)===-1||check.needsReconfirm===false))||(a.status==="Yes"&&check.currentStatus==="Waitlist"))){
+          a.preview=check;a.result=Object.assign({},check,{finalStatus:check.currentStatus});renderEmailAnswerSheet({res:a.result});showToast(t("saveVerified",{status:statusWord(check.currentStatus)}));return;
+        }
+        if(check&&check.success)a.preview=check;
+        showEmailAnswerConfirmation();showToast(t("saveUncertain"),true);return;
+      }
+      if(!res||!res.success){showEmailAnswerConfirmation();showToast(res&&res.badLink?t("eaBadLink"):(res&&res.error)||t("errNetwork"),true);return;}
+      a.result=res;a.preview=Object.assign({},res,{currentStatus:res.finalStatus});renderEmailAnswerSheet({res:res});triggerHaptic();
+      if(currentUser&&myEmail()===res.email)syncFromBackend(true);
+    }
+
+
     function renderEmailAnswerSheet(st) {
       const a = pendingEmailAnswer || {};
       if (st.saving) {
@@ -3626,7 +3748,7 @@
         renderSheetModal(`<div class="text-center pt-1">
           <span class="w-14 h-14 mx-auto mb-3 rounded-full inline-flex items-center justify-center bg-amber-500/20 text-amber-300">${ic("alert", "w-7 h-7")}</span>
           <p class="text-base font-bold text-white leading-snug mb-4">${escHtml(st.error)}</p>
-          ${st.retry ? `<button type="button" onclick="submitEmailAnswer()" class="tap-lg w-full mb-2 rounded-2xl bg-slate-800 text-slate-200 font-bold text-base">${escHtml(t("eaRetry"))}</button>` : ""}
+          ${st.retry ? `<button type="button" onclick="loadEmailAnswerPreview()" class="tap-lg w-full mb-2 rounded-2xl bg-slate-800 text-slate-200 font-bold text-base">${escHtml(t("eaRetry"))}</button>` : ""}
           ${openBtn}</div>`, "max-w-sm");
         return;
       }
@@ -3638,10 +3760,10 @@
         Maybe: ["help", "bg-amber-500/20 text-amber-300", t("eaMaybe", { name: first })],
         No: ["xCircle", "bg-slate-800 text-slate-300", t("eaOut", { name: first })]
       }[fin] || ["check", "bg-[#00f59b]/20 text-[#00f59b]", t("saved")];
-      const confirmed = Number(g.yesCount) >= Number(g.MinThreshold);
+      const confirmed = Number(g.confirmedCount === undefined ? g.yesCount : g.confirmedCount) >= Number(g.MinThreshold);
       const segBtn = function(status, icon, label) {
         const on = fin === status || (status === "Yes" && fin === "Waitlist");
-        return `<button type="button" id="ea-${status}" onclick="submitEmailAnswer('${status}')" aria-pressed="${on}" class="tap-lg rounded-2xl border font-extrabold text-sm inline-flex items-center justify-center gap-1.5 ${on ? "bg-emerald-950 text-[#00f59b] border-[#00f59b]/60" : "seg-off"}">${ic(icon, "w-4 h-4", 2.6)}${escHtml(label)}</button>`;
+        return `<button type="button" id="ea-${status}" onclick="showEmailAnswerConfirmation('${status}')" aria-pressed="${on}" class="tap-lg rounded-2xl border font-extrabold text-sm inline-flex items-center justify-center gap-1.5 ${on ? "bg-emerald-950 text-[#00f59b] border-[#00f59b]/60" : "seg-off"}">${ic(icon, "w-4 h-4", 2.6)}${escHtml(label)}</button>`;
       };
       renderSheetModal(`
         <div class="text-center pt-1">
@@ -3653,7 +3775,7 @@
           <div class="text-base font-extrabold text-white">${escHtml(g.Title || "")}</div>
           <div class="text-sm text-slate-300 mt-1 flex items-center gap-1.5">${ic("calendar", "w-4 h-4 text-slate-400")}${escHtml(whenLabel({ Date: g.Date, Time: g.Time }))}</div>
           <div class="text-sm text-slate-300 flex items-center gap-1.5 min-w-0">${ic("pin", "w-4 h-4 text-slate-400")}<span class="truncate">${escHtml(g.LocationName || "")}</span></div>
-          <div class="mt-2 text-sm font-bold ${confirmed ? "text-[#00f59b]" : "text-amber-300"}">${g.yesCount}/${g.MaxCap} ${escHtml(t("playersIn"))} · ${escHtml(confirmed ? t("pillOn") : t("pillNeeds", { n: Math.max(0, Number(g.MinThreshold) - Number(g.yesCount)) }))}</div>
+          <div class="mt-2 text-sm font-bold ${confirmed ? "text-[#00f59b]" : "text-amber-300"}">${g.yesCount}/${g.MaxCap} ${escHtml(t("playersIn"))} · ${escHtml(confirmed ? t("pillOn") : t("pillNeeds", { n: Math.max(0, Number(g.MinThreshold) - Number(g.confirmedCount === undefined ? g.yesCount : g.confirmedCount)) }))}</div>
         </div>
         <div class="mt-4 text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">${escHtml(t("eaChange"))}</div>
         <div class="grid grid-cols-3 gap-2 mb-4">${segBtn("Yes", "check", t("rsvpIn"))}${segBtn("Maybe", "help", t("rsvpMaybe"))}${segBtn("No", "x", t("rsvpOut"))}</div>
@@ -3669,6 +3791,7 @@
       if (activeTab !== "upcoming") switchTab("upcoming");
       expandedGames[a.gameId] = true;
       renderCurrentTab();
+      syncFromBackend(true);
       setTimeout(function() { const el = byId("game-" + a.gameId); if (el) try { el.scrollIntoView({ block: "start", behavior: "smooth" }); } catch (e) {} }, 60);
     }
 
@@ -3690,7 +3813,7 @@
       setTimeout(function() {
         const el = byId("game-" + r.gameId);
         if (el) try { el.scrollIntoView({ block: "start" }); } catch (e) {}
-        onRsvpTap(r.gameId, r.status);
+        confirmDialog({icon:"mail",title:t("eaConfirmAction",{status:statusWord(r.status)}),body:t("eaLegacyConfirm",{name:currentUser.fullName})+" "+whenLabel(g),okLabel:t("confirmBtn"),onOk:function(){closeModal();onRsvpTap(r.gameId,r.status);}});
       }, 60);
     }
 
@@ -3721,8 +3844,8 @@
     renderAuthBar();
     renderCurrentTab();
     if (pendingEmailAnswer) {
-      // save the email answer first; then (if this phone is logged in) load the fresh league data
-      submitEmailAnswer().then(function() { if (currentUser) { fetchWeatherForAllGamesAsync(); syncFromBackend(true); initOneSignalSdkIfConfigured(); } });
+      // Preview the email link without changing the answer; the user must explicitly confirm.
+      loadEmailAnswerPreview().then(function() { if (currentUser) { fetchWeatherForAllGamesAsync(); syncFromBackend(true); initOneSignalSdkIfConfigured(); } });
     } else if (currentUser) {
       fetchWeatherForAllGamesAsync();
       syncFromBackend(true);           // an older email answer is applied once fresh data arrives
