@@ -24,7 +24,7 @@
   <link rel="apple-touch-icon" sizes="192x192" href="pitch-pulse-01-classic-stitched-192.png?v=5.0">
   <link rel="manifest" id="pwa-manifest-link">
 
-  <title>Pitch Pulse League · Layout preview 2</title>
+  <title>Pitch Pulse League · Navigation preview 3</title>
 
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
@@ -1424,6 +1424,208 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
   }
 }
 
+/* Navigation consolidation: the same match actions and setup forms, grouped by task.
+ * Inline after responsive-layout.css. No visibility or permission decisions live here.
+ */
+body {
+  --pp-erg-surface: #101a14;
+  --pp-erg-subtle: #0b130f;
+  --pp-erg-line: rgba(148,163,184,.22);
+  --pp-erg-ink: #f1f5f9;
+  --pp-erg-muted: #a4b1ab;
+  --pp-erg-accent: #8de0b7;
+  --pp-erg-radius: 18px;
+}
+body.light-mode {
+  --pp-erg-surface: #fff;
+  --pp-erg-subtle: #f5f7f6;
+  --pp-erg-line: #dce3df;
+  --pp-erg-ink: #17251e;
+  --pp-erg-muted: #56675c;
+  --pp-erg-accent: #047857;
+}
+body:is([data-design="iphone"],[data-design="android"]) {
+  --pp-erg-surface: var(--pp-skin-surface);
+  --pp-erg-subtle: var(--pp-skin-surface-2);
+  --pp-erg-line: var(--pp-skin-line);
+  --pp-erg-ink: var(--pp-skin-ink);
+  --pp-erg-muted: var(--pp-skin-muted);
+  --pp-erg-accent: var(--pp-skin-accent);
+  --pp-erg-radius: var(--pp-skin-card-radius);
+}
+
+.ergonomic-page { width: 100%; max-width: 920px; margin-inline: auto; min-width: 0; }
+body #view-container > .ergonomic-page > * + * { margin-top: 12px; }
+.settings-groups { display: grid; gap: 10px; min-width: 0; }
+.settings-group-label { margin: 6px 2px 0; font-size: 12px; font-weight: 700; line-height: 1.4; color: var(--pp-erg-muted); }
+
+body .setup-disclosure {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--pp-erg-line);
+  border-radius: var(--pp-erg-radius);
+  background: var(--pp-erg-surface);
+  color: var(--pp-erg-ink);
+}
+body .setup-summary {
+  display: grid;
+  grid-template-columns: 22px minmax(0,1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 12px 14px;
+  border-radius: inherit;
+  cursor: pointer;
+  list-style: none;
+  touch-action: manipulation;
+}
+.setup-summary::-webkit-details-marker { display: none; }
+.setup-summary::marker { content: ""; }
+.setup-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; color: var(--pp-erg-accent); }
+.setup-icon .ic { width: 20px; height: 20px; }
+.setup-copy { min-width: 0; }
+.setup-title { display: block; font-size: 15px; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+.setup-hint { display: block; margin-top: 2px; font-size: 12px; line-height: 1.4; color: var(--pp-erg-muted); overflow-wrap: anywhere; }
+.setup-count { font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--pp-erg-muted); white-space: nowrap; }
+.setup-chevron { display: inline-flex; align-items: center; justify-content: center; width: 18px; color: var(--pp-erg-muted); transition: transform .18s ease; }
+.setup-chevron .ic { width: 18px; height: 18px; }
+.setup-disclosure[open] > .setup-summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.setup-disclosure[open] > .setup-summary .setup-chevron { transform: rotate(180deg); }
+.setup-disclosure[open] > .setup-summary { border-bottom: 1px solid var(--pp-erg-line); }
+.setup-body { min-width: 0; padding: 14px; }
+.setup-body > :first-child { margin-top: 0; }
+.setup-body > :last-child { margin-bottom: 0; }
+
+/* Existing renderers can retain their form controls and help buttons without
+ * placing another card border and large padding inside the disclosure.
+ */
+body[data-design] .setup-body > .glass-card {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0;
+  box-shadow: none !important;
+  padding: 0;
+}
+.setup-body :is(input,textarea,select) { min-width: 0; max-width: 100%; }
+
+.games-tools { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-width: 0; }
+.games-tools > .setup-disclosure { flex: 1 1 160px; }
+.games-tools > .setup-disclosure[open] { flex-basis: 100%; }
+.games-tools .setup-summary,
+.setup-disclosure--compact > .setup-summary { min-height: 44px; padding-block: 9px; }
+.games-tools .setup-title,
+.setup-disclosure--compact .setup-title { font-size: 14px; }
+.games-subnav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--pp-erg-line);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--pp-erg-accent);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.35;
+  text-align: center;
+}
+.games-subnav .ic { width: 18px; height: 18px; }
+.game-create-actions { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,220px),1fr)); gap: 8px; margin-bottom: 16px; }
+.game-create-actions > button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-height: 48px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.game-create-actions > button > span { min-width: 0; overflow-wrap: anywhere; }
+
+body .settings-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  min-height: 72px;
+  padding: 14px;
+  border: 1px solid var(--pp-erg-line);
+  border-radius: var(--pp-erg-radius);
+  background: var(--pp-erg-surface);
+  color: var(--pp-erg-ink);
+  text-align: left;
+}
+.settings-account-copy { min-width: 0; flex: 1; }
+.settings-account-copy > :is(strong,.setup-title) { display: block; margin-top: 0; font-size: 16px; line-height: 1.35; font-weight: 700; color: var(--pp-erg-ink); overflow-wrap: anywhere; }
+.settings-account-copy > span { display: block; margin-top: 3px; font-size: 13px; line-height: 1.4; color: var(--pp-erg-muted); overflow-wrap: anywhere; }
+.settings-account > .ic { flex-shrink: 0; color: var(--pp-erg-muted); }
+.settings-page-note { font-size: 12px; line-height: 1.5; color: var(--pp-erg-muted); padding-inline: 2px; }
+
+/* A player's status labels must not squeeze their name out of a cover screen.
+ * The original four children and click handler remain unchanged, including
+ * when search replaces just the result rows.
+ */
+#players-directory { min-width: 0; container-type: inline-size; container-name: players-directory; }
+@container players-directory (max-width: 560px) {
+  body #players-results > button {
+    display: grid;
+    grid-template-columns: 32px minmax(0,1fr) 18px;
+    align-items: center;
+    gap: 4px 10px;
+    min-width: 0;
+  }
+  body #players-results > button > span:first-child { grid-column: 1; grid-row: 1; }
+  body #players-results > button > span.min-w-0 { grid-column: 2; grid-row: 1; }
+  body #players-results > button > span:last-of-type {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  body #players-results > button > span:last-of-type:empty { display: none; }
+  body #players-results > button > svg:last-child { grid-column: 3; grid-row: 1; width: 18px; }
+}
+
+/* Different materials keep the three styles identifiable without adding
+ * permanent setup navigation or decorative dashboard tiles.
+ */
+body[data-design="iphone"] .setup-summary { padding-inline: 14px; }
+body[data-design="iphone"] .setup-disclosure { border-radius: 14px; }
+body[data-design="iphone"] .setup-title { font-weight: 650; }
+body[data-design="iphone"] .settings-account { border-radius: 16px; }
+body[data-design="android"] .setup-disclosure { border-radius: 22px; }
+body[data-design="android"] .setup-summary { padding-inline: 16px; }
+body[data-design="android"] .setup-disclosure[open] > .setup-summary { background: var(--pp-erg-subtle); }
+body[data-design="android"] .games-subnav { border-radius: 999px; background: var(--pp-erg-subtle); border-color: transparent; }
+body[data-design="android"] .game-create-actions > button { border-radius: 20px; }
+
+@media (max-width: 379px) {
+  body .setup-summary { gap: 8px; padding-inline: 11px; }
+  .setup-title { font-size: 14px; }
+  .setup-count { max-width: 78px; white-space: normal; text-align: right; }
+  .setup-body { padding: 11px; }
+  .settings-account-copy > :is(strong,.setup-title) { font-size: 15px; }
+  .games-subnav { padding-inline: 10px; }
+}
+@media (min-width: 640px) {
+  .setup-body { padding: 18px; }
+}
+@media (hover:hover) and (pointer:fine) {
+  .setup-summary:hover,
+  body .settings-account:hover,
+  .games-subnav:hover { background: var(--pp-erg-subtle); }
+}
+
   </style>
   <script>
     // Safety net: if the page ever shows a class the pre-built block above doesn't cover
@@ -1553,19 +1755,16 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
   <div id="toast-root" class="fixed left-0 right-0 z-[60] px-3 flex flex-col items-center gap-2 pointer-events-none" style="bottom: calc(86px + env(safe-area-inset-bottom));"></div>
 
   <!-- Bottom tab bar -->
-  <nav id="mobile-bottom-dock" style="display: none;" class="dock fixed bottom-0 left-0 right-0 z-40 pb-safe">
+  <nav id="mobile-bottom-dock" style="display: none;" class="dock fixed bottom-0 left-0 right-0 z-40 pb-safe" aria-label="Main navigation">
     <div id="mobile-dock-grid" class="grid grid-cols-3 gap-1 px-2 pt-1.5 max-w-lg mx-auto">
       <button type="button" onclick="navigateTab('upcoming')" id="mob-nav-upcoming" class="dock-btn tap-lg">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="3.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4M8 14h2M14 14h2M8 17.5h2"/></svg><span id="mob-lbl-upcoming"></span>
       </button>
-      <button type="button" onclick="navigateTab('history')" id="mob-nav-history" class="dock-btn tap-lg">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 16.5V21M7 3.5h10v5.5a5 5 0 0 1-10 0V3.5z"/><path d="M17 5h3v1.5A3.5 3.5 0 0 1 16.6 10M7 5H4v1.5A3.5 3.5 0 0 0 7.4 10"/></svg><span id="mob-lbl-history"></span>
+      <button type="button" onclick="navigateTab('players')" id="mob-nav-players" class="hidden dock-btn tap-lg" hidden>
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.3c2.2.7 3.5 2.8 3.5 5.7"/></svg><span id="mob-lbl-players"></span>
       </button>
-      <button type="button" onclick="openMyProfileModal()" id="mob-nav-profile" class="dock-btn tap-lg">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"/></svg><span id="mob-lbl-profile"></span>
-      </button>
-      <button type="button" onclick="navigateTab('admin')" id="mob-nav-admin" class="hidden dock-btn tap-lg">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l8 3v6.2c0 5-3.4 8.6-8 9.8-4.6-1.2-8-4.8-8-9.8V5.5l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span id="mob-lbl-admin"></span>
+      <button type="button" onclick="navigateTab('settings')" id="mob-nav-settings" class="dock-btn tap-lg">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg><span id="mob-lbl-settings"></span>
       </button>
     </div>
   </nav>
@@ -2014,6 +2213,43 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
   "previewMotionUnavailable": "La vista de movimiento no está disponible en este navegador."
 });
 
+    Object.assign(I18N.en, {
+  "navPlayers": "Players",
+  "navSettings": "Settings",
+  "mainNavigation": "Main navigation",
+  "manageGames": "Manage games",
+  "newSingleMatch": "New single match",
+  "newRecurringSeries": "New recurring series",
+  "recurringSeries": "Recurring series",
+  "backToGames": "Back to games",
+  "invitationsTitle": "Invitations",
+  "profilePreferences": "Profile, notifications & appearance",
+  "leagueSetup": "League setup",
+  "leagueSettings": "League settings",
+  "fieldsSetupHelp": "Add, review or edit places to play",
+  "featuresSetupHelp": "Choose which features the league uses",
+  "leagueSetupHelp": "Teams, defaults, rules & notifications",
+  "designPreview": "Navigation preview 3"
+});
+    Object.assign(I18N.es, {
+  "navPlayers": "Jugadores",
+  "navSettings": "Ajustes",
+  "mainNavigation": "Navegación principal",
+  "manageGames": "Gestionar partidos",
+  "newSingleMatch": "Nuevo partido",
+  "newRecurringSeries": "Nueva serie recurrente",
+  "recurringSeries": "Series recurrentes",
+  "backToGames": "Volver a partidos",
+  "invitationsTitle": "Invitaciones",
+  "profilePreferences": "Perfil, notificaciones y apariencia",
+  "leagueSetup": "Configuración de la liga",
+  "leagueSettings": "Ajustes de la liga",
+  "fieldsSetupHelp": "Agregar, revisar o editar canchas",
+  "featuresSetupHelp": "Elegir las funciones que usa la liga",
+  "leagueSetupHelp": "Equipos, valores por defecto, reglas y avisos",
+  "designPreview": "Vista de navegación 3"
+});
+
     function t(key, params) {
       const dict = I18N[currentLang] || I18N.en;
       let s = dict[key] !== undefined ? dict[key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
@@ -2442,7 +2678,7 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
     }
     function hasUnsavedSettings() { return Object.keys(adminSettingsDraft).length > 0; }
     function captureAdminDraft(target) {
-      if(activeTab!=="admin" || adminSection!=="settings" || !target)return;
+      if(!currentUser || !currentUser.isAdmin || (activeTab!=="settings" && !(activeTab==="admin" && adminSection==="settings")) || !target)return;
       const map={"st-a-name":"teamAName","st-a-shirt":"teamAShirt","st-b-name":"teamBName","st-b-shirt":"teamBShirt","st-min":"defaultMin","st-max":"defaultMax"};
       const id=target.id;if(id!=="admin-rules-textarea"&&!map[id])return;
       const baseline=id==="admin-rules-textarea"?String(appData.howWePlayRules||""):String(S()[map[id]]);
@@ -3244,9 +3480,9 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
       const before = activeTab;
       switchTab(tab);
       if (currentUser && activeTab !== before) {
-        const order = ["upcoming", "history", "admin"];
-        animateNavigationSurface(byId("view-container"), "navigation", order.indexOf(activeTab) - order.indexOf(before));
-        const button = byId("mob-nav-" + activeTab);
+        const order = ["upcoming", "players", "settings"];
+        animateNavigationSurface(byId("view-container"), "navigation", order.indexOf(activeTab === "history" ? "upcoming" : activeTab) - order.indexOf(before === "history" ? "upcoming" : before));
+        const button = byId("mob-nav-" + (activeTab === "history" ? "upcoming" : activeTab));
         if (button) presentationMotion.selection(button.querySelector(".ic"));
       }
     }
@@ -3438,6 +3674,220 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
       </section>`;
     }
 
+    // Three primary destinations. Setup panels reuse the existing league forms.
+    const SETUP_KEYS = ["games", "series", "pastgames", "invites", "fields", "features", "league"];
+    const setupUiAccounts = new Map();
+    let setupUiEpoch = authEpoch;
+    function setupUiState() {
+      if (setupUiEpoch !== authEpoch) { setupUiAccounts.clear(); setupUiEpoch = authEpoch; }
+      const account = presentationAccount();
+      if (!account) return { open: {}, inviteDraft: "", playerFilter: "" };
+      if (!setupUiAccounts.has(account)) setupUiAccounts.set(account, { open: {}, inviteDraft: "", playerFilter: "" });
+      const state = setupUiAccounts.get(account);
+      if (!currentUser.isAdmin) { state.open = {}; state.inviteDraft = ""; state.playerFilter = ""; }
+      return state;
+    }
+    function resetSetupUi() {
+      setupUiAccounts.clear();
+      playerFilter = "";
+    }
+    function setupDisclosure(key, icon, title, hint, body, count) {
+      const open = !!setupUiState().open[key];
+      return `<details id="setup-${key}" class="setup-disclosure" data-setup-key="${key}" ${open ? "open" : ""} ontoggle="setSetupExpanded('${key}',this)">
+        <summary class="setup-summary">
+          <span class="setup-icon" aria-hidden="true">${ic(icon,"w-5 h-5")}</span>
+          <span class="setup-copy"><span class="setup-title">${escHtml(title)}</span>${hint ? `<span class="setup-hint">${escHtml(hint)}</span>` : ""}</span>
+          ${count === undefined || count === null ? "" : `<span class="setup-count">${escHtml(count)}</span>`}
+          <span class="setup-chevron" aria-hidden="true">${ic("chevDown","w-4 h-4")}</span>
+        </summary>
+        <div class="setup-body">${body}</div>
+      </details>`;
+    }
+    function setSetupExpanded(key, element) {
+      if (!currentUser || !currentUser.isAdmin || SETUP_KEYS.indexOf(key) === -1 || !element || element.isConnected === false) return;
+      // Native details keeps its existing inputs, values, focus and scroll position.
+      setupUiState().open[key] = !!element.open;
+    }
+    function legacySetupRoute(section) {
+      const map = {
+        games: ["upcoming", "games"], series: ["upcoming", "series"],
+        players: ["players", ""], invites: ["players", "invites"],
+        fields: ["settings", "fields"], features: ["settings", "features"], settings: ["settings", "league"]
+      };
+      return map[section] || map.games;
+    }
+    function openSetupSection(section) {
+      if (!currentUser || !currentUser.isAdmin) { switchTab("upcoming"); return; }
+      const route = legacySetupRoute(section);
+      adminSection = section;
+      lsSet("soccer_admin_section", section);
+      if (route[1]) setupUiState().open[route[1]] = true;
+      if (route[1] === "series" || route[1] === "pastgames") setupUiState().open.games = true;
+      navigateTab(route[0]);
+      const panel = route[1] ? byId("setup-" + route[1]) : null;
+      if (panel) {
+        panel.open = true;
+        const summary = panel.querySelector("summary");
+        if (summary) try { summary.focus({ preventScroll: true }); } catch (e) {}
+        if (panel.scrollIntoView) panel.scrollIntoView({ block: "nearest", behavior: "auto" });
+      }
+    }
+    function guardErgonomicRoute() {
+      if (!currentUser) return;
+      if (activeTab === "admin") {
+        const route = legacySetupRoute(adminSection);
+        activeTab = currentUser.isAdmin ? route[0] : "upcoming";
+        if (currentUser.isAdmin && route[1]) {
+          setupUiState().open[route[1]] = true;
+          if (route[1] === "series") setupUiState().open.games = true;
+        }
+      }
+      if (!currentUser.isAdmin) {
+        setupUiState();
+        adminSettingsDraft = {};
+        pushVaultState = null;
+        playerFilter = "";
+        if (activeTab === "players") activeTab = "upcoming";
+      }
+      if (["upcoming", "history", "players", "settings"].indexOf(activeTab) === -1) activeTab = "upcoming";
+      if (activeTab === "history" && !standingsOn()) activeTab = "upcoming";
+    }
+    function switchErgonomicTab(tab) {
+      if (!currentUser) { renderLockedGateView(); return; }
+      if (tab === "admin") { openSetupSection(adminSection); return; }
+      activeTab = tab === "profile" ? "settings" : tab;
+      guardErgonomicRoute();
+      triggerHaptic();
+      updateViewTitle();
+      highlightDock();
+      renderCurrentTab();
+      window.scrollTo(0, 0);
+    }
+    function updateErgonomicViewTitle() {
+      const title = byId("mobile-active-view-title");
+      if (title) title.textContent = t(activeTab === "settings" ? "navSettings" : activeTab === "players" ? "navPlayers" : activeTab === "history" ? "standingsTitle" : "navGames");
+      [["mob-lbl-upcoming", "navGames"], ["mob-lbl-players", "navPlayers"], ["mob-lbl-settings", "navSettings"]].forEach(function(pair) {
+        const label = byId(pair[0]); if (label) label.textContent = t(pair[1]);
+      });
+      const dock = byId("mobile-bottom-dock"); if (dock) dock.setAttribute("aria-label", t("mainNavigation"));
+      const rules = byId("how-we-play-btn"); if (rules) rules.classList.toggle("hidden", activeTab !== "upcoming" || !F("featRules"));
+      const drawer = byId("how-we-play-drawer"); if (drawer && activeTab !== "upcoming") drawer.classList.add("hidden");
+    }
+    function highlightErgonomicDock() {
+      const selected = activeTab === "history" ? "upcoming" : activeTab;
+      ["upcoming", "players", "settings"].forEach(function(tab) {
+        const button = byId("mob-nav-" + tab); if (!button) return;
+        if (tab === selected) button.setAttribute("aria-current", "page"); else button.removeAttribute("aria-current");
+      });
+    }
+    function renderErgonomicAuthBar() {
+      guardErgonomicRoute();
+      const signedIn = !!currentUser, admin = !!(currentUser && currentUser.isAdmin);
+      const bar = byId("nav-tabs-bar"), dock = byId("mobile-bottom-dock"), grid = byId("mobile-dock-grid"), people = byId("mob-nav-players"), desktop = byId("desktop-auth-bar");
+      if (bar) { bar.classList.toggle("hidden", !signedIn); bar.classList.toggle("flex", signedIn); }
+      if (dock) dock.style.display = signedIn ? "block" : "none";
+      if (people) { people.hidden = !admin; people.classList.toggle("hidden", !admin); }
+      if (grid) grid.className = "grid " + (admin ? "grid-cols-3" : "grid-cols-2") + " gap-1 px-2 pt-1.5 max-w-lg mx-auto";
+      if (desktop) desktop.innerHTML = signedIn
+        ? `<button type="button" onclick="navigateTab('settings')" class="hdr-btn">${ic("user")}<span>${escHtml(currentUser.fullName)}</span></button>`
+        : `<button type="button" onclick="showLoginModal()" class="tap px-4 rounded-xl text-sm neon-btn">${escHtml(t("loginBtn"))}</button>`;
+      updateViewTitle();
+      highlightDock();
+    }
+    function renderErgonomicCurrentTab() {
+      cancelPresentationAnimations(); disconnectRsvpAttention();
+      if (!currentUser) { renderLockedGateView(); return; }
+      guardErgonomicRoute();
+      renderAuthBar(); hideInfoPop(); destroyCardMaps();
+      const y = window.scrollY;
+      if (activeTab === "players") renderPlayersView();
+      else if (activeTab === "settings") renderSettingsView();
+      else if (activeTab === "history") {
+        renderHistoryAndDirectoryView();
+        const container = byId("view-container");
+        container.innerHTML = `<div class="games-tools"><button type="button" class="games-subnav" onclick="navigateTab('upcoming')">${ic("calendar","w-4 h-4")}${escHtml(t("backToGames"))}</button></div>` + container.innerHTML;
+      } else renderUpcomingGamesView();
+      window.scrollTo(0, y);
+    }
+    function renderErgonomicAdminView() {
+      // Existing search/vault callbacks may still ask to refresh the admin view.
+      // Refresh the current destination, retaining disclosure state and drafts.
+      renderCurrentTab();
+    }
+    function renderGamesTools() {
+      if (!currentUser) return "";
+      let tools = "";
+      if (currentUser.isAdmin) {
+        const series = appData.recurring || [];
+        const past = (appData.games || []).filter(function(game) { return game.Date < getTodayIso(); }).slice().reverse().slice(0, 15);
+        const noFields = activeFields().length === 0;
+        const body = `${noFields ? `<p class="text-sm text-amber-300 mb-2">${escHtml(t("needFieldFirst"))} <button type="button" class="tap px-2 font-bold" onclick="openSetupSection('fields')">${escHtml(t("addField"))}</button></p>` : ""}
+          <div class="game-create-actions">
+            <button type="button" class="tap-lg neon-btn rounded-2xl px-3 text-sm" onclick="startSchedule('single')">${ic("plus","w-4 h-4")}${escHtml(t("newSingleMatch"))}</button>
+            <button type="button" class="tap-lg seg-off rounded-2xl px-3 text-sm font-bold" onclick="startSchedule('series')">${ic("repeat","w-4 h-4")}${escHtml(t("newRecurringSeries"))}</button>
+          </div>
+          ${setupDisclosure("series", "repeat", t("recurringSeries"), "", renderAdminSeries(true), series.length)}
+          ${past.length ? setupDisclosure("pastgames", "clock", t("pastMatches"), "", `<div class="space-y-1.5">${past.map(adminGameRow).join("")}</div>`, past.length) : ""}`;
+        tools += setupDisclosure("games", "sliders", t("manageGames"), "", body);
+      }
+      if (standingsOn()) tools += `<button type="button" class="games-subnav" onclick="navigateTab('history')">${ic("trophy","w-4 h-4")}${escHtml(t("navStandings"))}</button>`;
+      return tools ? `<div class="games-tools">${tools}</div>` : "";
+    }
+    function startSchedule(kind) {
+      if (!currentUser || !currentUser.isAdmin) return;
+      if (!activeFields().length) { openSetupSection("fields"); return; }
+      if (kind === "series") openSeriesForm(""); else openGameForm("");
+    }
+    function captureInviteDraft(value) {
+      if (!currentUser || !currentUser.isAdmin) return;
+      setupUiState().inviteDraft = String(value === undefined || value === null ? "" : value);
+    }
+    function clearInviteDraft(submitted) {
+      if (!currentUser || !currentUser.isAdmin) return;
+      if (submitted !== undefined && setupUiState().inviteDraft !== submitted) return;
+      setupUiState().inviteDraft = "";
+      const input = byId("inv-list"); if (input) input.value = "";
+    }
+    function updatePlayerSearch(value) {
+      if (!currentUser || !currentUser.isAdmin) return;
+      playerFilter = String(value || "");
+      setupUiState().playerFilter = playerFilter;
+      const results = byId("players-results");
+      if (results) results.innerHTML = renderAdminPlayers(true);
+    }
+    function renderPlayersView() {
+      if (!currentUser || !currentUser.isAdmin) { activeTab = "upcoming"; renderCurrentTab(); return; }
+      const state = setupUiState(); playerFilter = state.playerFilter;
+      const pending = (appData.invites || []).filter(function(invite) { return invite.Status !== "Registered"; }).length;
+      byId("view-container").innerHTML = `<div class="ergonomic-page">
+        ${setupDisclosure("invites", "mail", t("invitationsTitle"), "", renderAdminInvites(), pending || null)}
+        <div id="players-directory">${renderAdminPlayers()}</div>
+      </div>`;
+      const input = byId("inv-list"); if (input) input.value = state.inviteDraft;
+    }
+    function renderSettingsView() {
+      if (!currentUser) { renderLockedGateView(); return; }
+      const admin = !!currentUser.isAdmin;
+      const account = `<button type="button" class="settings-account" onclick="openMyProfileModal()">
+        ${renderAvatarBadge(currentUser.fullName, currentUser.position, "lg")}
+        <span class="settings-account-copy"><span class="setup-title">${escHtml(currentUser.fullName)}</span><span class="setup-hint">${escHtml(t("profilePreferences"))}</span></span>
+        ${ic("chevRight","w-5 h-5")}
+      </button>`;
+      let league = "";
+      if (admin) {
+        const active = activeFields().length;
+        const enabled = FEATURE_GROUPS.reduce(function(total, group) { return total + group[1].filter(function(key) { return key !== "maxGuests" && F(key); }).length; }, 0);
+        league = `<div class="settings-groups">
+          <p class="settings-group-label">${escHtml(t("leagueSetup"))}</p>
+          ${setupDisclosure("fields", "field", t("adm_fields"), t("fieldsSetupHelp"), renderAdminFields(), active)}
+          ${setupDisclosure("features", "toggle", t("adm_features"), t("featuresSetupHelp"), renderAdminFeatures(), enabled)}
+          ${setupDisclosure("league", "sliders", t("leagueSettings"), t("leagueSetupHelp"), renderAdminSettings())}
+        </div>`;
+      }
+      byId("view-container").innerHTML = `<div class="ergonomic-page">${account}${league}<p class="settings-page-note">Pitch Pulse v${APP_VERSION} · ${escHtml(t("designPreview"))}</p></div>`;
+      if (admin) restoreAdminDraft();
+    }
+
 
     // =========================================================================
     // THEME, LANGUAGE, HEADER, TAB BAR & NAVIGATION
@@ -3489,47 +3939,19 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
     }
     function standingsOn() { return F("featScores"); }
     function updateViewTitle() {
-      const el = byId("mobile-active-view-title");
-      if (!el) return;
-      el.textContent = activeTab === "admin" ? t("navAdmin") : (activeTab === "history" ? t("standingsTitle") : t("upcomingTitle"));
+      updateErgonomicViewTitle();
     }
 
     function renderAuthBar() {
-      const desktopBar = byId("desktop-auth-bar"), navTabsBar = byId("nav-tabs-bar"), dock = byId("mobile-bottom-dock");
-      const dockGrid = byId("mobile-dock-grid"), dockAdmin = byId("mob-nav-admin"), dockStand = byId("mob-nav-history");
-      if (currentUser) {
-        navTabsBar.classList.remove("hidden"); navTabsBar.classList.add("flex");
-        if (dock) dock.style.display = "block";
-        const isAdmin = !!currentUser.isAdmin, showStand = standingsOn();
-        if (dockAdmin) dockAdmin.classList.toggle("hidden", !isAdmin);
-        if (dockStand) dockStand.classList.toggle("hidden", !showStand);
-        const cols = 2 + (isAdmin ? 1 : 0) + (showStand ? 1 : 0);
-        if (dockGrid) dockGrid.className = "grid " + ({ 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4" }[cols]) + " gap-1 px-2 pt-1.5 max-w-lg mx-auto";
-        desktopBar.innerHTML = `<button type="button" onclick="openMyProfileModal()" class="hdr-btn">${ic("user")}<span>${escHtml(currentUser.fullName)}</span></button>`;
-      } else {
-        navTabsBar.classList.add("hidden"); navTabsBar.classList.remove("flex");
-        if (dock) dock.style.display = "none";
-        desktopBar.innerHTML = `<button type="button" onclick="showLoginModal()" class="tap px-4 rounded-xl text-sm neon-btn">${escHtml(t("loginBtn"))}</button>`;
-      }
-      highlightDock();
+      renderErgonomicAuthBar();
     }
+
     function highlightDock() {
-      ["upcoming", "history", "admin"].forEach(function(k) {
-        const el = byId("mob-nav-" + k);
-        if (!el) return;
-        if (k === activeTab) el.setAttribute("aria-current", "page"); else el.removeAttribute("aria-current");
-      });
+      highlightErgonomicDock();
     }
+
     function switchTab(tab) {
-      if (!currentUser) { renderLockedGateView(); return; }
-      if (tab === "admin" && !currentUser.isAdmin) tab = "upcoming";
-      if (tab === "history" && !standingsOn()) tab = "upcoming";
-      triggerHaptic();
-      activeTab = tab;
-      highlightDock();
-      updateViewTitle();
-      renderCurrentTab();
-      window.scrollTo(0, 0);
+      switchErgonomicTab(tab);
     }
 
     function renderLockedGateView() {
@@ -3546,17 +3968,7 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
     }
 
     function renderCurrentTab() {
-      cancelPresentationAnimations();
-      disconnectRsvpAttention();
-      if (!currentUser) { renderLockedGateView(); return; }
-      if (activeTab === "history" && !standingsOn()) { activeTab = "upcoming"; highlightDock(); updateViewTitle(); }
-      hideInfoPop();
-      destroyCardMaps();
-      const y = window.scrollY;
-      if (activeTab === "admin" && currentUser.isAdmin) renderAdminView();
-      else if (activeTab === "history") renderHistoryAndDirectoryView();
-      else renderUpcomingGamesView();
-      window.scrollTo(0, y);
+      renderErgonomicCurrentTab();
     }
 
     // =========================================================================
@@ -3639,13 +4051,14 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
       disconnectRsvpAttention();
       const container = byId("view-container");
       const today = getTodayIso();
+      const setupTools = renderGamesTools();
       const upcoming = upcomingGames();
       if (!upcoming.length) {
-        container.innerHTML = `<div class="glass-card rounded-[28px] p-8 text-center">
+        container.innerHTML = setupTools + `<div class="glass-card rounded-[28px] p-8 text-center">
           <img src="${BALL_ONLY_FILE}" alt="" width="48" height="48" class="w-12 h-12 mx-auto mb-3 opacity-80 object-contain">
           <p class="text-lg font-bold text-white mb-1.5">${escHtml(t("noGamesTitle"))}</p>
           <p class="text-sm text-slate-400 mb-4">${escHtml(currentUser && currentUser.isAdmin ? t("noGamesSubAdmin") : t("noGamesSub"))}</p>
-          ${currentUser && currentUser.isAdmin ? `<button type="button" onclick="adminSection='games'; switchTab('admin'); openGameForm('')" class="tap-lg px-5 rounded-2xl neon-btn text-base inline-flex items-center gap-2">${ic("plus", "w-5 h-5", 2.6)}${escHtml(t("newMatch"))}</button>` : ""}
+          ${currentUser && currentUser.isAdmin ? `<button type="button" onclick="startSchedule('single')" class="tap-lg px-5 rounded-2xl neon-btn text-base inline-flex items-center gap-2">${ic("plus", "w-5 h-5", 2.6)}${escHtml(t("newMatch"))}</button>` : ""}
         </div>`;
         return;
       }
@@ -3654,7 +4067,7 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
       if (!shown.length) shown = upcoming.slice(0, 1); // the next match always shows, even if it's weeks away
       const more = upcoming.length - shown.length;
       const firstActive = shown.find(function(g) { return g.Status !== "Cancelled" && !isGameDisplayFinished(g); });
-      container.innerHTML = '<div class="games-list space-y-3.5">' + shown.map(function(g) {
+      container.innerHTML = setupTools + '<div class="games-list space-y-3.5">' + shown.map(function(g) {
         const id = String(g.GameID);
         const isOpen = expandedGames[id] !== undefined ? !!expandedGames[id] : !!(firstActive && String(firstActive.GameID) === id);
         const earlier = isGameDisplayFinished(g) && !shown.slice(0,shown.indexOf(g)).some(isGameDisplayFinished);
@@ -4668,6 +5081,7 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
       confirmDialog({ icon: "logout", title: t("logoutConfirm"), okLabel: t("logoutBtn"), danger: true, onOk: function() { logout(); } });
     }
     function logout(silent) {
+      resetSetupUi();
       const u = currentUser;
       authEpoch++; pushVaultState=null; adminSettingsDraft={}; Object.keys(pendingGameChanges).forEach(function(k){delete pendingGameChanges[k];});
       if (u && !silent) apiPost({ action: "logout", requesterEmail: u.email, requesterPin: u.pin }, { silent: true, noAuth: true });
@@ -4861,41 +5275,17 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
     const ADMIN_SECTIONS = ["games", "series", "fields", "players", "invites", "features", "settings"];
     const ADMIN_ICONS = { games: "calendar", series: "repeat", fields: "field", players: "users", invites: "mail", features: "toggle", settings: "sliders" };
     function switchAdminSection(sec) {
-      adminSection = ADMIN_SECTIONS.indexOf(sec) === -1 ? "games" : sec;
-      lsSet("soccer_admin_section", adminSection);
-      triggerHaptic();
-      renderAdminView();
-      window.scrollTo(0, 0);
-      animateNavigationSurface(byId("view-container"));
+      openSetupSection(sec);
     }
+
     function renderAdminView() {
-      if (ADMIN_SECTIONS.indexOf(adminSection) === -1) adminSection = "games";
-      hideInfoPop();
-      const pending = (appData.invites || []).filter(function(i) { return i.Status !== "Registered"; }).length;
-      const counts = { series: (appData.recurring || []).length || "", invites: pending || "" };
-      const tabs = ADMIN_SECTIONS.map(function(sec) {
-        const on = adminSection === sec;
-        return `<button type="button" onclick="switchAdminSection('${sec}')" aria-pressed="${on}" class="tap-lg press relative min-w-0 px-1 py-1.5 rounded-2xl border flex flex-col items-center justify-center gap-0.5 leading-tight ${on ? "neon-btn border-transparent" : "seg-off"}">
-          ${ic(ADMIN_ICONS[sec], "w-5 h-5")}<span class="block max-w-full truncate text-[12px] font-extrabold">${escHtml(t("adm_" + sec))}</span>
-          ${counts[sec] ? `<span class="absolute top-1 right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-amber-400 text-[#070b09] text-[11px] font-extrabold flex items-center justify-center">${counts[sec]}</span>` : ""}</button>`;
-      }).join("");
-      let body = "";
-      if (adminSection === "games") body = renderAdminGames();
-      else if (adminSection === "series") body = renderAdminSeries();
-      else if (adminSection === "fields") body = renderAdminFields();
-      else if (adminSection === "players") body = renderAdminPlayers();
-      else if (adminSection === "invites") body = renderAdminInvites();
-      else if (adminSection === "features") body = renderAdminFeatures();
-      else body = renderAdminSettings();
-      byId("view-container").innerHTML = `<div class="space-y-3">
-        <nav class="grid grid-cols-4 sm:grid-cols-7 gap-1.5" aria-label="${escHtml(t("navAdmin"))}">${tabs}</nav>
-        ${body}</div>`;
-      if(adminSection === "settings")restoreAdminDraft();
+      renderErgonomicAdminView();
     }
+
     function adminCard(icon, title, inner, action, infoKey) {
       return `<section class="glass-card rounded-[28px] p-4 sm:p-5">
         <div class="flex items-center justify-between gap-2 mb-3">
-          <div class="flex items-center gap-1 min-w-0"><h2 class="text-xl font-extrabold text-white inline-flex items-center gap-2 min-w-0">${ic(icon, "w-6 h-6 text-[#00f59b]")}<span class="truncate">${title}</span></h2>${infoKey ? infoBtn(infoKey, t("adm_" + adminSection)) : ""}</div>
+          <div class="flex items-center gap-1 min-w-0"><h2 class="text-xl font-extrabold text-white inline-flex items-center gap-2 min-w-0">${ic(icon, "w-6 h-6 text-[#00f59b]")}<span class="truncate">${title}</span></h2>${infoKey ? infoBtn(infoKey, t(infoKey.replace(/^hi_/, "adm_"))) : ""}</div>
           ${action || ""}</div>${inner}</section>`;
     }
     function subHead(icon, label, infoKey) {
@@ -5008,11 +5398,11 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
       const changes=(sr.scheduledChanges||[]).slice().sort(function(a,b){return String(a.effectiveDate).localeCompare(String(b.effectiveDate));});
       return changes.length?`<div class="mt-2 space-y-1">${changes.map(function(change){const c=change.config||{};return `<p class="text-xs text-amber-300"><b>${escHtml(t("scheduledFrom",{date:fmtDate(change.effectiveDate)}))}:</b> ${escHtml(formatDaysBadges(c.DaysOfWeek))} · ${escHtml(fmtTime(c.Time))} · ${escHtml(c.LocationName||"")}</p>`;}).join("")}</div>`:"";
     }
-    function renderAdminSeries() {
+    function renderAdminSeries(embedded) {
       const list = appData.recurring || [];
       return adminCard("repeat", escHtml(t("adm_series")), `
         <p class="text-sm text-slate-400 mb-3">${escHtml(t("seriesHelp"))}</p>
-        <button type="button" onclick="openSeriesForm('')" class="tap-lg w-full rounded-2xl neon-btn text-base mb-4 inline-flex items-center justify-center gap-2">${ic("plus", "w-5 h-5", 2.6)}${escHtml(t("newSeries"))}</button>
+        ${embedded ? "" : `<button type="button" onclick="openSeriesForm('')" class="tap-lg w-full rounded-2xl neon-btn text-base mb-4 inline-flex items-center justify-center gap-2">${ic("plus", "w-5 h-5", 2.6)}${escHtml(t("newSeries"))}</button>`}
         <div class="space-y-2">${list.map(function(sr) {
           return `<div class="p-3.5 rounded-2xl bg-[#0b130f] border border-emerald-950">
             <div class="text-sm font-extrabold text-white">${escHtml(sr.Title)}</div>
@@ -5170,17 +5560,12 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
 
     // ---- Players -------------------------------------------------------------
     let playerFilter = "";
-    function renderAdminPlayers() {
+    function renderAdminPlayers(rowsOnly) {
       const all = Object.values(appData.profiles || {}).sort(function(a, b) { return String(a.fullName).localeCompare(String(b.fullName)); });
       const q = playerFilter.toLowerCase();
       const teams = F("featTeams");
       const list = all.filter(function(p) { return !q || String(p.fullName).toLowerCase().indexOf(q) !== -1 || String(p.email).indexOf(q) !== -1; });
-      return adminCard("users", escHtml(t("adm_players")) + ` <span class="text-sm text-slate-400 font-semibold">${all.length}</span>`, `
-        <div class="relative mb-3">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">${ic("search", "w-5 h-5")}</span>
-          <input id="player-search" type="search" enterkeyhint="search" value="${escHtml(playerFilter)}" oninput="playerFilter=this.value; const c=this.selectionStart; renderAdminView(); const n=byId('player-search'); if(n){n.focus(); n.setSelectionRange(c,c);}" placeholder="${escHtml(t("searchPlayersPh"))}" class="tap w-full pl-11 pr-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
-        </div>
-        <div class="space-y-1.5">${list.map(function(p) {
+      const rows = list.map(function(p) {
           const chips = [];
           if (p.role === "Admin") chips.push(`<span class="text-amber-300">${ic("shield", "w-4 h-4")}</span>`);
           if (teams && p.defaultTeam) chips.push(shirtDot(teamShirt(p.defaultTeam === "A" ? "white" : "dark")));
@@ -5191,7 +5576,14 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
             ${renderAvatarBadge(p.fullName, p.position)}
             <span class="min-w-0 flex-1"><span class="block text-sm font-bold text-white truncate">${escHtml(p.fullName)}</span><span class="block text-xs text-slate-400 truncate">${escHtml(p.email)}</span></span>
             <span class="flex items-center gap-1 shrink-0">${chips.join("")}</span>${ic("chevRight", "w-4 h-4 text-slate-400", 2.4)}</button>`;
-        }).join("") || `<p class="text-sm text-slate-500 italic">${escHtml(t("noneWord"))}</p>`}</div>
+        }).join("") || `<p class="text-sm text-slate-500 italic">${escHtml(t("noneWord"))}</p>`;
+      if (rowsOnly) return rows;
+      return adminCard("users", escHtml(t("adm_players")) + ` <span class="text-sm text-slate-400 font-semibold">${all.length}</span>`, `
+        <div class="relative mb-3">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">${ic("search", "w-5 h-5")}</span>
+          <input id="player-search" type="search" enterkeyhint="search" value="${escHtml(playerFilter)}" oninput="updatePlayerSearch(this.value)" placeholder="${escHtml(t("searchPlayersPh"))}" class="tap w-full pl-11 pr-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
+        </div>
+        <div id="players-results" class="space-y-1.5">${rows}</div>
       `, "", "hi_players");
     }
     function openPlayerAdminSheet(email) {
@@ -5265,7 +5657,7 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
       return adminCard("mail", escHtml(t("adm_invites")), `
         <p class="text-sm text-slate-400 mb-3">${escHtml(t("inviteHelp"))}</p>
         <label class="block mb-2"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("inviteListLbl"))}</span>
-          <textarea id="inv-list" rows="3" inputmode="email" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="${escHtml(t("invitePh"))}" class="mt-1 w-full p-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"></textarea></label>
+          <textarea id="inv-list" oninput="captureInviteDraft(this.value)" rows="3" inputmode="email" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="${escHtml(t("invitePh"))}" class="mt-1 w-full p-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"></textarea></label>
         <button type="button" id="inv-send" onclick="adminInvitePlayers()" class="tap-lg w-full rounded-2xl neon-btn text-base mb-4 inline-flex items-center justify-center gap-2">${ic("mail", "w-5 h-5")}${escHtml(t("sendInvites"))}</button>
         ${queued.length ? `<h3 class="text-xs font-bold uppercase tracking-wide text-amber-300 mb-1">${escHtml(t("queuedInvites", { n: queued.length }))}</h3>
           <p class="text-xs text-slate-400 mb-2">${escHtml(t("queuedHelp"))}</p>
@@ -5277,10 +5669,12 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
       `, "", "hi_invites");
     }
     function adminInvitePlayers() {
-      const raw = byId("inv-list").value.trim();
+      const submitted = byId("inv-list").value;
+      captureInviteDraft(submitted);
+      const raw = submitted.trim();
       const looksLikeEmail = raw.split(/[\s,;]+/).some(function(x) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x.replace(/^mailto:/i, "").replace(/[<>()"']/g, "")); });
       if (!raw || !looksLikeEmail) { showToast(t("errEmail"), true); return; }
-      mutate("invite", { action: "adminSendInvites", emails: raw }, { button: "inv-send" });
+      mutate("invite", { action: "adminSendInvites", emails: raw }, { button: "inv-send", after: function() { clearInviteDraft(submitted); } });
     }
 
     // ---- Features (league-wide switches, applied right away) ----------------
@@ -5430,7 +5824,7 @@ body #sheet-panel .match-date-time > label { min-width: 0; }
         setBusyButton("vault-unlock", true);
         const res = await apiPost({ action: "adminUnlockPushConfig", confirmPin: pin });
         setBusyButton("vault-unlock", false);
-        if (res && res.success) { pushVaultState = { pin: pin, appId: res.oneSignalAppId, restKeySet: res.restKeySet, restKeyHint: res.restKeyHint }; byId("push-vault-container").innerHTML = renderPushVault(); }
+        if (res && res.success && currentUser && currentUser.isAdmin) { pushVaultState = { pin: pin, appId: res.oneSignalAppId, restKeySet: res.restKeySet, restKeyHint: res.restKeyHint }; const container = byId("push-vault-container"); if (container) container.innerHTML = renderPushVault(); }
         else if (res && res.error) showToast(res.error, true);
       });
     }
