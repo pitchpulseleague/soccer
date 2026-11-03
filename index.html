@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Pitch Pulse 5.4.1: approved design, consolidated navigation and local theme/motion controls. -->
+<!-- Pitch Pulse 5.5.0 candidate: account lifecycle controls; requires matching backend. -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover, interactive-widget=resizes-content">
@@ -1424,7 +1424,7 @@ body .settings-account {
     const SITE_URL = "https://pitchpulseleague.github.io/soccer/";
     const SYSTEM_ADMIN_EMAIL = "pitchpulseleague@gmail.com";
     const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "ralph@me.com"];
-    const APP_VERSION = "5.4.1"; // Frontend release; the existing backend contract is unchanged.
+    const APP_VERSION = "5.5.0"; // Candidate release; deploy with the matching 5.5.0 backend.
 
     const ASSET_VERSION = "5.0";
     const ICON_192_FILE = "pitch-pulse-01-classic-stitched-192.png?v=" + ASSET_VERSION;
@@ -1437,6 +1437,12 @@ body .settings-account {
     const SMALL_SIDED_MIN_PLAYERS = 10;   // a small-sided match needs at least 5 v 5 (same as the server)
     const TIMING_OPTIONS = ["", "Running ~5m Late", "Running ~10m Late", "Running 15m+ Late", "Leaving ~15m Early", "Leaving ~30m Early"];
 
+    Object.assign(I18N.en,{"notifyNone": "Off: no phone notifications or email", "notifyNoneHelp": "Save to stop league notifications, including email fallback. You can still request PIN recovery and email-verification messages. Check the app for match changes.", "accountSecurity": "Account security", "changePin": "Change PIN", "changeEmail": "Change email", "currentPin": "Current 6-digit PIN", "securityChangeHelp": "Confirm your current PIN. After saving, you will be signed out on every device.", "newEmail": "New email address", "verifyEmailHelp": "We will send a 12-character verification code to your new email. Your email stays unchanged until you confirm the code.", "emailCodeHelp": "Enter the 12-character code sent to {email}. It expires after 15 minutes. Re-enter your current PIN to confirm.", "confirmEmail": "Confirm email change", "errEmailInvalid": "Enter a valid new email address.", "errEmailCode": "Enter the 12-character verification code.", "pinChangedLogin": "PIN changed. Sign in with your new PIN.", "emailChangedLogin": "Email changed. Sign in with your new email and existing PIN, then enable phone notifications again if you want them.", "accountChangeUncertain": "We could not confirm whether the change saved. Sign in again with the new credentials if they work, or your previous credentials. Do not repeat the change until you have checked.", "emailRequestUncertain": "The code request may have been sent. Check your new email before requesting another code.", "emailRequested": "Verification requested. Check your new email, including spam.", "backToProfile": "Back to profile", "emailAdminLocked": "This configured administrator email cannot be changed here."});
+    Object.assign(I18N.es,{"notifyNone": "Desactivadas: sin notificaciones ni correo", "notifyNoneHelp": "Guarda para dejar de recibir avisos de la liga, incluido el correo de respaldo. Puedes seguir solicitando recuperación de PIN y verificación de correo. Consulta la app para ver cambios en los partidos.", "accountSecurity": "Seguridad de la cuenta", "changePin": "Cambiar PIN", "changeEmail": "Cambiar correo", "currentPin": "PIN actual de 6 dígitos", "securityChangeHelp": "Confirma tu PIN actual. Al guardar se cerrará tu sesión en todos los dispositivos.", "newEmail": "Nuevo correo electrónico", "verifyEmailHelp": "Enviaremos un código de 12 caracteres al nuevo correo. Tu correo no cambia hasta que confirmes el código.", "emailCodeHelp": "Introduce el código de 12 caracteres enviado a {email}. Caduca en 15 minutos. Vuelve a introducir tu PIN actual para confirmar.", "confirmEmail": "Confirmar cambio de correo", "errEmailInvalid": "Introduce un correo nuevo válido.", "errEmailCode": "Introduce el código de verificación de 12 caracteres.", "pinChangedLogin": "PIN cambiado. Inicia sesión con el PIN nuevo.", "emailChangedLogin": "Correo cambiado. Inicia sesión con el correo nuevo y tu PIN actual. Después, vuelve a activar las notificaciones del teléfono si las quieres.", "accountChangeUncertain": "No pudimos confirmar si se guardó el cambio. Inicia sesión con los datos nuevos si funcionan o con los anteriores. Comprueba el resultado antes de repetir el cambio.", "emailRequestUncertain": "Es posible que se haya enviado el código. Revisa el nuevo correo antes de pedir otro.", "emailRequested": "Verificación solicitada. Revisa tu nuevo correo y la carpeta de spam.", "backToProfile": "Volver al perfil", "emailAdminLocked": "Este correo de administrador configurado no se puede cambiar aquí."});
+    Object.assign(I18N.en,{"removeProfile": "Remove my profile", "removalWarning": "Your active profile and sign-in access will be removed. Upcoming RSVPs and guest reservations will be released. Historical match records retain your initials under a replacement player identifier and can be linked again using your recovery code. This is not complete erasure: previously sent emails, backups, and notification-provider records may still contain identifying information.", "recoveryWarning": "Save this recovery code privately before continuing. Complete removal within 30 minutes, or request a new code. After removal, the code remains valid until used once. It is not an account PIN. Anyone with this code and a valid invitation could claim your history. If you lose it after removal, your previous history cannot be recovered through the app.", "prepareRemoval": "Continue: prepare recovery code", "recoveryCode": "Recovery code", "savedRecoveryCode": "I saved the recovery code somewhere safe and understand it cannot be recovered if lost.", "removalPhrase": "Type REMOVE MY PROFILE to confirm", "removalChecks": "Save your recovery code, check the acknowledgment, and type REMOVE MY PROFILE exactly.", "removalFinalWarning": "Final confirmation: remove your profile and sign out on every device? You will need a new invitation and your saved recovery code to link your history again.", "removalDone": "Profile removed. Keep your recovery code safe. To return and link your history, ask an organizer for a new invitation and enter the code when creating your profile.", "removalUncertain": "We could not confirm whether removal completed. You have been signed out locally. Keep your recovery code. Check whether your old login still works before repeating any removal, or ask an organizer to check your profile.", "removalPrepareUncertain": "We could not confirm the recovery-code request. Your profile has not been removed by this step. Request a new code before continuing.", "removalAdminLocked": "Configured administrator profiles cannot be removed here.", "returningPlayer": "Returning player? Link previous history (optional)", "recoveryRegisterHelp": "Use a new organizer invitation and the recovery code you saved when removing your profile. Without the code, a new profile will not reclaim that history.", "errRecoveryCode": "Enter the full 64-character recovery code, or leave the field empty to create a new profile.", "removalReturn": "Back to sign in"});
+    Object.assign(I18N.es,{"removeProfile": "Eliminar mi perfil", "removalWarning": "Se eliminarán tu perfil activo y el acceso a la cuenta. Se liberarán tus reservas y las de tus invitados en próximos partidos. Los registros históricos conservan tus iniciales con un identificador de reemplazo y se pueden volver a vincular con tu código. No es un borrado completo: los correos ya enviados, las copias de seguridad y los registros del proveedor de notificaciones pueden conservar datos identificativos.", "recoveryWarning": "Guarda este código de recuperación en un lugar privado antes de continuar. Completa la eliminación en 30 minutos o solicita un código nuevo. Después, el código sigue siendo válido hasta usarlo una vez. No es un PIN. Cualquiera que tenga este código y una invitación válida podría reclamar tu historial. Si lo pierdes después de eliminar el perfil, la app no podrá recuperar tu historial anterior.", "prepareRemoval": "Continuar: preparar código de recuperación", "recoveryCode": "Código de recuperación", "savedRecoveryCode": "Guardé el código en un lugar seguro y entiendo que no se puede recuperar si lo pierdo.", "removalPhrase": "Escribe REMOVE MY PROFILE para confirmar", "removalChecks": "Guarda tu código, marca la confirmación y escribe REMOVE MY PROFILE exactamente.", "removalFinalWarning": "Confirmación final: ¿eliminar tu perfil y cerrar la sesión en todos los dispositivos? Necesitarás una nueva invitación y el código guardado para volver a vincular tu historial.", "removalDone": "Perfil eliminado. Conserva tu código de recuperación. Para volver y vincular tu historial, pide una nueva invitación a un organizador e introduce el código al crear tu perfil.", "removalUncertain": "No pudimos confirmar si se completó la eliminación. Se cerró la sesión en este dispositivo. Conserva tu código. Comprueba si todavía puedes iniciar sesión antes de repetir la eliminación o pide a un organizador que revise tu perfil.", "removalPrepareUncertain": "No pudimos confirmar la solicitud del código. Este paso no eliminó tu perfil. Solicita un código nuevo antes de continuar.", "removalAdminLocked": "Los perfiles de administradores configurados no se pueden eliminar aquí.", "returningPlayer": "¿Vuelves a la liga? Vincula tu historial (opcional)", "recoveryRegisterHelp": "Usa una invitación nueva y el código que guardaste al eliminar tu perfil. Sin el código, un perfil nuevo no recuperará ese historial.", "errRecoveryCode": "Introduce el código completo de 64 caracteres o deja el campo vacío para crear un perfil nuevo.", "removalReturn": "Volver al inicio de sesión"});
+    Object.assign(I18N.en,{"inactive": "Inactive", "deactivatePlayer": "Deactivate player", "deactivatePlayerConfirm": "Deactivate {name}?", "deactivatePlayerHelp": "This blocks sign-in and releases upcoming reservations. Their name, email, and match history stay available for a later re-invitation. It does not remove their private profile data. Only the player can request privacy removal.", "reinvitePlayer": "Re-invite player", "reinvitePlayerConfirm": "Send a new invitation to {name}?", "reinvitePlayerHelp": "The invitation goes to their saved email. The profile remains inactive until they accept. Their existing match history is retained.", "inactiveProfileHelp": "This profile is inactive. Re-invite the player to let them return with their history."});
+    Object.assign(I18N.es,{"inactive": "Inactivo", "deactivatePlayer": "Desactivar jugador", "deactivatePlayerConfirm": "¿Desactivar a {name}?", "deactivatePlayerHelp": "Bloquea el acceso y libera las próximas reservas. Se conservan el nombre, el correo y el historial para una futura invitación. No elimina sus datos privados. Solo el jugador puede solicitar la eliminación por privacidad.", "reinvitePlayer": "Volver a invitar", "reinvitePlayerConfirm": "¿Enviar una nueva invitación a {name}?", "reinvitePlayerHelp": "La invitación se envía a su correo guardado. El perfil sigue inactivo hasta que la acepte. Se conserva su historial.", "inactiveProfileHelp": "Este perfil está inactivo. Vuelve a invitar al jugador para que regrese con su historial."});
     function isProtectedEmail(em) { return PROTECTED_ADMINS.indexOf(String(em || "").toLowerCase().trim()) !== -1; }
     function isSystemAdminOnly(em) { return String(em || "").toLowerCase().trim() === SYSTEM_ADMIN_EMAIL; }
 
@@ -1755,7 +1761,7 @@ body .settings-account {
     // =========================================================================
     // API LAYER — timeouts, double-tap protection, stale-refresh guard
     // =========================================================================
-    const SLOW_ACTIONS = { adminNudgeUnresponded: 60000, adminSendGameBlast: 60000, adminSaveRecurringSeries: 60000, adminStopRecurringSeries: 60000, adminSendInvite: 45000, adminSendInvites: 90000, adminMessagePlayer: 45000, adminCancelGame: 45000, adminRestoreGame: 45000, requestPinReset: 45000 };
+    const SLOW_ACTIONS = { adminNudgeUnresponded: 60000, adminSendGameBlast: 60000, adminSaveRecurringSeries: 60000, adminStopRecurringSeries: 60000, adminSendInvite: 45000, adminSendInvites: 90000, adminMessagePlayer: 45000, adminCancelGame: 45000, adminRestoreGame: 45000, requestPinReset: 45000, requestEmailChange: 45000, adminReinviteUser: 45000 };
 
     async function apiPost(payload, opts) {
       opts = opts || {}; payload = Object.assign({}, payload);
@@ -2147,10 +2153,11 @@ body .settings-account {
       return "off";
     }
     function profilePushStateHtml(pref) {
+      if(pref === "None") return `<p class="text-sm text-slate-300">${escHtml(t("notifyNoneHelp"))}</p>`;
       const state=pushDeviceState(),key={server:"pushServerNotReady",install:"pushNeedsInstall",unavailable:"pushUnavailableShort",blocked:"pushDeniedShort",ready:"pushReady",pending:"pushPermissionOnly",off:"pushNotReady"}[state];
       return `<p class="text-sm font-semibold ${state==="ready"?"text-emerald-300":"text-slate-300"}">${escHtml(t(key))}</p><p class="text-xs text-slate-400 mt-1">${escHtml(t("pushHelp"))}</p>${pref==="Push"&&state!=="ready"?`<p class="text-xs text-amber-300 mt-1">${escHtml(t("pushPreferenceWarning"))}</p>`:""}`;
     }
-    function renderProfilePushState() {const el=byId("profile-push-state"),select=byId("prof-notify-pref");if(el)el.innerHTML=profilePushStateHtml(select?select.value:(currentUser&&currentUser.notifyPref)||"Both");}
+    function renderProfilePushState() {const el=byId("profile-push-state"),select=byId("prof-notify-pref"),button=byId("profile-enable-push"),pref=select?select.value:(currentUser&&currentUser.notifyPref)||"Both";if(el)el.innerHTML=profilePushStateHtml(pref);if(button)button.style.display=pref==="None"?"none":"";}
 
     (function initPwaManifest() {
       try {
@@ -4205,21 +4212,28 @@ body .settings-account {
               <option value="Both" ${curPref === "Both" ? "selected" : ""}>${escHtml(t("notifyBoth"))}</option>
               <option value="Push" ${curPref === "Push" ? "selected" : ""}>${escHtml(t("notifyPush"))}</option>
               <option value="Email" ${curPref === "Email" ? "selected" : ""}>${escHtml(t("notifyEmail"))}</option>
+              <option value="None" ${curPref === "None" ? "selected" : ""}>${escHtml(t("notifyNone"))}</option>
             </select></label>
           <div id="profile-push-state">${profilePushStateHtml(curPref)}</div>
-          <button type="button" onclick="enablePushTapped()" class="tap w-full px-4 rounded-2xl bg-emerald-950 border border-[#00f59b]/40 text-[#00f59b] text-sm font-bold text-left inline-flex items-center gap-2">${ic("bell", "w-5 h-5")}${escHtml(t("enablePushHere"))}</button>
+          <button type="button" id="profile-enable-push" style="${curPref === "None" ? "display:none" : ""}" onclick="enablePushTapped()" class="tap w-full px-4 rounded-2xl bg-emerald-950 border border-[#00f59b]/40 text-[#00f59b] text-sm font-bold text-left inline-flex items-center gap-2">${ic("bell", "w-5 h-5")}${escHtml(t("enablePushHere"))}</button>
           ${isSys ? "" : `<label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("awayUntil"))}</span>
             <input id="prof-away-input" type="date" min="${getTodayIso()}" value="${escHtml(currentUser.awayUntil || "")}" class="tap mt-1 w-full px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
             <span class="block text-xs text-slate-400 mt-1">${escHtml(t("awayHelp"))}</span></label>`}
         </div>
         <button type="button" id="prof-save" onclick="saveMyProfilePreferences()" class="tap-lg w-full rounded-2xl neon-btn text-base mb-4">${escHtml(t("saveBtn"))}</button>
         ${renderAppearanceSettings()}
+        <section class="appearance-panel mb-4" aria-labelledby="prof-security-title">
+          <h4 id="prof-security-title" class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">${escHtml(t("accountSecurity"))}</h4>
+          <button type="button" onclick="showChangePinModal()" class="tap w-full rounded-xl border border-emerald-900 text-sm font-bold mb-2">${escHtml(t("changePin"))}</button>
+          ${isProtectedEmail(me) ? `<p class="text-xs text-slate-400">${escHtml(t("emailAdminLocked"))}</p>` : `<button type="button" onclick="showChangeEmailModal()" class="tap w-full rounded-xl border border-emerald-900 text-sm font-bold">${escHtml(t("changeEmail"))}</button>`}
+        </section>
         ${nextGame ? `<h4 class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">${escHtml(t("myHistory"))}</h4>
         <div id="my-matches" class="space-y-1.5 mb-4">${matchRow(nextGame, true)}
           ${restCount ? `<div id="my-matches-rest" class="hidden space-y-1.5">${restUpcoming.map(function(g) { return matchRow(g, false); }).join("")}
             ${restPlayed.length && restUpcoming.length ? `<p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 pt-1">${escHtml(t("playedLbl"))}</p>` : ""}${restPlayed.map(function(g) { return matchRow(g, false); }).join("")}</div>
           <button type="button" id="my-matches-more" onclick="showAllMyMatches()" class="tap w-full rounded-xl bg-[#0b130f] border border-emerald-950 text-sm font-bold text-emerald-300 inline-flex items-center justify-center gap-1.5">${escHtml(t("showMoreMine", { n: restCount }))}${ic("chevDown", "w-4 h-4")}</button>` : ""}
         </div>` : ""}
+        ${isProtectedEmail(me) ? "" : `<button type="button" onclick="showRemoveProfileModal()" class="tap w-full mb-3 rounded-2xl border border-rose-800/50 text-rose-300 text-sm font-bold">${escHtml(t("removeProfile"))}</button>`}
         <button type="button" onclick="confirmLogout()" class="tap-lg w-full rounded-2xl bg-rose-950 text-rose-300 border border-rose-800/50 font-bold text-base inline-flex items-center justify-center gap-2">${ic("logout", "w-5 h-5")}${escHtml(t("logoutBtn"))}</button>
         <p class="text-center text-[11px] text-slate-500 mt-3">Pitch Pulse v${APP_VERSION}</p>
       `);
@@ -4237,6 +4251,134 @@ body .settings-account {
       if (posEl) payload.position = posEl.value;
       if (awayEl) payload.awayUntil = awayEl.value;
       mutate("profile", payload, { button: "prof-save" });
+    }
+    // Account changes use dedicated contracts, not the league-data mutation response.
+    // Never persist a current/new PIN or verification code in browser storage.
+    function accountInput(id, label, type, attrs) {
+      return `<label class="block mb-3"><span class="text-xs font-bold text-slate-400">${escHtml(t(label))}</span><input id="${id}" type="${type}" ${attrs || ""} class="tap mt-1 w-full px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"></label>`;
+    }
+    function accountBackButton() {
+      return `<button type="button" onclick="openMyProfileModal()" class="tap w-full mt-2 text-sm text-slate-300">${escHtml(t("backToProfile"))}</button>`;
+    }
+    function showChangePinModal() {
+      if (!currentUser) return showLoginModal();
+      renderSheetModal(`${sheetHeader(escHtml(t("changePin")), escHtml(t("securityChangeHelp")), "lock")}
+        ${accountInput("account-current-pin", "currentPin", "password", 'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
+        ${accountInput("account-new-pin", "newPinPh", "password", 'inputmode="numeric" maxlength="6" autocomplete="new-password"')}
+        ${accountInput("account-confirm-pin", "repeatPin", "password", 'inputmode="numeric" maxlength="6" autocomplete="new-password"')}
+        <button type="button" id="account-submit" onclick="submitPinChange()" class="tap-lg w-full rounded-2xl neon-btn">${escHtml(t("saveNewPin"))}</button>${accountBackButton()}`, "max-w-sm");
+    }
+    async function submitPinChange() {
+      const currentPin = byId("account-current-pin").value, newPin = byId("account-new-pin").value, confirmPin = byId("account-confirm-pin").value;
+      if (!/^\d{6}$/.test(currentPin) || !/^\d{6}$/.test(newPin)) return showToast(t("errPin6"),true);
+      if (newPin !== confirmPin) return showToast(t("errPinMatch"),true);
+      await submitAccountChange({action:"changePin",currentPin:currentPin,newPin:newPin,confirmPin:confirmPin},myEmail(),"pinChangedLogin");
+    }
+    function showChangeEmailModal() {
+      if (!currentUser) return showLoginModal();
+      if (isProtectedEmail(myEmail())) return showToast(t("emailAdminLocked"),true);
+      renderSheetModal(`${sheetHeader(escHtml(t("changeEmail")), escHtml(t("verifyEmailHelp")), "mail")}
+        ${accountInput("account-new-email", "newEmail", "email", 'autocomplete="email" autocapitalize="none" spellcheck="false" inputmode="email"')}
+        ${accountInput("account-current-pin", "currentPin", "password", 'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
+        <button type="button" id="account-submit" onclick="requestAccountEmailChange()" class="tap-lg w-full rounded-2xl neon-btn">${escHtml(t("sendCode"))}</button>${accountBackButton()}`, "max-w-sm");
+    }
+    async function requestAccountEmailChange() {
+      const input=byId("account-new-email"),newEmail=input.value.trim().toLowerCase(),currentPin=byId("account-current-pin").value;
+      if (!newEmail || !input.checkValidity() || newEmail === myEmail()) return showToast(t("errEmailInvalid"),true);
+      if (!/^\d{6}$/.test(currentPin)) return showToast(t("errPin6"),true);
+      if (inFlight["account-security"]) return;
+      await runAction("account-security",async function() {
+        setBusyButton("account-submit",true);
+        try {
+          const res=await apiPost({action:"requestEmailChange",currentPin:currentPin,newEmail:newEmail},{silent:true});
+          if (!res || res.staleAuth) return;
+          if (res.success || res.uncertain) {
+            showConfirmEmailModal(newEmail);
+            showToast(t(res.uncertain ? "emailRequestUncertain" : "emailRequested"),!!res.uncertain);
+          } else if (res.error) showToast(res.error,true);
+        } finally {setBusyButton("account-submit",false);}
+      });
+    }
+    function showConfirmEmailModal(newEmail) {
+      renderSheetModal(`${sheetHeader(escHtml(t("confirmEmail")),escHtml(t("emailCodeHelp",{email:newEmail})),"mail")}
+        <p class="text-xs text-slate-400 mb-3">${escHtml(t("securityChangeHelp"))}</p>
+        <input id="account-new-email" type="hidden" value="${escHtml(newEmail)}">
+        ${accountInput("account-email-code","enterCode","text",'maxlength="12" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false"')}
+        ${accountInput("account-current-pin","currentPin","password",'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
+        <button type="button" id="account-submit" onclick="confirmAccountEmailChange()" class="tap-lg w-full rounded-2xl neon-btn">${escHtml(t("confirmEmail"))}</button>${accountBackButton()}`,"max-w-sm");
+    }
+    async function confirmAccountEmailChange() {
+      const newEmail=byId("account-new-email").value,currentPin=byId("account-current-pin").value,code=byId("account-email-code").value.trim();
+      if (!/^\d{6}$/.test(currentPin)) return showToast(t("errPin6"),true);
+      if (!/^[a-f0-9]{12}$/i.test(code)) return showToast(t("errEmailCode"),true);
+      await submitAccountChange({action:"confirmEmailChange",newEmail:newEmail,currentPin:currentPin,code:code},newEmail,"emailChangedLogin");
+    }
+    async function submitAccountChange(payload, loginEmail, successKey) {
+      if (inFlight["account-security"]) return;
+      await runAction("account-security",async function() {
+        setBusyButton("account-submit",true);
+        try {
+          const res=await apiPost(payload,{silent:true});
+          if (!res || res.staleAuth) return;
+          if (res.success || res.uncertain) {
+            logout(true);
+            showLoginModal(loginEmail,t(res.uncertain ? "accountChangeUncertain" : successKey));
+          } else if(res.error) showToast(res.error,true);
+        } finally {setBusyButton("account-submit",false);}
+      });
+    }
+    function showRemoveProfileModal() {
+      if (!currentUser) return showLoginModal();
+      if (isProtectedEmail(myEmail())) return showToast(t("removalAdminLocked"),true);
+      renderSheetModal(`${sheetHeader(escHtml(t("removeProfile")), "", "alert")}
+        <p class="text-sm text-rose-300 mb-4">${escHtml(t("removalWarning"))}</p>
+        <p class="text-sm text-slate-300 mb-4">${escHtml(t("removalFinalWarning"))}</p>
+        ${accountInput("account-current-pin","currentPin","password",'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
+        <button type="button" id="account-submit" onclick="prepareProfileRemoval()" class="tap-lg w-full rounded-2xl bg-rose-950 text-rose-300 border border-rose-800/50 font-bold">${escHtml(t("prepareRemoval"))}</button>${accountBackButton()}`,"max-w-sm");
+    }
+    async function prepareProfileRemoval() {
+      const currentPin=byId("account-current-pin").value;
+      if (!/^\d{6}$/.test(currentPin)) return showToast(t("errPin6"),true);
+      if (inFlight["account-security"]) return;
+      await runAction("account-security",async function() {
+        setBusyButton("account-submit",true);
+        try {
+          const res=await apiPost({action:"prepareAccountRemoval",currentPin:currentPin},{silent:true});
+          if (!res || res.staleAuth) return;
+          if (res.success && /^[a-f0-9]{64}$/i.test(res.recoveryCode || "")) showSaveRecoveryCodeModal(res.recoveryCode);
+          else showToast(res.uncertain ? t("removalPrepareUncertain") : res.error || t("errNetwork"),true);
+        } finally {setBusyButton("account-submit",false);}
+      });
+    }
+    function showSaveRecoveryCodeModal(recoveryCode) {
+      renderSheetModal(`${sheetHeader(escHtml(t("recoveryCode")), "", "key")}
+        <p class="text-sm font-bold text-amber-300 mb-3">${escHtml(t("recoveryWarning"))}</p>
+        <label class="block mb-3"><span class="text-xs text-slate-400">${escHtml(t("recoveryCode"))}</span>
+          <textarea id="removal-recovery-code" rows="4" readonly autocomplete="off" autocapitalize="off" spellcheck="false" class="w-full p-3 rounded-xl bg-[#0b130f] border border-emerald-900 font-mono text-base text-white" style="overflow-wrap:anywhere;word-break:break-all">${escHtml(recoveryCode)}</textarea></label>
+        <label class="flex items-start gap-3 text-sm text-slate-300 mb-4"><input id="removal-code-saved" type="checkbox" class="mt-1 w-5 h-5 shrink-0"><span>${escHtml(t("savedRecoveryCode"))}</span></label>
+        ${accountInput("removal-confirmation","removalPhrase","text",'autocomplete="off" autocapitalize="characters" spellcheck="false"')}
+        ${accountInput("account-current-pin","currentPin","password",'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
+        <button type="button" id="account-submit" onclick="confirmProfileRemoval()" class="tap-lg w-full rounded-2xl bg-rose-950 text-rose-300 border border-rose-800/50 font-bold">${escHtml(t("removeProfile"))}</button>${accountBackButton()}`,"max-w-sm");
+    }
+    async function confirmProfileRemoval() {
+      const recoveryCode=byId("removal-recovery-code").value,currentPin=byId("account-current-pin").value,confirmation=byId("removal-confirmation").value.trim(),savedRecoveryCode=byId("removal-code-saved").checked;
+      if (!savedRecoveryCode || confirmation !== "REMOVE MY PROFILE" || !/^[a-f0-9]{64}$/i.test(recoveryCode)) return showToast(t("removalChecks"),true);
+      if (!/^\d{6}$/.test(currentPin)) return showToast(t("errPin6"),true);
+      // The first screen, saved-code acknowledgment, and typed phrase are independent confirmations.
+      if (inFlight["account-security"]) return;
+      await runAction("account-security",async function() {
+        setBusyButton("account-submit",true);
+        try {
+          const res=await apiPost({action:"removeOwnProfile",currentPin:currentPin,recoveryCode:recoveryCode,confirmation:confirmation,savedRecoveryCode:true},{silent:true});
+          if (!res || res.staleAuth) return;
+          if (res.success || res.uncertain) {
+            logout(true);
+            renderSheetModal(`${sheetHeader(escHtml(t("removeProfile")), "", "user")}
+              <p class="text-sm text-slate-300 mb-4">${escHtml(t(res.uncertain ? "removalUncertain" : "removalDone"))}</p>
+              <button type="button" onclick="showLoginModal()" class="tap-lg w-full rounded-2xl neon-btn">${escHtml(t("removalReturn"))}</button>`,"max-w-sm");
+          } else if(res.error) showToast(res.error,true);
+        } finally {setBusyButton("account-submit",false);}
+      });
     }
     function confirmLogout() {
       confirmDialog({ icon: "logout", title: t("logoutConfirm"), okLabel: t("logoutBtn"), danger: true, onOk: function() { logout(); } });
@@ -4346,6 +4488,10 @@ body .settings-account {
           <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("repeatPin"))}</span>
             <input id="r-pin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" enterkeyhint="done" class="tap mt-1 w-full px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-xl tracking-[0.4em] text-center font-bold text-white"></label>
         </div>
+        <details class="mb-4"><summary class="tap text-sm font-bold text-slate-300">${escHtml(t("returningPlayer"))}</summary>
+          <p class="text-xs text-slate-400 my-2">${escHtml(t("recoveryRegisterHelp"))}</p>
+          ${accountInput("r-recovery-code","recoveryCode","password",'maxlength="64" autocomplete="off" autocapitalize="none" spellcheck="false"')}
+        </details>
         <button type="button" id="r-btn" onclick="doRegister()" class="tap-lg w-full rounded-2xl neon-btn text-base">${escHtml(t("createProfile"))}</button>
       `, "max-w-sm");
     }
@@ -4354,9 +4500,11 @@ body .settings-account {
       if (fullName.length < 2) { showToast(t("errName"), true); return; }
       if (!/^\d{6}$/.test(pin)) { showToast(t("errPin6"), true); return; }
       if (pin !== pin2) { showToast(t("errPinMatch"), true); return; }
+      const recoveryCode=(byId("r-recovery-code") ? byId("r-recovery-code").value : "").trim();
+      if (recoveryCode && !/^[a-f0-9]{64}$/i.test(recoveryCode)) {showToast(t("errRecoveryCode"),true);return;}
       await runAction("register", async function() {
         setBusyButton("r-btn", true);
-        const res = await apiPost({ action: "register", fullName: fullName, email: pendingInvite.email, position: "MID", pin: pin, inviteToken: pendingInvite.token }, { noAuth: true });
+        const res = await apiPost({ action: "register", fullName: fullName, email: pendingInvite.email, position: "MID", pin: pin, inviteToken: pendingInvite.token, recoveryCode: recoveryCode }, { noAuth: true });
         setBusyButton("r-btn", false);
         if (res && res.success) {
           pendingInvite = null;
@@ -4730,6 +4878,7 @@ body .settings-account {
           const chips = [];
           if (p.role === "Admin") chips.push(`<span class="text-amber-300">${ic("shield", "w-4 h-4")}</span>`);
           if (teams && p.defaultTeam) chips.push(shirtDot(teamShirt(p.defaultTeam === "A" ? "white" : "dark")));
+          if (String(p.status) === "Inactive") chips.push(`<span class="px-1.5 rounded bg-rose-950 text-rose-300 text-[11px] font-bold">${escHtml(t("inactive"))}</span>`);
           if (String(p.status) === "Suspended") chips.push(`<span class="px-1.5 rounded bg-rose-950 text-rose-300 text-[11px] font-bold">${escHtml(t("suspended"))}</span>`);
           if (p.awayUntil && p.awayUntil >= getTodayIso()) chips.push(`<span class="px-1.5 rounded bg-amber-500/20 text-amber-300 text-[11px] font-bold">${escHtml(fmtDate(p.awayUntil, { month: "short", day: "numeric" }))}</span>`);
           if (p.canBringGuests === false && maxGuests() > 0) chips.push(`<span class="px-1.5 rounded bg-slate-800 text-slate-300 text-[11px] font-bold">${escHtml(t("noGuestsShort"))}</span>`);
@@ -4750,7 +4899,8 @@ body .settings-account {
     function openPlayerAdminSheet(email) {
       const p = appData.profiles[email]; if (!p) return;
       const em = escJsArg(email);
-      const prot = !!p.isProtected;
+      const privacyRemoved = /^anon_[a-f0-9]+$/i.test(email);
+      const prot = !!p.isProtected || privacyRemoved;
       const teams = F("featTeams");
       const teamBtn = function(val, label, dot) {
         const on = (p.defaultTeam || "") === val;
@@ -4761,7 +4911,8 @@ body .settings-account {
           <span class="text-sm font-bold text-white inline-flex items-center gap-2">${ic(icon, "w-5 h-5 text-emerald-300")}${escHtml(label)}</span><span class="text-sm font-extrabold ${on ? "text-[#00f59b]" : "text-slate-400"}">${escHtml(on ? t("onWord") : t("offWord"))}</span></button>`;
       };
       const suspended = String(p.status) === "Suspended";
-      const canMessage = !p.isSystemAdminOnly && String(p.email).toLowerCase() !== myEmail();
+      const inactive = String(p.status) === "Inactive";
+      const canMessage = !p.isSystemAdminOnly && !privacyRemoved && !inactive && String(p.email).toLowerCase() !== myEmail();
       const stats = [profileParticipationText(p)];
       if (teams) stats.unshift(t("pos_" + (p.position || "MID")));
       if (reliabilityOn()) stats.push(reliabilityText(p));
@@ -4772,15 +4923,16 @@ body .settings-account {
             <p class="text-xs text-slate-400 mt-0.5">${escHtml(stats.join(" · "))}</p></div>
           ${closeBtn()}
         </div>
-        ${p.isSystemAdminOnly || !teams ? "" : `<p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">${escHtml(t("defaultTeamLbl"))}</p>
+        ${privacyRemoved || p.isSystemAdminOnly || !teams ? "" : `<p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">${escHtml(t("defaultTeamLbl"))}</p>
         <div class="grid grid-cols-3 gap-2 mb-1">${teamBtn("", t("noDefaultTeam"))}${teamBtn("A", teamLabel("white"), shirtDot(teamShirt("white")))}${teamBtn("B", teamLabel("dark"), shirtDot(teamShirt("dark")))}</div>
         <p class="text-xs text-slate-400 mb-4">${escHtml(t("defaultTeamHelp"))}</p>`}
         ${canMessage ? `<button type="button" id="dm-open" onclick="openMessagePlayerSheet('${em}')" class="tap-lg w-full mb-2 px-4 rounded-2xl bg-emerald-950 border border-[#00f59b]/30 text-[#00f59b] font-bold text-sm text-left inline-flex items-center gap-2">${ic("chat", "w-5 h-5")}${escHtml(t("msgPlayerBtn"))}</button>` : ""}
-        ${prot ? `<p class="text-sm text-slate-400 italic">${escHtml(t("protectedAdmin"))}</p>` : `<div class="space-y-2">
+        ${prot ? `<p class="text-sm text-slate-400 italic">${escHtml(t(privacyRemoved ? "recoveryRegisterHelp" : "protectedAdmin"))}</p>` : `<div class="space-y-2">
           ${maxGuests() > 0 ? switchRow("users", t("guestsAllowed"), p.canBringGuests !== false, `mutate('guest-${em}', {action:'adminToggleGuestPrivilege', targetEmail:'${em}', canBring:${p.canBringGuests === false}}, {closeSheet:false, after:function(){ openPlayerAdminSheet('${em}'); }})`) : ""}
           ${switchRow("shield", t("adminRights"), p.role === "Admin", `confirmDialog({icon:'shield', title:t('${p.role === "Admin" ? "demoteConfirm" : "promoteConfirm"}', {name:'${escJsArg(p.fullName)}'}), okLabel:t('confirmBtn'), onOk:function(){ mutate('role-${em}', {action:'adminUpdateUserRole', targetEmail:'${em}', newRole:'${p.role === "Admin" ? "Player" : "Admin"}'}, {button:'confirm-ok-btn'}); }})`)}
-          <button type="button" onclick="confirmDialog({icon:'${suspended ? "checkCircle" : "ban"}', danger:${!suspended}, title:t('${suspended ? "reactivateConfirm" : "suspendConfirm"}', {name:'${escJsArg(p.fullName)}'}), body:${suspended ? "''" : "t('suspendBody')"}, okLabel:t('confirmBtn'), onOk:function(){ mutate('susp-${em}', {action:'adminToggleSuspendUser', targetEmail:'${em}', newStatus:'${suspended ? "Active" : "Suspended"}'}, {button:'confirm-ok-btn'}); }})" class="tap-lg w-full px-4 rounded-2xl ${suspended ? "bg-emerald-950 text-[#00f59b]" : "bg-rose-950 text-rose-300"} font-bold text-sm text-left inline-flex items-center gap-2">${ic(suspended ? "checkCircle" : "ban", "w-5 h-5")}${escHtml(suspended ? t("reactivate") : t("suspend"))}</button>
-          ${!p.hasHistory ? `<button type="button" onclick="confirmDialog({icon:'trash', danger:true, title:t('removeConfirm', {name:'${escJsArg(p.fullName)}'}), okLabel:t('deleteBtn'), onOk:function(){ mutate('del-${em}', {action:'adminDeleteUser', targetEmail:'${em}'}, {button:'confirm-ok-btn'}); }})" class="tap w-full px-4 rounded-2xl text-rose-300 text-sm font-bold inline-flex items-center gap-2">${ic("trash", "w-4 h-4")}${escHtml(t("removePlayer"))}</button>` : ""}
+          ${suspended ? `<button type="button" onclick="confirmDialog({icon:'checkCircle', title:t('reactivateConfirm', {name:'${escJsArg(p.fullName)}'}), okLabel:t('confirmBtn'), onOk:function(){ mutate('susp-${em}', {action:'adminToggleSuspendUser', targetEmail:'${em}', newStatus:'Active'}, {button:'confirm-ok-btn'}); }})" class="tap-lg w-full px-4 rounded-2xl bg-emerald-950 text-[#00f59b] font-bold text-sm">${escHtml(t("reactivate"))}</button>` : ""}
+          ${inactive ? `<p class="text-xs text-slate-400">${escHtml(t("inactiveProfileHelp"))}</p>` : ""}
+          <button type="button" onclick="confirmDialog({icon:'${inactive ? "mail" : "ban"}', danger:${!inactive}, title:t('${inactive ? "reinvitePlayerConfirm" : "deactivatePlayerConfirm"}', {name:'${escJsArg(p.fullName)}'}), body:t('${inactive ? "reinvitePlayerHelp" : "deactivatePlayerHelp"}'), okLabel:t('${inactive ? "reinvitePlayer" : "deactivatePlayer"}'), onOk:function(){ mutate('account-${em}', {action:'${inactive ? "adminReinviteUser" : "adminDeactivateUser"}', targetEmail:'${em}'}, {button:'confirm-ok-btn'}); }})" class="tap-lg w-full px-4 rounded-2xl ${inactive ? "bg-emerald-950 text-[#00f59b]" : "bg-rose-950 text-rose-300"} font-bold text-sm text-left inline-flex items-center gap-2">${ic(inactive ? "mail" : "ban", "w-5 h-5")}${escHtml(t(inactive ? "reinvitePlayer" : "deactivatePlayer"))}</button>
         </div>`}
       `);
     }
