@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Pitch Pulse 5.5.0 candidate: account lifecycle controls; requires matching backend. -->
+<!-- Pitch Pulse 5.5.2: three local design choices, consolidated navigation and final-hour match status. -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover, interactive-widget=resizes-content">
@@ -214,13 +214,725 @@
   <!-- Tailwind styles, pre-built into this file so the page paints instantly without any CDN. -->
   <style id="tw-prebuilt">*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width:640px){.container{max-width:640px}}@media (min-width:768px){.container{max-width:768px}}@media (min-width:1024px){.container{max-width:1024px}}@media (min-width:1280px){.container{max-width:1280px}}@media (min-width:1536px){.container{max-width:1536px}}.pointer-events-none{pointer-events:none}.pointer-events-auto{pointer-events:auto}.visible{visibility:visible}.collapse{visibility:collapse}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0}.bottom-0{bottom:0}.left-0{left:0}.left-3\.5{left:.875rem}.right-0{right:0}.right-1\.5{right:.375rem}.top-0{top:0}.top-1{top:.25rem}.top-1\/2{top:50%}.z-10{z-index:10}.z-30{z-index:30}.z-40{z-index:40}.z-50{z-index:50}.z-\[60\]{z-index:60}.-mx-5{margin-left:-1.25rem;margin-right:-1.25rem}.mx-auto{margin-left:auto;margin-right:auto}.-mt-1{margin-top:-.25rem}.-mt-2{margin-top:-.5rem}.mb-0\.5{margin-bottom:.125rem}.mb-1{margin-bottom:.25rem}.mb-1\.5{margin-bottom:.375rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mb-6{margin-bottom:1.5rem}.ml-1{margin-left:.25rem}.ml-auto{margin-left:auto}.mr-1\.5{margin-right:.375rem}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-1\.5{margin-top:.375rem}.mt-2{margin-top:.5rem}.mt-2\.5{margin-top:.625rem}.mt-3{margin-top:.75rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.mt-6{margin-top:1.5rem}.mt-px{margin-top:1px}.block{display:block}.inline-block{display:inline-block}.inline{display:inline}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-12{height:3rem}.h-14{height:3.5rem}.h-16{height:4rem}.h-2\.5{height:.625rem}.h-20{height:5rem}.h-3\.5{height:.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-56{height:14rem}.h-6{height:1.5rem}.h-7{height:1.75rem}.h-8{height:2rem}.h-9{height:2.25rem}.h-\[18px\]{height:18px}.h-\[5px\]{height:5px}.h-full{height:100%}.max-h-\[92vh\]{max-height:92vh}.min-h-\[44px\]{min-height:44px}.min-h-screen{min-height:100vh}.w-1{width:.25rem}.w-10{width:2.5rem}.w-11{width:2.75rem}.w-12{width:3rem}.w-14{width:3.5rem}.w-16{width:4rem}.w-20{width:5rem}.w-3\.5{width:.875rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-7{width:1.75rem}.w-8{width:2rem}.w-9{width:2.25rem}.w-\[18px\]{width:18px}.w-full{width:100%}.min-w-0{min-width:0}.min-w-\[20px\]{min-width:20px}.max-w-5xl{max-width:64rem}.max-w-full{max-width:100%}.max-w-lg{max-width:32rem}.max-w-md{max-width:28rem}.max-w-sm{max-width:24rem}.flex-1{flex:1 1 0%}.flex-shrink{flex-shrink:1}.shrink-0{flex-shrink:0}.-translate-y-1\/2{--tw-translate-y:-50%}.-translate-y-1\/2,.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes spin{to{transform:rotate(1turn)}}.animate-spin{animation:spin 1s linear infinite}.cursor-pointer{cursor:pointer}.cursor-progress{cursor:progress}.resize{resize:both}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-cols-7{grid-template-columns:repeat(7,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-0\.5{gap:.125rem}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-2\.5{gap:.625rem}.gap-3{gap:.75rem}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem*var(--tw-space-y-reverse))}.space-y-1\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.375rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.375rem*var(--tw-space-y-reverse))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-2\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.625rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.625rem*var(--tw-space-y-reverse))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.75rem*var(--tw-space-y-reverse))}.space-y-3\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.875rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.875rem*var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis}.truncate,.whitespace-nowrap{white-space:nowrap}.whitespace-pre-wrap{white-space:pre-wrap}.break-all{word-break:break-all}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-\[22px\]{border-radius:22px}.rounded-\[24px\]{border-radius:24px}.rounded-\[28px\]{border-radius:28px}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-xl{border-radius:.75rem}.rounded-t-\[28px\]{border-top-left-radius:28px;border-top-right-radius:28px}.border{border-width:1px}.border-2{border-width:2px}.border-\[3px\]{border-width:3px}.border-l-2{border-left-width:2px}.border-t{border-top-width:1px}.border-\[\#00f59b\]{--tw-border-opacity:1;border-color:rgb(0 245 155/var(--tw-border-opacity,1))}.border-\[\#00f59b\]\/30{border-color:rgba(0,245,155,.3)}.border-\[\#00f59b\]\/40{border-color:rgba(0,245,155,.4)}.border-\[\#00f59b\]\/60{border-color:rgba(0,245,155,.6)}.border-amber-400{--tw-border-opacity:1;border-color:rgb(251 191 36/var(--tw-border-opacity,1))}.border-amber-500\/40{border-color:rgba(245,158,11,.4)}.border-current{border-color:currentColor}.border-emerald-500\/40{border-color:rgba(16,185,129,.4)}.border-emerald-800{--tw-border-opacity:1;border-color:rgb(6 95 70/var(--tw-border-opacity,1))}.border-emerald-800\/40{border-color:rgba(6,95,70,.4)}.border-emerald-800\/50{border-color:rgba(6,95,70,.5)}.border-emerald-800\/60{border-color:rgba(6,95,70,.6)}.border-emerald-900{--tw-border-opacity:1;border-color:rgb(6 78 59/var(--tw-border-opacity,1))}.border-emerald-900\/50{border-color:rgba(6,78,59,.5)}.border-emerald-900\/60{border-color:rgba(6,78,59,.6)}.border-emerald-950{--tw-border-opacity:1;border-color:rgb(2 44 34/var(--tw-border-opacity,1))}.border-rose-500{--tw-border-opacity:1;border-color:rgb(244 63 94/var(--tw-border-opacity,1))}.border-rose-500\/30{border-color:rgba(244,63,94,.3)}.border-rose-500\/40{border-color:rgba(244,63,94,.4)}.border-rose-600\/60{border-color:rgba(225,29,72,.6)}.border-rose-800\/50{border-color:rgba(159,18,57,.5)}.border-sky-400{--tw-border-opacity:1;border-color:rgb(56 189 248/var(--tw-border-opacity,1))}.border-sky-500{--tw-border-opacity:1;border-color:rgb(14 165 233/var(--tw-border-opacity,1))}.border-sky-500\/40{border-color:rgba(14,165,233,.4)}.border-slate-500\/40{border-color:rgba(100,116,139,.4)}.border-transparent{border-color:transparent}.border-white\/30{border-color:hsla(0,0%,100%,.3)}.border-t-transparent{border-top-color:transparent}.bg-\[\#00f59b\]{--tw-bg-opacity:1;background-color:rgb(0 245 155/var(--tw-bg-opacity,1))}.bg-\[\#00f59b\]\/20{background-color:rgba(0,245,155,.2)}.bg-\[\#0b130f\]{--tw-bg-opacity:1;background-color:rgb(11 19 15/var(--tw-bg-opacity,1))}.bg-\[\#111c16\]{--tw-bg-opacity:1;background-color:rgb(17 28 22/var(--tw-bg-opacity,1))}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.bg-amber-500\/10{background-color:rgba(245,158,11,.1)}.bg-amber-500\/20{background-color:rgba(245,158,11,.2)}.bg-amber-600{--tw-bg-opacity:1;background-color:rgb(217 119 6/var(--tw-bg-opacity,1))}.bg-black\/55{background-color:rgba(0,0,0,.55)}.bg-black\/60{background-color:rgba(0,0,0,.6)}.bg-emerald-950{--tw-bg-opacity:1;background-color:rgb(2 44 34/var(--tw-bg-opacity,1))}.bg-emerald-950\/50{background-color:rgba(2,44,34,.5)}.bg-emerald-950\/60{background-color:rgba(2,44,34,.6)}.bg-rose-500{--tw-bg-opacity:1;background-color:rgb(244 63 94/var(--tw-bg-opacity,1))}.bg-rose-500\/10{background-color:rgba(244,63,94,.1)}.bg-rose-500\/20{background-color:rgba(244,63,94,.2)}.bg-rose-950{--tw-bg-opacity:1;background-color:rgb(76 5 25/var(--tw-bg-opacity,1))}.bg-rose-950\/60{background-color:rgba(76,5,25,.6)}.bg-rose-950\/80{background-color:rgba(76,5,25,.8)}.bg-sky-500{--tw-bg-opacity:1;background-color:rgb(14 165 233/var(--tw-bg-opacity,1))}.bg-sky-500\/20{background-color:rgba(14,165,233,.2)}.bg-sky-950{--tw-bg-opacity:1;background-color:rgb(8 47 73/var(--tw-bg-opacity,1))}.bg-slate-500\/40{background-color:rgba(100,116,139,.4)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42/var(--tw-bg-opacity,1))}.object-contain{-o-object-fit:contain;object-fit:contain}.object-cover{-o-object-fit:cover;object-fit:cover}.p-0{padding:0}.p-2{padding:.5rem}.p-2\.5{padding:.625rem}.p-3{padding:.75rem}.p-3\.5{padding:.875rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-1{padding-left:.25rem;padding-right:.25rem}.px-1\.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-2\.5{padding-left:.625rem;padding-right:.625rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-3\.5{padding-left:.875rem;padding-right:.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2\.5{padding-top:.625rem;padding-bottom:.625rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-1{padding-bottom:.25rem}.pb-28{padding-bottom:7rem}.pb-3{padding-bottom:.75rem}.pb-3\.5{padding-bottom:.875rem}.pl-11{padding-left:2.75rem}.pl-3{padding-left:.75rem}.pl-3\.5{padding-left:.875rem}.pr-1{padding-right:.25rem}.pr-1\.5{padding-right:.375rem}.pr-2{padding-right:.5rem}.pr-3\.5{padding-right:.875rem}.pt-1{padding-top:.25rem}.pt-1\.5{padding-top:.375rem}.pt-10{padding-top:2.5rem}.pt-2{padding-top:.5rem}.pt-3{padding-top:.75rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.align-middle{vertical-align:middle}.align-\[-2px\]{vertical-align:-2px}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[12px\]{font-size:12px}.text-\[13px\]{font-size:13px}.text-\[15px\]{font-size:15px}.text-\[22px\]{font-size:22px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.leading-tight{line-height:1.25}.tracking-\[0\.3em\]{letter-spacing:.3em}.tracking-\[0\.4em\]{letter-spacing:.4em}.tracking-wide{letter-spacing:.025em}.tracking-wider{letter-spacing:.05em}.tracking-widest{letter-spacing:.1em}.text-\[\#00f59b\]{--tw-text-opacity:1;color:rgb(0 245 155/var(--tw-text-opacity,1))}.text-\[\#070b09\]{--tw-text-opacity:1;color:rgb(7 11 9/var(--tw-text-opacity,1))}.text-amber-200{--tw-text-opacity:1;color:rgb(253 230 138/var(--tw-text-opacity,1))}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183/var(--tw-text-opacity,1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.text-emerald-400\/80{color:rgba(52,211,153,.8)}.text-rose-200{--tw-text-opacity:1;color:rgb(254 205 211/var(--tw-text-opacity,1))}.text-rose-300{--tw-text-opacity:1;color:rgb(253 164 175/var(--tw-text-opacity,1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133/var(--tw-text-opacity,1))}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252/var(--tw-text-opacity,1))}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248/var(--tw-text-opacity,1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225/var(--tw-text-opacity,1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184/var(--tw-text-opacity,1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.line-through{text-decoration-line:line-through}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.accent-\[\#00f59b\]{accent-color:#00f59b}.opacity-50{opacity:.5}.opacity-60{opacity:.6}.opacity-75{opacity:.75}.opacity-80{opacity:.8}.opacity-90{opacity:.9}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-2xl,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.outline{outline-style:solid}.ring{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.ring,.ring-2{box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.ring-2{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.ring-\[\#00f59b\]\/40{--tw-ring-color:rgba(0,245,155,.4)}.blur{--tw-blur:blur(8px)}.blur,.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-filter{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.ease-out{transition-timing-function:cubic-bezier(0,0,.2,1)}.first\:mt-0:first-child{margin-top:0}.has-\[\:checked\]\:bg-emerald-950:has(:checked){--tw-bg-opacity:1;background-color:rgb(2 44 34/var(--tw-bg-opacity,1))}.has-\[\:checked\]\:text-\[\#00f59b\]:has(:checked){--tw-text-opacity:1;color:rgb(0 245 155/var(--tw-text-opacity,1))}@media (min-width:640px){.sm\:hidden{display:none}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:grid-cols-7{grid-template-columns:repeat(7,minmax(0,1fr))}.sm\:items-center{align-items:center}.sm\:rounded-3xl{border-radius:1.5rem}.sm\:p-10{padding:2.5rem}.sm\:p-4{padding:1rem}.sm\:p-5{padding:1.25rem}.sm\:p-6{padding:1.5rem}.sm\:px-4{padding-left:1rem;padding-right:1rem}}@media (min-width:768px){.md\:flex{display:flex}}</style>
   <style id="presentation-styles">
-    /* Theme and motion settings for the approved Pitch Pulse design. */
+/*
+ * Pitch Pulse optional presentation skins.
+ * Inline after the existing styles, before DOMContentLoaded.
+ * Every rule is scoped to an optional design. Generic remains unchanged.
+ * No imports, external assets, fonts, entrance animations or feature visibility rules.
+ * Motion policy and the personal design picker are supplied by the host page.
+ */
+
+/* Shared tokens default to dark mode; .light-mode supplies the light palette. */
+body[data-design="iphone"],
+body[data-design="android"] {
+  --pp-skin-bg: #101310;
+  --pp-skin-surface: #1a1f1b;
+  --pp-skin-surface-2: #242b25;
+  --pp-skin-surface-3: #333d34;
+  --pp-skin-ink: #eef3ed;
+  --pp-skin-secondary: #cad3c8;
+  --pp-skin-muted: #b0bbae;
+  --pp-skin-line: #3a453b;
+  --pp-skin-control-line: #738570;
+  --pp-skin-accent: #9ed5af;
+  --pp-skin-accent-hover: #b3e4c2;
+  --pp-skin-on-accent: #113720;
+  --pp-skin-accent-soft: #263f2e;
+  --pp-skin-accent-line: #4f7158;
+  --pp-skin-action-bg: #1d2c21;
+  --pp-skin-amber-bg: #3b301d;
+  --pp-skin-amber-ink: #f1cf8b;
+  --pp-skin-amber-line: #80683c;
+  --pp-skin-rose-bg: #3c2726;
+  --pp-skin-rose-ink: #ffb4aa;
+  --pp-skin-rose-line: #80524d;
+  --pp-skin-blue-bg: #20353f;
+  --pp-skin-blue-ink: #b2d6e8;
+  --pp-skin-blue-line: #466a7b;
+  --pp-skin-card-radius: 28px;
+  --pp-skin-control-radius: 999px;
+  --pp-skin-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
+  --pp-skin-dock: #1a241c;
+  --brand: var(--pp-skin-accent);
+  background-color: var(--pp-skin-bg) !important;
+  color: var(--pp-skin-ink) !important;
+}
+
+body[data-design="iphone"] {
+  --pp-skin-bg: #0c0e0d;
+  --pp-skin-surface: #1b1e1c;
+  --pp-skin-surface-2: #252a27;
+  --pp-skin-surface-3: #343b36;
+  --pp-skin-ink: #f2f5f2;
+  --pp-skin-secondary: #d0d7d1;
+  --pp-skin-muted: #b1bab3;
+  --pp-skin-line: #373f39;
+  --pp-skin-control-line: #748177;
+  --pp-skin-accent: #89d5ac;
+  --pp-skin-accent-hover: #a3e2be;
+  --pp-skin-on-accent: #0c3020;
+  --pp-skin-accent-soft: #233c2e;
+  --pp-skin-accent-line: #456b53;
+  --pp-skin-action-bg: #1d2b22;
+  --pp-skin-card-radius: 22px;
+  --pp-skin-control-radius: 13px;
+  --pp-skin-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  --pp-skin-dock: rgba(24, 28, 25, 0.94);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+}
+
+body[data-design="iphone"].light-mode {
+  --pp-skin-bg: #f2f3f5;
+  --pp-skin-surface: #ffffff;
+  --pp-skin-surface-2: #f1f3f4;
+  --pp-skin-surface-3: #e2e6e4;
+  --pp-skin-ink: #1b211e;
+  --pp-skin-secondary: #454e48;
+  --pp-skin-muted: #626b65;
+  --pp-skin-line: #dce1dd;
+  --pp-skin-control-line: #7b867f;
+  --pp-skin-accent: #1a6b4b;
+  --pp-skin-accent-hover: #14583e;
+  --pp-skin-on-accent: #ffffff;
+  --pp-skin-accent-soft: #e8f3ec;
+  --pp-skin-accent-line: #bdd7c6;
+  --pp-skin-action-bg: #f4f8f5;
+  --pp-skin-amber-bg: #fcf0d8;
+  --pp-skin-amber-ink: #78540d;
+  --pp-skin-amber-line: #dfc88c;
+  --pp-skin-rose-bg: #faece9;
+  --pp-skin-rose-ink: #9a3830;
+  --pp-skin-rose-line: #ddb9b3;
+  --pp-skin-blue-bg: #e8f1f7;
+  --pp-skin-blue-ink: #305e79;
+  --pp-skin-blue-line: #b5cedc;
+  --pp-skin-shadow: 0 1px 3px rgba(22, 38, 28, 0.045);
+  --pp-skin-dock: rgba(255, 255, 255, 0.94);
+}
+
+body[data-design="android"] {
+  font-family: Roboto, "Noto Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+body[data-design="android"].light-mode {
+  --pp-skin-bg: #f1f5ef;
+  --pp-skin-surface: #fbfdf8;
+  --pp-skin-surface-2: #e9f0e5;
+  --pp-skin-surface-3: #dfe7d9;
+  --pp-skin-ink: #1b251c;
+  --pp-skin-secondary: #414d3f;
+  --pp-skin-muted: #596553;
+  --pp-skin-line: #ccd7c7;
+  --pp-skin-control-line: #74816d;
+  --pp-skin-accent: #2d6443;
+  --pp-skin-accent-hover: #214e33;
+  --pp-skin-on-accent: #ffffff;
+  --pp-skin-accent-soft: #d7ead8;
+  --pp-skin-accent-line: #a7c8ac;
+  --pp-skin-action-bg: #e5f0e3;
+  --pp-skin-amber-bg: #f9edcf;
+  --pp-skin-amber-ink: #76540b;
+  --pp-skin-amber-line: #d9c48e;
+  --pp-skin-rose-bg: #f9e8e4;
+  --pp-skin-rose-ink: #933c33;
+  --pp-skin-rose-line: #d7b6ad;
+  --pp-skin-blue-bg: #e3eef3;
+  --pp-skin-blue-ink: #315f73;
+  --pp-skin-blue-line: #acc7d2;
+  --pp-skin-shadow: 0 1px 2px rgba(33, 50, 32, 0.06);
+  --pp-skin-dock: #e6eee1;
+}
+
+/* Neutral surfaces. Explicit !important overrides match the existing light utilities. */
+body[data-design="iphone"] .glass-card,
+body[data-design="android"] .glass-card {
+  background: var(--pp-skin-surface) !important;
+  border: 1px solid var(--pp-skin-line) !important;
+  border-radius: var(--pp-skin-card-radius);
+  box-shadow: var(--pp-skin-shadow) !important;
+}
+
+body[data-design="iphone"] :is(.bg-\[\#0b130f\], .bg-\[\#0b130f\]\/70, .bg-\[\#0b130f\]\/80, .bg-\[\#111c16\], .bg-slate-900),
+body[data-design="android"] :is(.bg-\[\#0b130f\], .bg-\[\#0b130f\]\/70, .bg-\[\#0b130f\]\/80, .bg-\[\#111c16\], .bg-slate-900) {
+  background-color: var(--pp-skin-surface-2) !important;
+  border-color: var(--pp-skin-line) !important;
+}
+
+body[data-design="iphone"] .bg-slate-800,
+body[data-design="android"] .bg-slate-800 {
+  background-color: var(--pp-skin-surface-3) !important;
+  color: var(--pp-skin-secondary) !important;
+}
+
+body[data-design="iphone"] .text-white,
+body[data-design="android"] .text-white { color: var(--pp-skin-ink) !important; }
+
+body[data-design="iphone"] :is(.text-slate-200, .text-slate-300),
+body[data-design="android"] :is(.text-slate-200, .text-slate-300) { color: var(--pp-skin-secondary) !important; }
+
+body[data-design="iphone"] :is(.text-slate-400, .text-slate-500),
+body[data-design="android"] :is(.text-slate-400, .text-slate-500) { color: var(--pp-skin-muted) !important; }
+
+body[data-design="iphone"] :is(.text-\[\#00f59b\], .text-emerald-300, .text-emerald-400, .text-emerald-400\/80),
+body[data-design="android"] :is(.text-\[\#00f59b\], .text-emerald-300, .text-emerald-400, .text-emerald-400\/80) { color: var(--pp-skin-accent) !important; }
+
+body[data-design="iphone"] :is(.border-emerald-950, .border-emerald-950\/80, .border-emerald-900, .border-emerald-900\/50, .border-emerald-900\/60, .border-emerald-800, .border-emerald-800\/40, .border-emerald-800\/50, .border-emerald-800\/60),
+body[data-design="android"] :is(.border-emerald-950, .border-emerald-950\/80, .border-emerald-900, .border-emerald-900\/50, .border-emerald-900\/60, .border-emerald-800, .border-emerald-800\/40, .border-emerald-800\/50, .border-emerald-800\/60) { border-color: var(--pp-skin-line) !important; }
+
+body[data-design="iphone"] :is(.border-\[\#00f59b\]\/30, .border-\[\#00f59b\]\/40, .border-\[\#00f59b\]\/60),
+body[data-design="android"] :is(.border-\[\#00f59b\]\/30, .border-\[\#00f59b\]\/40, .border-\[\#00f59b\]\/60) { border-color: var(--pp-skin-accent-line) !important; }
+
+body[data-design="iphone"] :is(.bg-emerald-950, .bg-emerald-950\/50, .bg-emerald-950\/60, .bg-emerald-950\/90, .bg-\[\#00f59b\]\/20),
+body[data-design="android"] :is(.bg-emerald-950, .bg-emerald-950\/50, .bg-emerald-950\/60, .bg-emerald-950\/90, .bg-\[\#00f59b\]\/20) {
+  background-color: var(--pp-skin-accent-soft) !important;
+  border-color: var(--pp-skin-accent-line) !important;
+  color: var(--pp-skin-accent) !important;
+}
+
+/* Preserve warning, destructive and waitlist meaning with quieter tonal colors. */
+body[data-design="iphone"] :is(.bg-amber-500\/10, .bg-amber-500\/20, .bg-amber-600\/30),
+body[data-design="android"] :is(.bg-amber-500\/10, .bg-amber-500\/20, .bg-amber-600\/30) {
+  background-color: var(--pp-skin-amber-bg) !important;
+  border-color: var(--pp-skin-amber-line) !important;
+  color: var(--pp-skin-amber-ink) !important;
+}
+
+body[data-design="iphone"] :is(.text-amber-200, .text-amber-300, .text-amber-400),
+body[data-design="android"] :is(.text-amber-200, .text-amber-300, .text-amber-400) { color: var(--pp-skin-amber-ink) !important; }
+
+body[data-design="iphone"] :is(.bg-rose-950, .bg-rose-950\/60, .bg-rose-950\/80, .bg-rose-950\/90, .bg-rose-500\/10, .bg-rose-500\/20),
+body[data-design="android"] :is(.bg-rose-950, .bg-rose-950\/60, .bg-rose-950\/80, .bg-rose-950\/90, .bg-rose-500\/10, .bg-rose-500\/20) {
+  background-color: var(--pp-skin-rose-bg) !important;
+  border-color: var(--pp-skin-rose-line) !important;
+  color: var(--pp-skin-rose-ink) !important;
+}
+
+body[data-design="iphone"] :is(.text-rose-200, .text-rose-300, .text-rose-400),
+body[data-design="android"] :is(.text-rose-200, .text-rose-300, .text-rose-400) { color: var(--pp-skin-rose-ink) !important; }
+
+body[data-design="iphone"] button.bg-rose-500.text-white,
+body[data-design="android"] button.bg-rose-500.text-white {
+  background-color: #a43830 !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+}
+
+body[data-design="iphone"] :is(.bg-sky-950, .bg-sky-500\/20),
+body[data-design="android"] :is(.bg-sky-950, .bg-sky-500\/20) {
+  background-color: var(--pp-skin-blue-bg) !important;
+  border-color: var(--pp-skin-blue-line) !important;
+  color: var(--pp-skin-blue-ink) !important;
+}
+
+body[data-design="iphone"] :is(.text-sky-300, .text-sky-400),
+body[data-design="android"] :is(.text-sky-300, .text-sky-400) { color: var(--pp-skin-blue-ink) !important; }
+
+/* Brand-dark header remains readable beneath either phone's status bar. */
+body[data-design="iphone"] .app-header,
+body[data-design="android"] .app-header {
+  background: rgba(7, 18, 13, 0.96);
+  border-bottom-color: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+}
+
+body[data-design="iphone"] .app-header .hdr-title,
+body[data-design="android"] .app-header .hdr-title { color: #ffffff; }
+
+body[data-design="iphone"] .hdr-btn,
+body[data-design="android"] .hdr-btn {
+  background: rgba(255, 255, 255, 0.075);
+  color: #e2eee6;
+  border-radius: var(--pp-skin-control-radius);
+}
+
+body[data-design="iphone"] .view-title,
+body[data-design="android"] .view-title {
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+body[data-design="android"] :is(h1, h2, h3, .font-display) {
+  font-family: Roboto, "Noto Sans", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: -0.012em;
+}
+
+/* Solid primary actions; routine controls stay neutral or lightly tonal. */
+body[data-design="iphone"] .neon-btn,
+body[data-design="android"] .neon-btn {
+  background: var(--pp-skin-accent) !important;
+  color: var(--pp-skin-on-accent) !important;
+  border-color: transparent !important;
+  border-radius: var(--pp-skin-control-radius);
+  box-shadow: none !important;
+  font-weight: 650;
+}
+
+body[data-design="iphone"] .neon-btn:hover,
+body[data-design="android"] .neon-btn:hover {
+  background: var(--pp-skin-accent-hover) !important;
+  box-shadow: none !important;
+}
+
+body[data-design="iphone"] .seg-off,
+body[data-design="android"] .seg-off {
+  background-color: var(--pp-skin-surface-2) !important;
+  border-color: var(--pp-skin-line) !important;
+  color: var(--pp-skin-secondary) !important;
+}
+
+body[data-design="iphone"] :focus-visible,
+body[data-design="android"] :focus-visible {
+  outline: 3px solid var(--pp-skin-accent);
+  outline-offset: 3px;
+}
+
+body[data-design="iphone"] :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
+body[data-design="android"] :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  background-color: var(--pp-skin-surface-2) !important;
+  border-color: var(--pp-skin-control-line) !important;
+  color: var(--pp-skin-ink) !important;
+  border-radius: 12px;
+}
+
+body[data-design="iphone"] :is(input, textarea)::placeholder,
+body[data-design="android"] :is(input, textarea)::placeholder { color: var(--pp-skin-muted); opacity: 1; }
+
+body[data-design="iphone"] input[type="checkbox"],
+body[data-design="android"] input[type="checkbox"] { accent-color: var(--pp-skin-accent); }
+
+body[data-design="iphone"] .pin-box:focus,
+body[data-design="android"] .pin-box:focus {
+  border-color: var(--pp-skin-accent) !important;
+  box-shadow: 0 0 0 3px var(--pp-skin-accent-soft);
+}
+
+body[data-design="iphone"] .switch .track,
+body[data-design="android"] .switch .track { background: var(--pp-skin-surface-3); }
+
+body[data-design="iphone"] .switch input:checked + .track,
+body[data-design="android"] .switch input:checked + .track { background: var(--pp-skin-accent); }
+
+/* Match headings and capacity remain in the original semantic order. */
+body[data-design="iphone"] .match-card,
+body[data-design="android"] .match-card { padding: 18px; }
+
+body[data-design="iphone"] .match-card.ring-2,
+body[data-design="android"] .match-card.ring-2 { box-shadow: 0 0 0 1px var(--pp-skin-accent-line), var(--pp-skin-shadow) !important; }
+
+body[data-design="iphone"] .match-primary-info,
+body[data-design="android"] .match-primary-info { min-width: 0; gap: 14px; }
+
+body[data-design="iphone"] .match-title,
+body[data-design="android"] .match-title {
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  overflow-wrap: break-word;
+}
+
+body[data-design="iphone"] .match-venue,
+body[data-design="android"] .match-venue {
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--pp-skin-accent) !important;
+}
+
+body[data-design="iphone"] .match-venue > .truncate,
+body[data-design="android"] .match-venue > .truncate {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+body[data-design="iphone"] .match-compact,
+body[data-design="android"] .match-compact { padding: 16px 18px; }
+
+body[data-design="iphone"] .match-compact .match-title,
+body[data-design="android"] .match-compact .match-title { font-size: 17px; line-height: 1.3; }
+
+body[data-design="iphone"] .match-turnout,
+body[data-design="android"] .match-turnout { margin-top: 18px; }
+
+body[data-design="iphone"] .match-turnout [role="progressbar"],
+body[data-design="android"] .match-turnout [role="progressbar"] {
+  height: 6px;
+  background-color: var(--pp-skin-surface-3) !important;
+}
+
+body[data-design="iphone"] .match-turnout [role="progressbar"] > .h-full,
+body[data-design="android"] .match-turnout [role="progressbar"] > .h-full { background-color: var(--pp-skin-accent) !important; }
+
+/* Apple's grouped-control treatment and Material's separate tonal capsules. */
+body[data-design="iphone"] .rsvp-panel {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid transparent;
+  border-top-color: var(--pp-skin-line);
+  border-radius: 18px;
+}
+
+body[data-design="android"] .rsvp-panel {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid var(--pp-skin-line);
+  border-radius: 24px;
+  background: var(--pp-skin-surface-2);
+}
+
+body[data-design="iphone"] .rsvp-heading,
+body[data-design="android"] .rsvp-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 650;
+}
+
+body[data-design="iphone"] .rsvp-grid {
+  gap: 4px;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--pp-skin-surface-2);
+}
+
+body[data-design="android"] .rsvp-grid { gap: 8px; }
+
+body[data-design="iphone"] .rsvp-choice[data-rsvp],
+body[data-design="android"] .rsvp-choice[data-rsvp] {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 6px;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--pp-skin-secondary) !important;
+  border-radius: var(--pp-skin-control-radius);
+  font-weight: 650;
+  box-shadow: none;
+}
+
+body[data-design="android"] .rsvp-choice[data-rsvp] {
+  background: var(--pp-skin-surface) !important;
+  border-color: var(--pp-skin-line) !important;
+}
+
+body[data-design="iphone"] .rsvp-choice[data-rsvp] > span,
+body[data-design="android"] .rsvp-choice[data-rsvp] > span {
+  max-width: 100%;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+body[data-design="iphone"] .rsvp-choice[data-rsvp] > span > span,
+body[data-design="android"] .rsvp-choice[data-rsvp] > span > span { min-width: 0; }
+
+body[data-design="iphone"] .rsvp-choice[data-rsvp="Yes"][aria-pressed="true"] {
+  background: var(--pp-skin-accent) !important;
+  color: var(--pp-skin-on-accent) !important;
+  border-color: transparent !important;
+}
+
+body[data-design="android"] .rsvp-choice[data-rsvp="Yes"][aria-pressed="true"] {
+  background: var(--pp-skin-accent-soft) !important;
+  color: var(--pp-skin-accent) !important;
+  border-color: var(--pp-skin-accent-line) !important;
+}
+
+body[data-design="iphone"] .rsvp-choice[data-rsvp="Maybe"][aria-pressed="true"],
+body[data-design="android"] .rsvp-choice[data-rsvp="Maybe"][aria-pressed="true"] {
+  background: var(--pp-skin-amber-bg) !important;
+  color: var(--pp-skin-amber-ink) !important;
+  border-color: var(--pp-skin-amber-line) !important;
+}
+
+body[data-design="iphone"] .rsvp-choice[data-rsvp="No"][aria-pressed="true"],
+body[data-design="android"] .rsvp-choice[data-rsvp="No"][aria-pressed="true"] {
+  background: var(--pp-skin-rose-bg) !important;
+  color: var(--pp-skin-rose-ink) !important;
+  border-color: var(--pp-skin-rose-line) !important;
+}
+
+/* The Yes control represents the current waitlist position when bg-sky-500 is present. */
+body[data-design="iphone"] .rsvp-choice[data-rsvp="Yes"].bg-sky-500[aria-pressed="true"],
+body[data-design="android"] .rsvp-choice[data-rsvp="Yes"].bg-sky-500[aria-pressed="true"] {
+  background: var(--pp-skin-blue-bg) !important;
+  color: var(--pp-skin-blue-ink) !important;
+  border-color: var(--pp-skin-blue-line) !important;
+}
+
+body[data-design="iphone"] .rsvp-choice[data-rsvp]:disabled,
+body[data-design="android"] .rsvp-choice[data-rsvp]:disabled { opacity: 0.58; }
+
+body[data-design="iphone"] .rsvp-status,
+body[data-design="android"] .rsvp-status { font-size: 13px; line-height: 1.5; margin-top: 10px; }
+
+/* Static emphasis changes paint only: base padding, borders and radii reserve the same space. */
+body[data-design="iphone"] .rsvp-panel:is([data-attention="answer"], [data-attention="reconfirm"]),
+body[data-design="android"] .rsvp-panel:is([data-attention="answer"], [data-attention="reconfirm"]) {
+  padding: 14px;
+  background: var(--pp-skin-action-bg);
+  border: 1px solid var(--pp-skin-accent-line);
+  border-radius: 18px;
+}
+
+body[data-design="android"] .rsvp-panel:is([data-attention="answer"], [data-attention="reconfirm"]) {
+  border-radius: 24px;
+  box-shadow: inset 3px 0 0 var(--pp-skin-accent);
+}
+
+body[data-design="iphone"] .rsvp-attention-label,
+body[data-design="android"] .rsvp-attention-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  max-width: 100%;
+  border-radius: 999px;
+  color: var(--pp-skin-accent);
+  background: var(--pp-skin-accent-soft);
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* The roster is a calm supporting list, visually separate from the RSVP control. */
+body[data-design="iphone"] .roster-section,
+body[data-design="android"] .roster-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--pp-skin-line); }
+
+body[data-design="iphone"] .roster-section > h3,
+body[data-design="android"] .roster-section > h3 { font-size: 15px; line-height: 1.4; font-weight: 650; margin-bottom: 10px; }
+
+body[data-design="iphone"] .roster-section > [role="tablist"] {
+  padding: 3px;
+  gap: 0;
+  background: var(--pp-skin-surface-2);
+  border-radius: 12px;
+}
+
+body[data-design="iphone"] .roster-filter,
+body[data-design="android"] .roster-filter {
+  min-height: 44px;
+  padding: 8px 5px;
+  color: var(--pp-skin-muted);
+  font-weight: 600;
+  font-size: 13px;
+  background: transparent;
+  box-shadow: none;
+}
+
+body[data-design="iphone"] .roster-filter { border-radius: 9px; }
+body[data-design="android"] .roster-filter { border-radius: 999px; border: 1px solid var(--pp-skin-line); }
+
+body[data-design="iphone"] .roster-filter[aria-selected="true"] {
+  background: var(--pp-skin-surface);
+  color: var(--pp-skin-ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
+}
+
+body[data-design="android"] .roster-filter[aria-selected="true"] {
+  background: var(--pp-skin-accent-soft);
+  color: var(--pp-skin-accent);
+  border-color: var(--pp-skin-accent-line);
+}
+
+body[data-design="iphone"] .roster-row,
+body[data-design="android"] .roster-row { min-height: 52px; padding: 10px 8px; }
+
+body[data-design="iphone"] .roster-row {
+  background: transparent !important;
+  border-width: 0 0 1px;
+  border-color: var(--pp-skin-line) !important;
+  border-radius: 0;
+}
+
+body[data-design="android"] .roster-row {
+  background: var(--pp-skin-surface-2) !important;
+  border-color: transparent !important;
+  border-radius: 16px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+body[data-design="iphone"] .match-secondary-actions,
+body[data-design="android"] .match-secondary-actions { margin-top: 18px; }
+
+body[data-design="iphone"] .match-secondary-actions > button,
+body[data-design="android"] .match-secondary-actions > button {
+  min-height: 46px;
+  padding: 9px 10px;
+  background: transparent !important;
+  border-color: var(--pp-skin-line) !important;
+  border-radius: var(--pp-skin-control-radius);
+  color: var(--pp-skin-accent) !important;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Dock treatments use the same accessible labels and safe-area layout. */
+body[data-design="iphone"] .dock,
+body[data-design="android"] .dock {
+  background: var(--pp-skin-dock);
+  border-top-color: var(--pp-skin-line);
+}
+
+body[data-design="iphone"] .dock-btn,
+body[data-design="android"] .dock-btn {
+  min-height: 56px;
+  color: var(--pp-skin-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+body[data-design="iphone"] .dock-btn[aria-current="page"],
+body[data-design="android"] .dock-btn[aria-current="page"] { color: var(--pp-skin-accent); font-weight: 700; }
+
+body[data-design="iphone"] .dock-btn .ic { width: 24px; height: 24px; }
+
+body[data-design="android"] .dock { -webkit-backdrop-filter: none; backdrop-filter: none; }
+body[data-design="android"] .dock-btn { position: relative; min-height: 60px; gap: 5px; padding-top: 4px; font-size: 12px; }
+body[data-design="android"] .dock-btn .ic { width: 24px; height: 24px; }
+body[data-design="android"] .dock-btn > .ic,
+body[data-design="android"] .dock-btn > span { position: relative; z-index: 1; }
+
+body[data-design="android"] .dock-btn::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 3px;
+  width: 62px;
+  max-width: calc(100% - 8px);
+  height: 32px;
+  border-radius: 999px;
+  background: transparent;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+body[data-design="android"] .dock-btn[aria-current="page"]::before { background: var(--pp-skin-accent-soft); }
+
+/* Sheets stay functional and share the skin's materials. */
+body[data-design="iphone"] #sheet-panel,
+body[data-design="android"] #sheet-panel { border-radius: var(--pp-skin-card-radius) var(--pp-skin-card-radius) 0 0; }
+
+body[data-design="iphone"] #info-pop,
+body[data-design="android"] #info-pop {
+  background: var(--pp-skin-surface);
+  color: var(--pp-skin-secondary);
+  border-color: var(--pp-skin-line);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.16);
+}
+
+body[data-design="iphone"] #info-pop b.pop-title,
+body[data-design="android"] #info-pop b.pop-title { color: var(--pp-skin-ink); }
+
+/* The pitch, shirt assignments and success/error toasts retain their real colors. */
+body[data-design="iphone"] .soccer-pitch-bg .text-white,
+body[data-design="android"] .soccer-pitch-bg .text-white { color: #ffffff !important; }
+
+body[data-design="iphone"] .toast-ok,
+body[data-design="android"] .toast-ok { background: #123d2a !important; color: #ffffff !important; border-color: #648e75; }
+
+@media (min-width: 640px) {
+  body[data-design="iphone"] .match-card,
+  body[data-design="android"] .match-card { padding: 22px; }
+  body[data-design="iphone"] #sheet-panel,
+  body[data-design="android"] #sheet-panel { border-radius: var(--pp-skin-card-radius); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body[data-design="iphone"] button.roster-row:hover,
+  body[data-design="android"] button.roster-row:hover,
+  body[data-design="iphone"] .match-secondary-actions > button:hover,
+  body[data-design="android"] .match-secondary-actions > button:hover { background-color: var(--pp-skin-surface-2) !important; }
+  body[data-design="iphone"] .match-compact:hover,
+  body[data-design="android"] .match-compact:hover { border-color: var(--pp-skin-accent-line) !important; }
+}
+
+/* At 320px the nested RSVP panel leaves roughly 71px per choice. Stack the icon
+ * and reserve two lines of label space so "Join waitlist" stays inside the button
+ * and a different selected answer does not change the grid height. */
+@media (max-width: 360px) {
+  body[data-design="iphone"] .rsvp-choice[data-rsvp],
+  body[data-design="android"] .rsvp-choice[data-rsvp] {
+    min-height: 76px;
+    padding: 8px 4px;
+  }
+
+  body[data-design="iphone"] .rsvp-choice[data-rsvp] > span,
+  body[data-design="android"] .rsvp-choice[data-rsvp] > span {
+    width: 100%;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  body[data-design="iphone"] .rsvp-choice[data-rsvp] > span > span,
+  body[data-design="android"] .rsvp-choice[data-rsvp] > span > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 2.5em;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+
+  body[data-design="iphone"] .roster-filter,
+  body[data-design="android"] .roster-filter { padding-left: 3px; padding-right: 3px; font-size: 12px; }
+
+  /* Preserve all three 44px header actions by tightening only the brand. */
+  body[data-design="iphone"] .app-header > div,
+  body[data-design="android"] .app-header > div { gap: 6px; }
+
+  body[data-design="iphone"] .app-header > div > .min-w-0,
+  body[data-design="android"] .app-header > div > .min-w-0 { gap: 8px; }
+
+  body[data-design="iphone"] .app-header .hdr-logo,
+  body[data-design="android"] .app-header .hdr-logo { width: 32px; height: 32px; }
+
+  body[data-design="iphone"] .app-header .hdr-title,
+  body[data-design="android"] .app-header .hdr-title { font-size: 15px; letter-spacing: 0.015em; }
+}
+
+    /* Personal appearance settings. The match UI in Generic keeps its original styles. */
     .rsvp-attention-label { display: none; }
     .appearance-panel { border-top: 1px solid rgba(148,163,184,.22); padding-top: 16px; }
     .appearance-label { font-size: 13px; line-height: 1.4; font-weight: 700; margin: 16px 0 8px; }
     .appearance-help { color: #94a3b8; font-size: 12px; line-height: 1.5; margin-top: 8px; }
     body.light-mode .appearance-help { color: #526173; }
-    .motion-picker { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+    .design-picker { display: grid; gap: 8px; }
+    .design-choice { display: grid; grid-template-columns: 36px minmax(0,1fr) 20px; gap: 12px; align-items: center; width: 100%; min-height: 72px; padding: 12px; border: 1px solid #334155; border-radius: 14px; background: #0b130f; color: #f1f5f9; text-align: left; transition: background-color .16s ease, border-color .16s ease; }
+    .design-choice[aria-checked="true"] { background: #102d22; border-color: #3fa67c; }
+    body.light-mode .design-choice { background: #ffffff; color: #182520; border-color: #d4ddd8; }
+    body.light-mode .design-choice[aria-checked="true"] { background: #eff8f3; border-color: #047857; }
+    .design-choice-copy { display: block; min-width: 0; }
+    .design-choice-title { display: block; font-size: 14px; line-height: 1.4; font-weight: 700; }
+    .design-choice-description { display: block; font-size: 12px; line-height: 1.4; color: #a9b7ae; margin-top: 2px; }
+    body.light-mode .design-choice-description { color: #526173; }
+    .design-choice-check { visibility: hidden; color: var(--brand); }
+    .design-choice[aria-checked="true"] .design-choice-check { visibility: visible; }
+    .design-swatch { position: relative; display: block; width: 36px; height: 44px; overflow: hidden; border: 1px solid #cdd7d1; border-radius: 7px; background: #f2f4f7; }
+    .design-swatch > span { position: absolute; top: 0; left: 0; right: 0; height: 8px; background: #07120d; }
+    .design-swatch > b { position: absolute; top: 12px; left: 4px; right: 4px; height: 13px; background: #ffffff; border: 1px solid #e0e6e1; border-radius: 4px; }
+    .design-swatch > i { position: absolute; left: 4px; bottom: 6px; width: 7px; height: 6px; border-radius: 2px; background: #047857; box-shadow: 9px 0 #d9e3dd, 18px 0 #d9e3dd; }
+    .design-choice[data-design-choice="iphone"] .design-swatch { background: #f2f2f7; border-radius: 9px; }
+    .design-choice[data-design-choice="iphone"] .design-swatch > b { border: 0; border-radius: 3px; }
+    .design-choice[data-design-choice="iphone"] .design-swatch > i { border-radius: 2px; height: 7px; }
+    .design-choice[data-design-choice="android"] .design-swatch { background: #f6faf7; border-radius: 8px; }
+    .design-choice[data-design-choice="android"] .design-swatch > b { background: #e5eee7; border: 0; border-radius: 6px; }
+    .design-choice[data-design-choice="android"] .design-swatch > i { border-radius: 6px; background: #276449; }
+    .motion-picker { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
     .motion-choice { min-height: 44px; border-radius: 12px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; font-size: 14px; font-weight: 700; padding: 8px; }
     .motion-choice[aria-checked="true"] { border-color: #3fa67c; color: #8de0b7; background: #102d22; }
     body.light-mode .motion-choice { background: #eef2f6; color: #1e293b; border-color: #d5dde7; }
@@ -235,7 +947,97 @@
       .press:active, .neon-btn:active, .dock-btn:active .ic { transform: none !important; }
     }
 
-/* Approved Pitch Pulse design: shared and Generic presentation refinements. */
+/* Layout preview 2: distinct materials and control families, using the same DOM. */
+body[data-design="iphone"][data-standalone="false"] .app-header {
+  background: rgba(23,27,24,.94);
+  border-bottom-color: var(--pp-skin-line);
+  color: var(--pp-skin-ink);
+}
+body[data-design="iphone"].light-mode[data-standalone="false"] .app-header {
+  background: rgba(249,250,249,.94);
+}
+body[data-design="iphone"][data-standalone="false"] .app-header .hdr-title,
+body[data-design="android"][data-standalone="false"] .app-header .hdr-title {
+  color: var(--pp-skin-ink);
+  text-transform: none;
+  letter-spacing: -.02em;
+}
+body[data-design="iphone"] .hdr-title { font-weight: 700; }
+body[data-design="iphone"][data-standalone="false"] .hdr-btn {
+  color: var(--pp-skin-accent);
+  background: transparent;
+  border-radius: 10px;
+}
+body[data-design="iphone"] .hdr-logo { border-radius: 9px; box-shadow: none; }
+body[data-design="iphone"] .view-title { font-size: 24px; letter-spacing: -.025em; font-weight: 750; }
+body[data-design="iphone"] .match-card { border-radius: 20px; }
+body[data-design="iphone"] .match-title { font-weight: 750; }
+body[data-design="iphone"] .match-compact { border-radius: 16px; }
+body[data-design="iphone"] .match-weather { background: transparent !important; border: 0; padding: 0; }
+body[data-design="iphone"] .rsvp-panel { border-radius: 14px; }
+body[data-design="iphone"] .rsvp-grid {
+  border-radius: 12px;
+  padding: 4px;
+  gap: 3px;
+  background: var(--pp-skin-surface-3);
+}
+body[data-design="iphone"] .rsvp-choice[data-rsvp] {
+  border-radius: 8px;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+body[data-design="iphone"] .rsvp-choice[data-rsvp][aria-pressed="true"] {
+  background: var(--pp-skin-surface) !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.14);
+}
+body[data-design="iphone"] .rsvp-choice[data-rsvp="Yes"][aria-pressed="true"] { color: var(--pp-skin-accent) !important; }
+body[data-design="iphone"] .rsvp-choice[data-rsvp="Maybe"][aria-pressed="true"] { color: var(--pp-skin-amber-ink) !important; }
+body[data-design="iphone"] .rsvp-choice[data-rsvp="No"][aria-pressed="true"] { color: var(--pp-skin-rose-ink) !important; }
+body[data-design="iphone"] .rsvp-choice[data-rsvp="Yes"].bg-sky-500[aria-pressed="true"] { color: var(--pp-skin-blue-ink) !important; }
+body[data-design="iphone"] .match-secondary-actions { gap: 0; }
+body[data-design="iphone"] .match-secondary-actions > button {
+  background: transparent !important;
+  border-width: 0;
+  border-radius: 8px;
+}
+body[data-design="iphone"] .match-secondary-actions > button + button { border-left: 1px solid var(--pp-skin-line); border-radius: 0 8px 8px 0; }
+body[data-design="iphone"] #mobile-bottom-dock { box-shadow: 0 -1px 12px rgba(0,0,0,.03); }
+body[data-design="iphone"] .dock-btn[aria-current="page"] .ic { stroke-width: 2.4; }
+
+body[data-design="android"][data-standalone="false"] .app-header {
+  background: var(--pp-skin-dock);
+  color: var(--pp-skin-ink);
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+body[data-design="android"] .hdr-title { font-size: 19px; font-weight: 600; }
+body[data-design="android"][data-standalone="false"] .hdr-btn {
+  background: transparent;
+  color: var(--pp-skin-ink);
+  border-radius: 999px;
+}
+body[data-design="android"] .hdr-logo { border-radius: 50%; box-shadow: none; }
+body[data-design="android"] .view-title { font-size: 23px; letter-spacing: -.015em; font-weight: 600; }
+body[data-design="android"] .match-title { font-weight: 650; }
+body[data-design="android"] .match-card { border-radius: 28px; }
+body[data-design="android"] .match-compact {
+  background: var(--pp-skin-surface-2) !important;
+  border-color: transparent !important;
+  border-radius: 24px;
+}
+body[data-design="android"] .rsvp-panel { border-radius: 24px; }
+body[data-design="android"] .rsvp-grid { gap: 6px; }
+body[data-design="android"] .rsvp-choice[data-rsvp] { border-radius: 999px; }
+body[data-design="android"] .match-secondary-actions > button {
+  background: var(--pp-skin-surface-2) !important;
+  border-color: transparent !important;
+  border-radius: 999px;
+}
+body[data-design="android"] .match-collapse { border-radius: 16px; background: var(--pp-skin-surface-2) !important; }
+body[data-design="android"] .match-weather { border-radius: 16px; border-color: transparent !important; }
+body[data-design="android"] .roster-section > h3 { font-weight: 600; }
+
 /* Keep the status-bar area legible for existing black-translucent Home Screen apps. */
 body[data-standalone="true"] .app-header {
   background: #07120d;
@@ -243,23 +1045,23 @@ body[data-standalone="true"] .app-header {
 }
 body[data-standalone="true"] .app-header .hdr-title { color: #fff; }
 
-/* Keep the response reminder visible even when movement is reduced. */
-body .rsvp-panel {
+/* A persistent action cue also works in Generic and when movement is reduced. */
+body[data-design="generic"] .rsvp-panel {
   border: 1px solid transparent;
   border-left-width: 3px;
   border-radius: 16px;
   padding: 12px;
 }
-body .rsvp-panel:is([data-attention="answer"],[data-attention="reconfirm"]) {
+body[data-design="generic"] .rsvp-panel:is([data-attention="answer"],[data-attention="reconfirm"]) {
   border-color: rgba(0,245,155,.32);
   background: rgba(0,245,155,.035);
 }
-body.light-mode .rsvp-panel:is([data-attention="answer"],[data-attention="reconfirm"]) {
+body[data-design="generic"].light-mode .rsvp-panel:is([data-attention="answer"],[data-attention="reconfirm"]) {
   border-color: #95c9ae;
   background: #f3f9f5;
 }
 .rsvp-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-body .rsvp-attention-label {
+body[data-design="generic"] .rsvp-attention-label {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
@@ -271,7 +1073,7 @@ body .rsvp-attention-label {
   line-height: 1.4;
   font-weight: 700;
 }
-body.light-mode .rsvp-attention-label { background: #e1f2e6; border-color: #95c9ae; color: #14643f; }
+body[data-design="generic"].light-mode .rsvp-attention-label { background: #e1f2e6; border-color: #95c9ae; color: #14643f; }
 
 .motion-picker { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
 .motion-choice { padding: 9px 3px; font-size: 13px; min-width: 0; overflow-wrap: anywhere; }
@@ -316,11 +1118,31 @@ body.light-mode .rsvp-attention-label { background: #e1f2e6; border-color: #95c9
 body.light-mode .motion-demo { background: #f1f5f2; border-color: #d3dfd5; }
 body.light-mode .motion-demo > div { background: #fff; color: #28513b; }
 body.light-mode .motion-preview-btn { color: #23543a; background: #e6f1e8; border-color: #a8c4ae; }
+body:is([data-design="iphone"],[data-design="android"]) .motion-demo {
+  background: var(--pp-skin-surface-2);
+  border-color: var(--pp-skin-line);
+}
+body:is([data-design="iphone"],[data-design="android"]) .motion-demo > div {
+  background: var(--pp-skin-surface);
+  color: var(--pp-skin-ink);
+}
+body:is([data-design="iphone"],[data-design="android"]) .motion-preview-btn {
+  background: var(--pp-skin-accent-soft);
+  color: var(--pp-skin-accent);
+  border-color: var(--pp-skin-accent-line);
+  border-radius: var(--pp-skin-control-radius);
+}
+body[data-design="iphone"] .motion-demo > div { border-radius: 6px; }
+body[data-design="android"] .motion-demo > div { border-radius: 18px; }
+
 /* Finite native motion is applied only from deliberate interaction hooks. */
 html[data-motion="reduced"] { scroll-behavior: auto !important; }
 body[data-motion="reduced"] .press:active,
 body[data-motion="reduced"] .neon-btn:active,
 body[data-motion="reduced"] .dock-btn:active .ic { transform: none; }
+@media (hover:hover) and (pointer:fine) {
+  body:is([data-design="iphone"],[data-design="android"])[data-standalone="false"] .hdr-btn:hover { background: var(--pp-skin-surface-3); }
+}
 
 /* Pitch Pulse responsive layout, revision 2.
  * One set of game actions and one roster; available space controls their layout.
@@ -807,6 +1629,86 @@ body .settings-account {
   .games-subnav:hover { background: var(--pp-erg-subtle); }
 }
 
+body:is([data-design="iphone"],[data-design="android"]) {
+  --pp-erg-surface: var(--pp-skin-surface);
+  --pp-erg-subtle: var(--pp-skin-surface-2);
+  --pp-erg-line: var(--pp-skin-line);
+  --pp-erg-ink: var(--pp-skin-ink);
+  --pp-erg-muted: var(--pp-skin-muted);
+  --pp-erg-accent: var(--pp-skin-accent);
+  --pp-erg-radius: var(--pp-skin-card-radius);
+}
+/* One compact, in-flow match summary. It never overlays the page or the dock. */
+.match-hour-root[hidden] { display: none !important; }
+.match-hour-root {
+  --pp-hour-line: #497f5f;
+  --pp-hour-soft: #183323;
+  --pp-hour-warn: #f1cf8b;
+  --pp-hour-bad: #ffb4aa;
+  margin: 0 0 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--pp-hour-line);
+  border-radius: 20px;
+  background: var(--pp-erg-surface);
+  color: var(--pp-erg-ink);
+  container-name: final-hour;
+  container-type: inline-size;
+  min-width: 0;
+  max-width: 100%;
+}
+body.light-mode .match-hour-root {
+  --pp-hour-line: #a8c4ae;
+  --pp-hour-soft: #e6f1e8;
+  --pp-hour-warn: #78540d;
+  --pp-hour-bad: #9a3830;
+}
+body:is([data-design="iphone"],[data-design="android"]) .match-hour-root {
+  --pp-hour-line: var(--pp-skin-accent-line);
+  --pp-hour-soft: var(--pp-skin-accent-soft);
+  --pp-hour-warn: var(--pp-skin-amber-ink);
+  --pp-hour-bad: var(--pp-skin-rose-ink);
+  border-radius: var(--pp-skin-card-radius);
+}
+.match-hour-layout { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; }
+.match-hour-main { flex: 1 1 320px; min-width: 0; }
+.match-hour-eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 5px; color: var(--pp-erg-muted); font-size: 12px; font-weight: 600; line-height: 1.4; }
+.match-hour-eyebrow > .ic { width: 16px; height: 16px; color: var(--pp-erg-accent); }
+.match-hour-state { display: inline-flex; align-items: center; gap: 5px; padding: 2px 7px; border: 1px solid var(--pp-hour-line); border-radius: 999px; color: var(--pp-erg-accent); line-height: 1.4; }
+.match-hour-root[data-status="needs"] .match-hour-state { color: var(--pp-hour-warn); border-color: currentColor; }
+.match-hour-root[data-status="cancelled"] .match-hour-state { color: var(--pp-hour-bad); border-color: currentColor; }
+.match-hour-root[data-fresh="false"] .match-hour-state { color: var(--pp-erg-muted); border-color: var(--pp-erg-line); }
+.match-hour-title { margin: 0; font-size: 19px; line-height: 1.35; font-weight: 750; letter-spacing: -.018em; overflow-wrap: anywhere; }
+.match-hour-title > [role="timer"] { font-variant-numeric: tabular-nums; }
+.match-hour-subtitle { margin-top: 3px; font-size: 13px; line-height: 1.45; color: var(--pp-erg-muted); overflow-wrap: anywhere; }
+.match-hour-details { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-top: 8px; font-size: 13px; line-height: 1.5; }
+.match-hour-details > span { min-width: 0; overflow-wrap: anywhere; }
+.match-hour-reply { font-weight: 650; }
+.match-hour-reply[data-attention="true"] { color: var(--pp-hour-warn); }
+.match-hour-meta { margin-top: 3px; font-size: 12px; line-height: 1.5; color: var(--pp-erg-muted); overflow-wrap: anywhere; }
+.match-hour-actions { flex: 0 1 200px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.match-hour-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; max-width: 100%; width: 100%; padding: 9px 14px; border: 1px solid var(--pp-hour-line); border-radius: 12px; background: var(--pp-hour-soft); color: var(--pp-erg-accent); font-size: 14px; font-weight: 700; line-height: 1.4; text-align: center; }
+.match-hour-action > span { min-width: 0; overflow-wrap: anywhere; }
+.match-hour-action > .ic { width: 16px; height: 16px; }
+body[data-design="android"] .match-hour-action { border-radius: 999px; }
+.match-hour-link { display: inline-flex; justify-content: center; align-items: center; min-height: 44px; padding: 6px 10px; border-radius: 8px; color: var(--pp-erg-muted); font-size: 12px; line-height: 1.4; text-decoration: underline; text-underline-offset: 3px; }
+.match-hour-footer { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-top: 10px; border-top: 1px solid var(--pp-erg-line); padding-top: 8px; color: var(--pp-erg-muted); font-size: 11px; line-height: 1.5; }
+.match-hour-warning { color: var(--pp-hour-warn); }
+.match-hour-root :is(button,p,span,time)[hidden] { display: none !important; }
+@container final-hour (max-width: 540px) {
+  .match-hour-main { flex-basis: 100%; }
+  .match-hour-actions { flex: 1 1 100%; }
+  .match-hour-action { flex: 1 1 160px; width: auto; }
+  .match-hour-title { font-size: 18px; }
+}
+@media (max-width: 379px) {
+  .match-hour-root { padding: 12px; border-radius: 16px; }
+  .match-hour-details { gap: 3px 10px; font-size: 12px; }
+}
+@media (hover:hover) and (pointer:fine) {
+  .match-hour-action:hover { border-color: var(--pp-erg-accent); }
+  .match-hour-link:hover { color: var(--pp-erg-accent); }
+}
+
   </style>
   <script>
     // Safety net: if the page ever shows a class the pre-built block above doesn't cover
@@ -869,7 +1771,7 @@ body .settings-account {
 
 
   <script>
-    // Use the approved design from the first paint, while preserving this account's motion preference.
+    // Restore this account's design and motion choices before the first paint.
     (function () {
       var design = "generic", motion = "expressive", signedIn = false;
       try {
@@ -877,6 +1779,7 @@ body .settings-account {
         if (user && user.email && user.pin) {
           signedIn = true;
           var saved = JSON.parse(localStorage.getItem("pitchpulse_appearance_v1:" + String(user.email).trim().toLowerCase()) || "null") || {};
+          if (["generic", "iphone", "android"].indexOf(saved.design) !== -1) design = saved.design;
           if (["expressive", "standard", "reduced"].indexOf(saved.motion) !== -1) motion = saved.motion;
         }
       } catch (e) {}
@@ -925,6 +1828,9 @@ body .settings-account {
       </div>
       <div id="how-we-play-body" class="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed"></div>
     </div>
+
+    <!-- Final-hour summary is outside the polite live region; minute ticks stay quiet. -->
+    <section id="match-hour-root" class="match-hour-root" hidden aria-labelledby="match-hour-heading" aria-live="off"></section>
 
     <!-- Dynamic View Container -->
     <main id="view-container"></main>
@@ -1410,6 +2316,79 @@ body .settings-account {
   "leagueSetupHelp": "Equipos, valores por defecto, reglas y avisos"
 });
 
+
+    // 5.5: restored appearance choices and final-hour labels.
+    Object.assign(I18N.en, {
+  "designLabel": "Design",
+  "designGeneric": "Generic",
+  "designIphone": "iPhone Friendly",
+  "designAndroid": "Android Friendly",
+  "designGenericHelp": "Pitch Pulse’s familiar cards and dark header.",
+  "designIphoneHelp": "Neutral toolbar, grouped answers and simple lists.",
+  "designAndroidHelp": "Tonal toolbar, rounded cards and pill navigation.",
+  "designDeviceHelp": "Choose the look you like on any device. All three adapt to the available screen space.",
+  "appearanceLocalNote": "Design and motion apply immediately and are saved for your account in this browser.",
+  "appearanceSessionOnly": "Design and motion apply immediately. This browser could not save them; they will reset after a reload.",
+  "hourNextMatch": "Your next match",
+  "hourMatchUpdate": "Match update",
+  "hourCountdown": "Kickoff in {n} min",
+  "hourLessThanMinute": "Kickoff in less than a minute",
+  "hourCancelledTitle": "This match is cancelled",
+  "hourSavedStatus": "Last status: {status}",
+  "hourConfirmedCounts": "{n}/{max} confirmed",
+  "hourReservedCounts": "{n}/{max} spots reserved · {confirmed} confirmed",
+  "hourChecked": "Checked {time}",
+  "hourNotChecked": "Status has not been checked yet",
+  "hourOffline": "Offline. Match details may have changed.",
+  "hourRefreshFailed": "Couldn’t refresh. Showing the last saved status.",
+  "hourCached": "Saved details. Refresh to check the latest status.",
+  "hourStale": "Status may be out of date. Refresh to check.",
+  "hourSaving": "Saving your answer. Waiting for confirmation…",
+  "hourViewMatch": "View match",
+  "hourAnswer": "Review my answer",
+  "hourReconfirm": "Review & reconfirm",
+  "hourDismiss": "Dismiss update",
+  "hourMatchGone": "That match is no longer available in this view.",
+  "f_msgOneHour": "One-hour match update",
+  "fd_msgOneHour": "A phone notification as kickoff approaches. No email.",
+  "fi_msgOneHour": "Between 45 and 60 minutes before kickoff, sends one phone notification with the latest match status, confirmed count and your answer. Goes to players who are In, Maybe or Waitlisted, plus the current organizers. Skips away or suspended accounts and Email-only preferences. Requires phone notifications to be configured and allowed. No email fallback. The final-hour card inside the app is always available."
+});
+    Object.assign(I18N.es, {
+  "designLabel": "Diseño",
+  "designGeneric": "Genérico",
+  "designIphone": "Para iPhone",
+  "designAndroid": "Para Android",
+  "designGenericHelp": "Las tarjetas y el encabezado oscuro de Pitch Pulse.",
+  "designIphoneHelp": "Barra neutra, respuestas agrupadas y listas sencillas.",
+  "designAndroidHelp": "Barra de tonos suaves, tarjetas redondeadas y navegación tipo píldora.",
+  "designDeviceHelp": "Elige el diseño que prefieras en cualquier dispositivo. Los tres se adaptan al espacio disponible.",
+  "appearanceLocalNote": "El diseño y el movimiento se aplican al instante y se guardan para tu cuenta en este navegador.",
+  "appearanceSessionOnly": "El diseño y el movimiento se aplican al instante. Este navegador no pudo guardarlos; se restablecerán al recargar.",
+  "hourNextMatch": "Tu próximo partido",
+  "hourMatchUpdate": "Aviso del partido",
+  "hourCountdown": "Empieza en {n} min",
+  "hourLessThanMinute": "Empieza en menos de un minuto",
+  "hourCancelledTitle": "Este partido está cancelado",
+  "hourSavedStatus": "Último estado: {status}",
+  "hourConfirmedCounts": "{n}/{max} confirmados",
+  "hourReservedCounts": "{n}/{max} lugares reservados · {confirmed} confirmados",
+  "hourChecked": "Comprobado a las {time}",
+  "hourNotChecked": "Todavía no se ha comprobado el estado",
+  "hourOffline": "Sin conexión. Los datos del partido pueden haber cambiado.",
+  "hourRefreshFailed": "No se pudo actualizar. Se muestra el último estado guardado.",
+  "hourCached": "Datos guardados. Actualiza para comprobar el estado actual.",
+  "hourStale": "El estado puede estar desactualizado. Actualiza para comprobarlo.",
+  "hourSaving": "Guardando tu respuesta. Esperando confirmación…",
+  "hourViewMatch": "Ver partido",
+  "hourAnswer": "Revisar mi respuesta",
+  "hourReconfirm": "Revisar y reconfirmar",
+  "hourDismiss": "Descartar aviso",
+  "hourMatchGone": "Ese partido ya no está disponible en esta vista.",
+  "f_msgOneHour": "Aviso de una hora",
+  "fd_msgOneHour": "Una notificación al acercarse el inicio. Sin correo.",
+  "fi_msgOneHour": "Entre 45 y 60 minutos antes del inicio, envía una notificación al teléfono con el estado actual, la cantidad de confirmados y tu respuesta. Va a quienes están en Voy, Tal vez o En espera, y a los organizadores actuales. Omite cuentas ausentes o suspendidas y las preferencias de Solo correo. Requiere notificaciones configuradas y permitidas. No se usa correo como respaldo. La tarjeta de la última hora en la app siempre está disponible."
+});
+
     function t(key, params) {
       const dict = I18N[currentLang] || I18N.en;
       let s = dict[key] !== undefined ? dict[key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
@@ -1424,7 +2403,7 @@ body .settings-account {
     const SITE_URL = "https://pitchpulseleague.github.io/soccer/";
     const SYSTEM_ADMIN_EMAIL = "pitchpulseleague@gmail.com";
     const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "ralph@me.com"];
-    const APP_VERSION = "5.5.0"; // Candidate release; deploy with the matching 5.5.0 backend.
+    const APP_VERSION = "5.5.2";
 
     const ASSET_VERSION = "5.0";
     const ICON_192_FILE = "pitch-pulse-01-classic-stitched-192.png?v=" + ASSET_VERSION;
@@ -1437,12 +2416,6 @@ body .settings-account {
     const SMALL_SIDED_MIN_PLAYERS = 10;   // a small-sided match needs at least 5 v 5 (same as the server)
     const TIMING_OPTIONS = ["", "Running ~5m Late", "Running ~10m Late", "Running 15m+ Late", "Leaving ~15m Early", "Leaving ~30m Early"];
 
-    Object.assign(I18N.en,{"notifyNone": "Off: no phone notifications or email", "notifyNoneHelp": "Save to stop league notifications, including email fallback. You can still request PIN recovery and email-verification messages. Check the app for match changes.", "accountSecurity": "Account security", "changePin": "Change PIN", "changeEmail": "Change email", "currentPin": "Current 6-digit PIN", "securityChangeHelp": "Confirm your current PIN. After saving, you will be signed out on every device.", "newEmail": "New email address", "verifyEmailHelp": "We will send a 12-character verification code to your new email. Your email stays unchanged until you confirm the code.", "emailCodeHelp": "Enter the 12-character code sent to {email}. It expires after 15 minutes. Re-enter your current PIN to confirm.", "confirmEmail": "Confirm email change", "errEmailInvalid": "Enter a valid new email address.", "errEmailCode": "Enter the 12-character verification code.", "pinChangedLogin": "PIN changed. Sign in with your new PIN.", "emailChangedLogin": "Email changed. Sign in with your new email and existing PIN, then enable phone notifications again if you want them.", "accountChangeUncertain": "We could not confirm whether the change saved. Sign in again with the new credentials if they work, or your previous credentials. Do not repeat the change until you have checked.", "emailRequestUncertain": "The code request may have been sent. Check your new email before requesting another code.", "emailRequested": "Verification requested. Check your new email, including spam.", "backToProfile": "Back to profile", "emailAdminLocked": "This configured administrator email cannot be changed here."});
-    Object.assign(I18N.es,{"notifyNone": "Desactivadas: sin notificaciones ni correo", "notifyNoneHelp": "Guarda para dejar de recibir avisos de la liga, incluido el correo de respaldo. Puedes seguir solicitando recuperación de PIN y verificación de correo. Consulta la app para ver cambios en los partidos.", "accountSecurity": "Seguridad de la cuenta", "changePin": "Cambiar PIN", "changeEmail": "Cambiar correo", "currentPin": "PIN actual de 6 dígitos", "securityChangeHelp": "Confirma tu PIN actual. Al guardar se cerrará tu sesión en todos los dispositivos.", "newEmail": "Nuevo correo electrónico", "verifyEmailHelp": "Enviaremos un código de 12 caracteres al nuevo correo. Tu correo no cambia hasta que confirmes el código.", "emailCodeHelp": "Introduce el código de 12 caracteres enviado a {email}. Caduca en 15 minutos. Vuelve a introducir tu PIN actual para confirmar.", "confirmEmail": "Confirmar cambio de correo", "errEmailInvalid": "Introduce un correo nuevo válido.", "errEmailCode": "Introduce el código de verificación de 12 caracteres.", "pinChangedLogin": "PIN cambiado. Inicia sesión con el PIN nuevo.", "emailChangedLogin": "Correo cambiado. Inicia sesión con el correo nuevo y tu PIN actual. Después, vuelve a activar las notificaciones del teléfono si las quieres.", "accountChangeUncertain": "No pudimos confirmar si se guardó el cambio. Inicia sesión con los datos nuevos si funcionan o con los anteriores. Comprueba el resultado antes de repetir el cambio.", "emailRequestUncertain": "Es posible que se haya enviado el código. Revisa el nuevo correo antes de pedir otro.", "emailRequested": "Verificación solicitada. Revisa tu nuevo correo y la carpeta de spam.", "backToProfile": "Volver al perfil", "emailAdminLocked": "Este correo de administrador configurado no se puede cambiar aquí."});
-    Object.assign(I18N.en,{"removeProfile": "Remove my profile", "removalWarning": "Your active profile and sign-in access will be removed. Upcoming RSVPs and guest reservations will be released. Historical match records retain your initials under a replacement player identifier and can be linked again using your recovery code. This is not complete erasure: previously sent emails, backups, and notification-provider records may still contain identifying information.", "recoveryWarning": "Save this recovery code privately before continuing. Complete removal within 30 minutes, or request a new code. After removal, the code remains valid until used once. It is not an account PIN. Anyone with this code and a valid invitation could claim your history. If you lose it after removal, your previous history cannot be recovered through the app.", "prepareRemoval": "Continue: prepare recovery code", "recoveryCode": "Recovery code", "savedRecoveryCode": "I saved the recovery code somewhere safe and understand it cannot be recovered if lost.", "removalPhrase": "Type REMOVE MY PROFILE to confirm", "removalChecks": "Save your recovery code, check the acknowledgment, and type REMOVE MY PROFILE exactly.", "removalFinalWarning": "Final confirmation: remove your profile and sign out on every device? You will need a new invitation and your saved recovery code to link your history again.", "removalDone": "Profile removed. Keep your recovery code safe. To return and link your history, ask an organizer for a new invitation and enter the code when creating your profile.", "removalUncertain": "We could not confirm whether removal completed. You have been signed out locally. Keep your recovery code. Check whether your old login still works before repeating any removal, or ask an organizer to check your profile.", "removalPrepareUncertain": "We could not confirm the recovery-code request. Your profile has not been removed by this step. Request a new code before continuing.", "removalAdminLocked": "Configured administrator profiles cannot be removed here.", "returningPlayer": "Returning player? Link previous history (optional)", "recoveryRegisterHelp": "Use a new organizer invitation and the recovery code you saved when removing your profile. Without the code, a new profile will not reclaim that history.", "errRecoveryCode": "Enter the full 64-character recovery code, or leave the field empty to create a new profile.", "removalReturn": "Back to sign in"});
-    Object.assign(I18N.es,{"removeProfile": "Eliminar mi perfil", "removalWarning": "Se eliminarán tu perfil activo y el acceso a la cuenta. Se liberarán tus reservas y las de tus invitados en próximos partidos. Los registros históricos conservan tus iniciales con un identificador de reemplazo y se pueden volver a vincular con tu código. No es un borrado completo: los correos ya enviados, las copias de seguridad y los registros del proveedor de notificaciones pueden conservar datos identificativos.", "recoveryWarning": "Guarda este código de recuperación en un lugar privado antes de continuar. Completa la eliminación en 30 minutos o solicita un código nuevo. Después, el código sigue siendo válido hasta usarlo una vez. No es un PIN. Cualquiera que tenga este código y una invitación válida podría reclamar tu historial. Si lo pierdes después de eliminar el perfil, la app no podrá recuperar tu historial anterior.", "prepareRemoval": "Continuar: preparar código de recuperación", "recoveryCode": "Código de recuperación", "savedRecoveryCode": "Guardé el código en un lugar seguro y entiendo que no se puede recuperar si lo pierdo.", "removalPhrase": "Escribe REMOVE MY PROFILE para confirmar", "removalChecks": "Guarda tu código, marca la confirmación y escribe REMOVE MY PROFILE exactamente.", "removalFinalWarning": "Confirmación final: ¿eliminar tu perfil y cerrar la sesión en todos los dispositivos? Necesitarás una nueva invitación y el código guardado para volver a vincular tu historial.", "removalDone": "Perfil eliminado. Conserva tu código de recuperación. Para volver y vincular tu historial, pide una nueva invitación a un organizador e introduce el código al crear tu perfil.", "removalUncertain": "No pudimos confirmar si se completó la eliminación. Se cerró la sesión en este dispositivo. Conserva tu código. Comprueba si todavía puedes iniciar sesión antes de repetir la eliminación o pide a un organizador que revise tu perfil.", "removalPrepareUncertain": "No pudimos confirmar la solicitud del código. Este paso no eliminó tu perfil. Solicita un código nuevo antes de continuar.", "removalAdminLocked": "Los perfiles de administradores configurados no se pueden eliminar aquí.", "returningPlayer": "¿Vuelves a la liga? Vincula tu historial (opcional)", "recoveryRegisterHelp": "Usa una invitación nueva y el código que guardaste al eliminar tu perfil. Sin el código, un perfil nuevo no recuperará ese historial.", "errRecoveryCode": "Introduce el código completo de 64 caracteres o deja el campo vacío para crear un perfil nuevo.", "removalReturn": "Volver al inicio de sesión"});
-    Object.assign(I18N.en,{"inactive": "Inactive", "deactivatePlayer": "Deactivate player", "deactivatePlayerConfirm": "Deactivate {name}?", "deactivatePlayerHelp": "This blocks sign-in and releases upcoming reservations. Their name, email, and match history stay available for a later re-invitation. It does not remove their private profile data. Only the player can request privacy removal.", "reinvitePlayer": "Re-invite player", "reinvitePlayerConfirm": "Send a new invitation to {name}?", "reinvitePlayerHelp": "The invitation goes to their saved email. The profile remains inactive until they accept. Their existing match history is retained.", "inactiveProfileHelp": "This profile is inactive. Re-invite the player to let them return with their history."});
-    Object.assign(I18N.es,{"inactive": "Inactivo", "deactivatePlayer": "Desactivar jugador", "deactivatePlayerConfirm": "¿Desactivar a {name}?", "deactivatePlayerHelp": "Bloquea el acceso y libera las próximas reservas. Se conservan el nombre, el correo y el historial para una futura invitación. No elimina sus datos privados. Solo el jugador puede solicitar la eliminación por privacidad.", "reinvitePlayer": "Volver a invitar", "reinvitePlayerConfirm": "¿Enviar una nueva invitación a {name}?", "reinvitePlayerHelp": "La invitación se envía a su correo guardado. El perfil sigue inactivo hasta que la acepte. Se conserva su historial.", "inactiveProfileHelp": "Este perfil está inactivo. Vuelve a invitar al jugador para que regrese con su historial."});
     function isProtectedEmail(em) { return PROTECTED_ADMINS.indexOf(String(em || "").toLowerCase().trim()) !== -1; }
     function isSystemAdminOnly(em) { return String(em || "").toLowerCase().trim() === SYSTEM_ADMIN_EMAIL; }
 
@@ -1586,6 +2559,7 @@ body .settings-account {
 
     let isSyncInFlight = false;
     let lastMutationDoneAt = 0;
+    let lastSyncAttemptAtMs = 0;
     const inFlight = {};
     let pendingInvite = null;
     let pushVaultState = null;
@@ -1595,7 +2569,7 @@ body .settings-account {
       settings: { teamAName: "White", teamAShirt: "white", teamBName: "Dark", teamBShirt: "black", defaultMin: 14, defaultMax: 18, maxGuests: 3,
         featTeams: false, featScores: false, featMotm: false, featAttendance: false, featLateDrops: false, trackBall: false, trackPinnies: false, trackGK: false,
         featArrival: false, featCaptains: false, featAnnouncements: true, featWeather: true, featCalendar: true, featRules: true,
-        msgDayBefore: true, msgMatchDay: true, msgGameOn: true, msgConfirm: false, msgMaybeMorning: true, msgTwoHour: false },
+        msgDayBefore: true, msgMatchDay: true, msgGameOn: true, msgConfirm: false, msgMaybeMorning: true, msgTwoHour: false, msgOneHour: true },
       requirePinnies: false, howWePlayRules: "", oneSignalAppId: "", pushConfigured: false,
       rivalryStats: { whiteWins: 0, darkWins: 0, draws: 0, whiteGoals: 0, darkGoals: 0, totalMatchesScored: 0 },
       games: [], locations: [], profiles: {}, invites: [], recurring: []
@@ -1624,7 +2598,8 @@ body .settings-account {
         currentUser = Object.assign({}, currentUser, d.user);
         lsSet("soccer_user", JSON.stringify(currentUser));
       }
-      try { const copy = Object.assign({}, appData); delete copy.user; delete copy._clientAuthEpoch; lsSet("soccer_cached_data_v54", JSON.stringify(copy)); } catch (e) {}
+      try { const copy = Object.assign({}, appData); delete copy.user; delete copy._clientAuthEpoch; copy._clientFetchedAtMs = Date.now(); lsSet("soccer_cached_data_v54", JSON.stringify(copy)); } catch (e) {}
+      recordFinalHourSync(d);
       presentationFreshEpoch = currentUser ? authEpoch : -1; // Only fresh accepted data may trigger a visual reply cue.
       return true;
     }
@@ -1761,7 +2736,7 @@ body .settings-account {
     // =========================================================================
     // API LAYER — timeouts, double-tap protection, stale-refresh guard
     // =========================================================================
-    const SLOW_ACTIONS = { adminNudgeUnresponded: 60000, adminSendGameBlast: 60000, adminSaveRecurringSeries: 60000, adminStopRecurringSeries: 60000, adminSendInvite: 45000, adminSendInvites: 90000, adminMessagePlayer: 45000, adminCancelGame: 45000, adminRestoreGame: 45000, requestPinReset: 45000, requestEmailChange: 45000, adminReinviteUser: 45000 };
+    const SLOW_ACTIONS = { adminNudgeUnresponded: 60000, adminSendGameBlast: 60000, adminSaveRecurringSeries: 60000, adminStopRecurringSeries: 60000, adminSendInvite: 45000, adminSendInvites: 90000, adminMessagePlayer: 45000, adminCancelGame: 45000, adminRestoreGame: 45000, requestPinReset: 45000 };
 
     async function apiPost(payload, opts) {
       opts = opts || {}; payload = Object.assign({}, payload);
@@ -1877,6 +2852,7 @@ body .settings-account {
       if (hasUnsavedSettings()) { if(isManual)showToast(t("unsavedSettings")); return; }
       if (!isManual && editingSurfaceBusy()) return;
       isSyncInFlight=true;
+      lastSyncAttemptAtMs=Date.now();
       const startedAt=Date.now(), epoch=authEpoch, ind=byId("sync-indicator"), btn=byId("manual-refresh-btn");
       if(ind)ind.textContent=t("syncing"); if(btn)btn.classList.add("animate-spin");
       const data=await apiPost({action:"getLeagueData"},{silent:!isManual});
@@ -1885,17 +2861,20 @@ body .settings-account {
       if(data && data.success){
         if(lastMutationDoneAt>startedAt || Object.keys(inFlight).length || editingSurfaceBusy()){if(ind)ind.textContent="";return;}
         setAppData(data);if(ind)ind.textContent="";
-        initOneSignalSdkIfConfigured();applyThemeAndLanguageUI();renderAuthBar();renderCurrentTab();fetchWeatherForAllGamesAsync();applyEmailRsvpIfReady();
+        initOneSignalSdkIfConfigured();applyThemeAndLanguageUI();renderAuthBar();renderCurrentTab();fetchWeatherForAllGamesAsync();applyEmailRsvpIfReady();applyMatchDeepLinkIfReady();
       }else if(data && data.authError){logout(true);showToast(data.error||t("errSession"),true);}
-      else if(ind)ind.textContent=t("offline");
+      else { finalHourSync.failed=true; if(ind)ind.textContent=t("offline"); updateFinalHourCard(); }
     }
 
 
     document.addEventListener("visibilitychange", function() {
+      updateFinalHourCard();
       if (document.visibilityState === "visible" && currentUser) syncFromBackend(false);
     });
     setInterval(function() {
-      if (document.visibilityState === "visible" && currentUser) syncFromBackend(false);
+      if (document.visibilityState !== "visible" || !currentUser) return;
+      updateFinalHourCard();
+      if (automaticSyncDue()) syncFromBackend(false);
     }, 60000);
 
     // =========================================================================
@@ -2153,11 +3132,10 @@ body .settings-account {
       return "off";
     }
     function profilePushStateHtml(pref) {
-      if(pref === "None") return `<p class="text-sm text-slate-300">${escHtml(t("notifyNoneHelp"))}</p>`;
       const state=pushDeviceState(),key={server:"pushServerNotReady",install:"pushNeedsInstall",unavailable:"pushUnavailableShort",blocked:"pushDeniedShort",ready:"pushReady",pending:"pushPermissionOnly",off:"pushNotReady"}[state];
       return `<p class="text-sm font-semibold ${state==="ready"?"text-emerald-300":"text-slate-300"}">${escHtml(t(key))}</p><p class="text-xs text-slate-400 mt-1">${escHtml(t("pushHelp"))}</p>${pref==="Push"&&state!=="ready"?`<p class="text-xs text-amber-300 mt-1">${escHtml(t("pushPreferenceWarning"))}</p>`:""}`;
     }
-    function renderProfilePushState() {const el=byId("profile-push-state"),select=byId("prof-notify-pref"),button=byId("profile-enable-push"),pref=select?select.value:(currentUser&&currentUser.notifyPref)||"Both";if(el)el.innerHTML=profilePushStateHtml(pref);if(button)button.style.display=pref==="None"?"none":"";}
+    function renderProfilePushState() {const el=byId("profile-push-state"),select=byId("prof-notify-pref");if(el)el.innerHTML=profilePushStateHtml(select?select.value:(currentUser&&currentUser.notifyPref)||"Both");}
 
     (function initPwaManifest() {
       try {
@@ -2522,8 +3500,8 @@ body .settings-account {
     // LOCAL APPEARANCE — presentation only; never sent to the league API
     // =========================================================================
     const PRESENTATION_KEY_PREFIX = "pitchpulse_appearance_v1:";
-    // The approved Pitch Pulse design is fixed; retain the old key for motion preferences.
-    const PRESENTATION_DESIGNS = ["generic"];
+    // Appearance remains local to this signed-in account and browser.
+    const PRESENTATION_DESIGNS = ["generic", "iphone", "android"];
     const PRESENTATION_MOTIONS = ["expressive", "standard", "reduced"];
     const presentationByAccount = new Map();
     const presentationSessionOnly = new Set();
@@ -2548,7 +3526,7 @@ body .settings-account {
     function normalizePresentationPreferences(value) {
       const p = value && typeof value === "object" ? value : {};
       return {
-        design: "generic",
+        design: PRESENTATION_DESIGNS.indexOf(p.design) !== -1 ? p.design : "generic",
         // The first preview called this Auto. Its device-motion override is retained.
         motion: PRESENTATION_MOTIONS.indexOf(p.motion) !== -1 ? p.motion : "expressive"
       };
@@ -2563,7 +3541,7 @@ body .settings-account {
       }
       return presentationByAccount.get(account);
     }
-    function getDesignPref() { return "generic"; }
+    function getDesignPref() { return presentationPreferences().design; }
     function getMotionPref() { return presentationPreferences().motion; }
     function motionAllowed() {
       return getMotionPref() !== "reduced" && !!reducedMotionQuery && !reducedMotionQuery.matches && document.visibilityState !== "hidden";
@@ -2616,7 +3594,7 @@ body .settings-account {
       }
     }
     function refreshPresentationControls() {
-      [["prof-motion", "data-motion-choice", getMotionPref()]].forEach(function(group) {
+      [["prof-design", "data-design-choice", getDesignPref()], ["prof-motion", "data-motion-choice", getMotionPref()]].forEach(function(group) {
         const el = byId(group[0]);
         if (!el) return;
         Array.from(el.querySelectorAll("[" + group[1] + "]")).forEach(function(button) {
@@ -2682,15 +3660,18 @@ body .settings-account {
     }
     function syncPresentationChrome() {
       // Safari uses the page background for display areas outside the web viewport.
-      const dark = effectiveTheme() === "dark";
-      const bg = dark ? "#070b09" : "#f2f4f7";
+      const dark = effectiveTheme() === "dark", design = getDesignPref();
+      const bg = design === "iphone" ? (dark ? "#0c0e0d" : "#f2f3f5")
+        : design === "android" ? (dark ? "#101310" : "#f1f5ef") : (dark ? "#070b09" : "#f2f4f7");
       const rootStyle = document.documentElement.style;
       if (rootStyle && rootStyle.setProperty) {
         rootStyle.setProperty("background-color", bg);
         rootStyle.setProperty("color-scheme", dark ? "dark" : "light");
       }
       const theme = byId("meta-theme-color");
-      if (theme) theme.setAttribute("content", "#07120d");
+      const standalone = typeof isStandalone === "function" && isStandalone();
+      if (theme) theme.setAttribute("content", standalone || design === "generic" ? "#07120d"
+        : design === "iphone" ? (dark ? "#171b18" : "#f9faf9") : (dark ? "#1a241c" : "#e6eee1"));
     }
     // The static prompt survives a pending save; only an acknowledged answer clears it.
     function rsvpReplyState(game, meta) {
@@ -2802,9 +3783,22 @@ body .settings-account {
     updatePresentationViewport();
 
     function renderAppearanceSettings() {
-      const motion = getMotionPref();
+      const design = getDesignPref(), motion = getMotionPref();
+      const choices = [["generic", "designGeneric", "designGenericHelp"], ["iphone", "designIphone", "designIphoneHelp"], ["android", "designAndroid", "designAndroidHelp"]];
       return `<section class="appearance-panel mb-4" aria-labelledby="prof-appearance-title">
         <h4 id="prof-appearance-title" class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">${escHtml(t("appearance"))}</h4>
+        <h5 id="prof-design-label" class="appearance-label">${escHtml(t("designLabel"))}</h5>
+        <div id="prof-design" class="design-picker" role="radiogroup" aria-labelledby="prof-design-label">
+          ${choices.map(function(choice) {
+            const on = design === choice[0];
+            return `<button type="button" id="design-choice-${choice[0]}" class="design-choice" role="radio" aria-checked="${on}" tabindex="${on ? 0 : -1}" data-design-choice="${choice[0]}" onclick="setDesignPref('${choice[0]}')">
+              <span class="design-swatch" aria-hidden="true"><span></span><b></b><i></i></span>
+              <span class="design-choice-copy"><span class="design-choice-title">${escHtml(t(choice[1]))}</span><span class="design-choice-description">${escHtml(t(choice[2]))}</span></span>
+              <span class="design-choice-check" aria-hidden="true">${ic("check", "w-5 h-5", 2.5)}</span>
+            </button>`;
+          }).join("")}
+        </div>
+        <p class="appearance-help">${escHtml(t("designDeviceHelp"))}</p>
         <h5 class="appearance-label">${escHtml(t("colorTheme"))}</h5>
         <div id="prof-theme">${segmented("theme", themePref, [["auto", t("themeAuto"), "setProfileTheme('auto')"], ["light", t("themeLight"), "setProfileTheme('light')"], ["dark", t("themeDark"), "setProfileTheme('dark')"]])}</div>
         <h5 id="prof-motion-label" class="appearance-label">${escHtml(t("motionLabel"))}</h5>
@@ -3123,6 +4117,7 @@ body .settings-account {
     }
 
     function renderLockedGateView() {
+      const hour = byId("match-hour-root"); if (hour) hour.hidden = true;
       byId("view-container").innerHTML = `
         <div class="glass-card rounded-[28px] p-6 sm:p-10 text-center max-w-lg mx-auto mt-6 shadow-2xl">
           <img src="${ICON_192_FILE}" alt="Pitch Pulse" width="80" height="80" class="w-20 h-20 rounded-[22px] mx-auto mb-4 border border-[#00f59b]/40 shadow-lg object-cover" onerror="this.src='${ICON_SVG_FILE}'">
@@ -3137,6 +4132,7 @@ body .settings-account {
 
     function renderCurrentTab() {
       renderErgonomicCurrentTab();
+      updateFinalHourCard();
     }
 
     // =========================================================================
@@ -3204,6 +4200,257 @@ body .settings-account {
       const v = map[m.myStatus] || ["bg-slate-800 text-slate-300", "", t("chipNoAnswer")];
       return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${v[0]}">${v[1] ? ic(v[1], "w-3.5 h-3.5", 2.6) : ""}${escHtml(v[2])}</span>`;
     }
+
+    // =========================================================================
+    // FINAL HOUR — local countdown, accepted-server-data freshness, no extra polling
+    // =========================================================================
+    const FINAL_HOUR_WINDOW_MS = 60 * 60000;
+    const FINAL_HOUR_FRESH_FOR_MS = 150000;
+    let finalHourSync = { epoch: -1, receivedAtMs: 0, dataAtMs: 0, failed: false };
+    let finalHourSession = { epoch: -1, account: "", gameId: "", dismissed: new Set() };
+    let finalHourTickTimer = null;
+    let pendingMatchLink = "";
+
+    function finalHourSessionState() {
+      const account = myEmail();
+      if (finalHourSession.epoch !== authEpoch || finalHourSession.account !== account) {
+        finalHourSession = { epoch: authEpoch, account: account, gameId: "", dismissed: new Set() };
+      }
+      return finalHourSession;
+    }
+    function resetFinalHourState() {
+      if (finalHourTickTimer !== null) clearTimeout(finalHourTickTimer);
+      finalHourTickTimer = null;
+      finalHourSync = { epoch: -1, receivedAtMs: 0, dataAtMs: 0, failed: false };
+      finalHourSession = { epoch: -1, account: "", gameId: "", dismissed: new Set() };
+      const root = byId("match-hour-root");
+      if (root) { root.hidden = true; root.innerHTML = ""; root.removeAttribute("data-game-id"); }
+    }
+    function recordFinalHourSync(data) {
+      if (!currentUser || !data || !Array.isArray(data.games)) return;
+      const now = Date.now(), server = Number(data.serverNowMs);
+      finalHourSync = {
+        epoch: authEpoch, receivedAtMs: now,
+        dataAtMs: server > 0 && Number.isFinite(new Date(server).getTime()) ? server : now + serverClockOffsetMs,
+        failed: false
+      };
+    }
+    function finalHourFreshness() {
+      const accepted = finalHourSync.epoch === authEpoch && finalHourSync.receivedAtMs > 0;
+      const elapsed = accepted ? Date.now() - finalHourSync.receivedAtMs : Infinity;
+      // A backward wall-clock change must not keep old data fresh indefinitely.
+      const age = elapsed >= 0 ? elapsed : Infinity;
+      const offline = navigator.onLine === false;
+      const fresh = accepted && !offline && !finalHourSync.failed && age <= FINAL_HOUR_FRESH_FOR_MS;
+      const cachedAt = Number(appData.serverNowMs || appData._clientFetchedAtMs || 0);
+      const dataAtMs = accepted ? finalHourSync.dataAtMs : (cachedAt > 0 && Number.isFinite(new Date(cachedAt).getTime()) ? cachedAt : 0);
+      let warning = "";
+      if (offline) warning = t("hourOffline");
+      else if (finalHourSync.failed) warning = t("hourRefreshFailed");
+      else if (!accepted) warning = t("hourCached");
+      else if (!fresh) warning = t("hourStale");
+      return { fresh: fresh, dataAtMs: dataAtMs, warning: warning };
+    }
+    function finalHourGameStart(game) {
+      try { return gameStartDate(game).getTime(); } catch (e) { return NaN; }
+    }
+    function finalHourGameKey(game) { return String(game.GameID) + ":" + finalHourGameStart(game); }
+    function selectFinalHourGame(now) {
+      if (!currentUser) return null;
+      const state = finalHourSessionState();
+      const inWindow = function(game) {
+        if (!game || game.hasScore || game.hasStartedOrPassed) return false;
+        const left = finalHourGameStart(game) - now;
+        return Number.isFinite(left) && left > 0 && left <= FINAL_HOUR_WINDOW_MS;
+      };
+      // If the match just shown is cancelled, leave a clear update until dismissed
+      // or its scheduled kickoff passes. An unrelated old cancellation stays out.
+      const previous = state.gameId ? findGame(state.gameId) : null;
+      if (inWindow(previous) && String(previous.Status) === "Cancelled" && !state.dismissed.has(finalHourGameKey(previous))) return previous;
+      return (appData.games || []).filter(function(game) {
+        if (!inWindow(game) || String(game.Status) === "Cancelled" || game.rsvpLocked) return false;
+        const m = gameMeta(game);
+        return m.canManage || m.myStatus !== "No";
+      }).sort(function(a, b) {
+        return finalHourGameStart(a) - finalHourGameStart(b) || String(a.GameID).localeCompare(String(b.GameID));
+      })[0] || null;
+    }
+    function finalHourCheckedLabel(stamp) {
+      if (!(stamp > 0)) return t("hourNotChecked");
+      try {
+        const zone = leagueTimeZone();
+        const options = { timeZone: zone, hour: "numeric", minute: "2-digit", timeZoneName: "short" };
+        const day = new Intl.DateTimeFormat("en-US", { timeZone: zone, year: "numeric", month: "2-digit", day: "2-digit" });
+        if (day.format(new Date(stamp)) !== day.format(new Date(leagueNowMs()))) Object.assign(options, { year: "numeric", month: "short", day: "numeric" });
+        const time = new Intl.DateTimeFormat(locale(), options).format(new Date(stamp));
+        return t("hourChecked", { time: time });
+      } catch (e) { return t("hourNotChecked"); }
+    }
+    function finalHourModel(now) {
+      const game = selectFinalHourGame(now);
+      if (!game) return null;
+      const m = gameMeta(game), start = finalHourGameStart(game), minutes = Math.ceil((start - now) / 60000);
+      const freshness = finalHourFreshness();
+      const cancelled = m.isCancelled;
+      const reconfirm = !cancelled && !!(m.myEntry && m.myEntry.needsReconfirm);
+      const needsAnswer = !cancelled && !m.isSysAdmin && !m.locked && (reconfirm || !m.myStatus || m.myStatus === "Maybe");
+      const status = cancelled ? "cancelled" : (m.isConfirmed ? "on" : "needs");
+      const stateText = cancelled ? t("pillCancelled") : (m.isConfirmed ? t("pillOn") : t("pillNeeds", { n: Math.max(0, m.minThreshold - m.confirmedCount) }));
+      let reply = "";
+      if (!cancelled && !m.isSysAdmin) reply = reconfirm ? t("reconfirmChip") : (m.myStatus === "Waitlist" ? t("chipWaitlist", { n: Math.max(1, m.myWaitPos) }) : (m.myStatus ? statusWord(m.myStatus) : t("chipNoAnswer")));
+      const shirt = !cancelled && gf(game, "teams") && m.myStatus === "Yes" && m.mySide && !reconfirm
+        ? t("youAreOn", { team: teamLabel(m.mySide), shirt: shirtName(teamShirt(m.mySide)) }) : "";
+      const saving = isGameSaving(game.GameID);
+      return {
+        id: String(game.GameID), start: start, cancelled: cancelled, status: status,
+        heading: cancelled ? t("hourCancelledTitle") : (minutes <= 1 ? t("hourLessThanMinute") : t("hourCountdown", { n: minutes })),
+        eyebrow: cancelled ? t("hourMatchUpdate") : t("hourNextMatch"),
+        stateText: freshness.fresh && !saving ? stateText : t("hourSavedStatus", { status: stateText }),
+        subtitle: String(game.Title || "") + " · " + fmtTime(game.Time),
+        location: String(game.LocationName || ""),
+        counts: cancelled ? t("cancelledNotice") : (m.pendingReconfirmCount > 0
+          ? t("hourReservedCounts", { n: m.yesCount, max: m.maxCap, confirmed: m.confirmedCount })
+          : t("hourConfirmedCounts", { n: m.confirmedCount, max: m.maxCap })),
+        pending: !cancelled && m.pendingReconfirmCount > 0 ? t("pendingReconfirmN", { n: m.pendingReconfirmCount }) : "",
+        reply: reply, shirt: shirt, needsAnswer: needsAnswer,
+        action: needsAnswer ? (reconfirm ? t("hourReconfirm") : t("hourAnswer")) : t("hourViewMatch"),
+        fresh: freshness.fresh && !saving, checked: finalHourCheckedLabel(freshness.dataAtMs),
+        dataAtMs: freshness.dataAtMs, warning: saving ? t("hourSaving") : freshness.warning
+      };
+    }
+    function finalHourMarkup() {
+      return `<div class="match-hour-layout">
+        <div class="match-hour-main">
+          <div class="match-hour-eyebrow">${ic("clock")}<span id="match-hour-eyebrow"></span><span id="match-hour-state" class="match-hour-state"></span></div>
+          <h2 id="match-hour-heading" class="match-hour-title"><span id="match-hour-countdown" role="timer" aria-live="off"></span></h2>
+          <p id="match-hour-subtitle" class="match-hour-subtitle"></p>
+          <p id="match-hour-location" class="match-hour-subtitle"></p>
+          <div class="match-hour-details"><span id="match-hour-counts"></span><span id="match-hour-reply" class="match-hour-reply"></span></div>
+          <p id="match-hour-pending" class="match-hour-meta"></p>
+          <p id="match-hour-shirt" class="match-hour-meta"></p>
+        </div>
+        <div class="match-hour-actions">
+          <button type="button" id="match-hour-action" class="match-hour-action" onclick="openFinalHourMatch()"><span id="match-hour-action-label"></span>${ic("chevRight")}</button>
+          <button type="button" id="match-hour-refresh" class="match-hour-link" onclick="syncFromBackend(true)">${escHtml(t("refresh"))}</button>
+          <button type="button" id="match-hour-dismiss" class="match-hour-link" onclick="dismissFinalHourUpdate()" hidden>${escHtml(t("hourDismiss"))}</button>
+        </div>
+      </div>
+      <div class="match-hour-footer"><time id="match-hour-checked"></time><span id="match-hour-warning" class="match-hour-warning"></span></div>`;
+    }
+    function updateFinalHourCard() {
+      if (finalHourTickTimer !== null) clearTimeout(finalHourTickTimer);
+      finalHourTickTimer = null;
+      const root = byId("match-hour-root");
+      if (!root) return;
+      if (!currentUser || activeTab !== "upcoming") { root.hidden = true; return; }
+      if (document.visibilityState === "hidden") return;
+      const now = leagueNowMs(), model = finalHourModel(now);
+      if (!model) { root.hidden = true; root.removeAttribute("data-game-id"); finalHourSessionState().gameId = ""; return; }
+      const first = root.getAttribute("data-game-id") !== model.id || root.getAttribute("data-lang") !== currentLang || !root.innerHTML;
+      const wasHidden = root.hidden;
+      if (first) root.innerHTML = finalHourMarkup();
+      root.setAttribute("data-game-id", model.id);
+      root.setAttribute("data-lang", currentLang);
+      root.setAttribute("data-status", model.status);
+      root.setAttribute("data-fresh", String(model.fresh));
+      root.hidden = false;
+      finalHourSessionState().gameId = model.id;
+      const texts = { "eyebrow": model.eyebrow, "countdown": model.heading, "state": model.stateText,
+        "subtitle": model.subtitle, "location": model.location, "counts": model.counts, "reply": model.reply,
+        "pending": model.pending, "shirt": model.shirt, "action-label": model.action,
+        "checked": model.checked, "warning": model.warning };
+      Object.keys(texts).forEach(function(key) {
+        const el = byId("match-hour-" + key); if (!el) return;
+        if (el.textContent !== texts[key]) el.textContent = texts[key];
+        el.hidden = !texts[key];
+      });
+      const checked = byId("match-hour-checked");
+      if (checked && model.dataAtMs > 0) checked.setAttribute("datetime", new Date(model.dataAtMs).toISOString());
+      const reply = byId("match-hour-reply"); if (reply) reply.setAttribute("data-attention", String(model.needsAnswer));
+      const dismiss = byId("match-hour-dismiss"); if (dismiss) dismiss.hidden = !model.cancelled;
+      // Only the small status surface enters, once. Countdown ticks never move it,
+      // rebuild controls, request the network, or announce each minute to VoiceOver.
+      if ((first || wasHidden) && model.fresh && motionAllowed() && !editingSurfaceBusy()) {
+        animatePresentation(root, [{ opacity: .75, transform: "translateY(5px)" }, { opacity: 1, transform: "translateY(0)" }], getMotionPref() === "expressive" ? 260 : 150);
+      }
+      const remaining = model.start - now;
+      const untilMinute = remaining % 60000 || 60000;
+      finalHourTickTimer = setTimeout(updateFinalHourCard, Math.min(remaining, untilMinute) + 25);
+    }
+    function dismissFinalHourUpdate() {
+      const state = finalHourSessionState(), game = findGame(state.gameId);
+      if (game && String(game.Status) === "Cancelled") state.dismissed.add(finalHourGameKey(game));
+      state.gameId = "";
+      updateFinalHourCard();
+    }
+    function focusMatchFromSummary(gameId) {
+      if (!currentUser) return false;
+      const game = findGame(gameId);
+      if (!game) { showToast(t("hourMatchGone"), true); return false; }
+      const past = String(game.Date) < getTodayIso();
+      if (past && !standingsOn()) { showToast(t("hourMatchGone")); return false; }
+      if (past) navigateTab("history");
+      else {
+        const days = Math.ceil((Date.parse(String(game.Date) + "T12:00:00Z") - Date.parse(getTodayIso() + "T12:00:00Z")) / 86400000);
+        if (Number.isFinite(days)) upcomingDays = Math.max(upcomingDays, Math.ceil((days + 1) / 7) * 7);
+      }
+      expandedGames[String(gameId)] = true;
+      if (!past) { if (activeTab !== "upcoming") switchTab("upcoming"); else renderCurrentTab(); }
+      const card = byId((past ? "history-game-" : "game-") + gameId);
+      if (card) {
+        card.setAttribute("tabindex", "-1");
+        try { card.focus({ preventScroll: true }); } catch (e) { card.focus(); }
+        if (card.scrollIntoView) card.scrollIntoView({ block: "start", behavior: motionAllowed() ? "smooth" : "auto" });
+      }
+      return !!card;
+    }
+    function openFinalHourMatch() { return focusMatchFromSummary(finalHourSessionState().gameId); }
+
+    // Notification deep links only open a match. They never change an answer.
+    function readMatchDeepLink() {
+      try {
+        const params = new URLSearchParams(location.search);
+        if (params.has("rsvp") || params.has("invite")) return;
+        const id = params.get("match") || "";
+        if (id.length > 0 && id.length <= 128) pendingMatchLink = id;
+      } catch (e) {}
+    }
+    function applyMatchDeepLinkIfReady() {
+      if (!pendingMatchLink || !currentUser || finalHourSync.epoch !== authEpoch || editingSurfaceBusy()) return;
+      const id = pendingMatchLink;
+      pendingMatchLink = "";
+      try {
+        const url = new URL(location.href); url.searchParams.delete("match");
+        history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+      } catch (e) {}
+      focusMatchFromSummary(id);
+    }
+
+    // One network poll schedule remains. Countdowns use their own local minute
+    // boundary timeout; the API stays at one minute near play, five minutes otherwise.
+    function automaticSyncDue() {
+      if (!currentUser || document.visibilityState !== "visible" || navigator.onLine === false) return false;
+      const now = leagueNowMs();
+      const nearPlay = (appData.games || []).some(function(game) {
+        if (game.hasScore || String(game.Status) === "Cancelled") return false;
+        const start = finalHourGameStart(game);
+        const end = Number(game.endAtMs) || start + 75 * 60000;
+        return Number.isFinite(start) && start - now <= FINAL_HOUR_WINDOW_MS && end > now;
+      });
+      const elapsed = Date.now() - lastSyncAttemptAtMs;
+      return elapsed < 0 || elapsed >= (nearPlay ? 60000 : 300000);
+    }
+    window.addEventListener("offline", updateFinalHourCard);
+    window.addEventListener("online", function() {
+      updateFinalHourCard();
+      if (document.visibilityState === "visible" && currentUser) syncFromBackend(false);
+    });
+    window.addEventListener("pageshow", function(event) {
+      updateFinalHourCard();
+      if (event.persisted && currentUser) syncFromBackend(false);
+    });
+    window.addEventListener("orientationchange", updateFinalHourCard, { passive: true });
+
 
     // =========================================================================
     // UPCOMING MATCHES (the next 7 days, then "Show more")
@@ -4077,7 +5324,7 @@ body .settings-account {
       const tools = [];
       if (canManage && att) tools.push(`<button type="button" onclick="openAttendanceSheet('${id}')" class="tap rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-sm font-bold inline-flex items-center justify-center gap-1.5">${ic("clipboard", "w-4 h-4")}${escHtml(t("toolAttendance"))}</button>`);
       if (canManage && scores) tools.push(`<button type="button" onclick="openScoreSheet('${id}')" class="tap rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-sm font-bold inline-flex items-center justify-center gap-1.5">${ic("trophy", "w-4 h-4")}${escHtml(g.hasScore ? t("toolScoreEdit") : t("toolScore"))}</button>`);
-      return `<div class="bg-[#0b130f] p-3.5 rounded-2xl border border-emerald-950">
+      return `<div id="history-game-${escHtml(g.GameID)}" class="bg-[#0b130f] p-3.5 rounded-2xl border border-emerald-950">
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="text-sm font-extrabold text-white truncate">${escHtml(g.Title)}</div>
@@ -4212,28 +5459,21 @@ body .settings-account {
               <option value="Both" ${curPref === "Both" ? "selected" : ""}>${escHtml(t("notifyBoth"))}</option>
               <option value="Push" ${curPref === "Push" ? "selected" : ""}>${escHtml(t("notifyPush"))}</option>
               <option value="Email" ${curPref === "Email" ? "selected" : ""}>${escHtml(t("notifyEmail"))}</option>
-              <option value="None" ${curPref === "None" ? "selected" : ""}>${escHtml(t("notifyNone"))}</option>
             </select></label>
           <div id="profile-push-state">${profilePushStateHtml(curPref)}</div>
-          <button type="button" id="profile-enable-push" style="${curPref === "None" ? "display:none" : ""}" onclick="enablePushTapped()" class="tap w-full px-4 rounded-2xl bg-emerald-950 border border-[#00f59b]/40 text-[#00f59b] text-sm font-bold text-left inline-flex items-center gap-2">${ic("bell", "w-5 h-5")}${escHtml(t("enablePushHere"))}</button>
+          <button type="button" onclick="enablePushTapped()" class="tap w-full px-4 rounded-2xl bg-emerald-950 border border-[#00f59b]/40 text-[#00f59b] text-sm font-bold text-left inline-flex items-center gap-2">${ic("bell", "w-5 h-5")}${escHtml(t("enablePushHere"))}</button>
           ${isSys ? "" : `<label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("awayUntil"))}</span>
             <input id="prof-away-input" type="date" min="${getTodayIso()}" value="${escHtml(currentUser.awayUntil || "")}" class="tap mt-1 w-full px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
             <span class="block text-xs text-slate-400 mt-1">${escHtml(t("awayHelp"))}</span></label>`}
         </div>
         <button type="button" id="prof-save" onclick="saveMyProfilePreferences()" class="tap-lg w-full rounded-2xl neon-btn text-base mb-4">${escHtml(t("saveBtn"))}</button>
         ${renderAppearanceSettings()}
-        <section class="appearance-panel mb-4" aria-labelledby="prof-security-title">
-          <h4 id="prof-security-title" class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">${escHtml(t("accountSecurity"))}</h4>
-          <button type="button" onclick="showChangePinModal()" class="tap w-full rounded-xl border border-emerald-900 text-sm font-bold mb-2">${escHtml(t("changePin"))}</button>
-          ${isProtectedEmail(me) ? `<p class="text-xs text-slate-400">${escHtml(t("emailAdminLocked"))}</p>` : `<button type="button" onclick="showChangeEmailModal()" class="tap w-full rounded-xl border border-emerald-900 text-sm font-bold">${escHtml(t("changeEmail"))}</button>`}
-        </section>
         ${nextGame ? `<h4 class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">${escHtml(t("myHistory"))}</h4>
         <div id="my-matches" class="space-y-1.5 mb-4">${matchRow(nextGame, true)}
           ${restCount ? `<div id="my-matches-rest" class="hidden space-y-1.5">${restUpcoming.map(function(g) { return matchRow(g, false); }).join("")}
             ${restPlayed.length && restUpcoming.length ? `<p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 pt-1">${escHtml(t("playedLbl"))}</p>` : ""}${restPlayed.map(function(g) { return matchRow(g, false); }).join("")}</div>
           <button type="button" id="my-matches-more" onclick="showAllMyMatches()" class="tap w-full rounded-xl bg-[#0b130f] border border-emerald-950 text-sm font-bold text-emerald-300 inline-flex items-center justify-center gap-1.5">${escHtml(t("showMoreMine", { n: restCount }))}${ic("chevDown", "w-4 h-4")}</button>` : ""}
         </div>` : ""}
-        ${isProtectedEmail(me) ? "" : `<button type="button" onclick="showRemoveProfileModal()" class="tap w-full mb-3 rounded-2xl border border-rose-800/50 text-rose-300 text-sm font-bold">${escHtml(t("removeProfile"))}</button>`}
         <button type="button" onclick="confirmLogout()" class="tap-lg w-full rounded-2xl bg-rose-950 text-rose-300 border border-rose-800/50 font-bold text-base inline-flex items-center justify-center gap-2">${ic("logout", "w-5 h-5")}${escHtml(t("logoutBtn"))}</button>
         <p class="text-center text-[11px] text-slate-500 mt-3">Pitch Pulse v${APP_VERSION}</p>
       `);
@@ -4252,138 +5492,11 @@ body .settings-account {
       if (awayEl) payload.awayUntil = awayEl.value;
       mutate("profile", payload, { button: "prof-save" });
     }
-    // Account changes use dedicated contracts, not the league-data mutation response.
-    // Never persist a current/new PIN or verification code in browser storage.
-    function accountInput(id, label, type, attrs) {
-      return `<label class="block mb-3"><span class="text-xs font-bold text-slate-400">${escHtml(t(label))}</span><input id="${id}" type="${type}" ${attrs || ""} class="tap mt-1 w-full px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"></label>`;
-    }
-    function accountBackButton() {
-      return `<button type="button" onclick="openMyProfileModal()" class="tap w-full mt-2 text-sm text-slate-300">${escHtml(t("backToProfile"))}</button>`;
-    }
-    function showChangePinModal() {
-      if (!currentUser) return showLoginModal();
-      renderSheetModal(`${sheetHeader(escHtml(t("changePin")), escHtml(t("securityChangeHelp")), "lock")}
-        ${accountInput("account-current-pin", "currentPin", "password", 'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
-        ${accountInput("account-new-pin", "newPinPh", "password", 'inputmode="numeric" maxlength="6" autocomplete="new-password"')}
-        ${accountInput("account-confirm-pin", "repeatPin", "password", 'inputmode="numeric" maxlength="6" autocomplete="new-password"')}
-        <button type="button" id="account-submit" onclick="submitPinChange()" class="tap-lg w-full rounded-2xl neon-btn">${escHtml(t("saveNewPin"))}</button>${accountBackButton()}`, "max-w-sm");
-    }
-    async function submitPinChange() {
-      const currentPin = byId("account-current-pin").value, newPin = byId("account-new-pin").value, confirmPin = byId("account-confirm-pin").value;
-      if (!/^\d{6}$/.test(currentPin) || !/^\d{6}$/.test(newPin)) return showToast(t("errPin6"),true);
-      if (newPin !== confirmPin) return showToast(t("errPinMatch"),true);
-      await submitAccountChange({action:"changePin",currentPin:currentPin,newPin:newPin,confirmPin:confirmPin},myEmail(),"pinChangedLogin");
-    }
-    function showChangeEmailModal() {
-      if (!currentUser) return showLoginModal();
-      if (isProtectedEmail(myEmail())) return showToast(t("emailAdminLocked"),true);
-      renderSheetModal(`${sheetHeader(escHtml(t("changeEmail")), escHtml(t("verifyEmailHelp")), "mail")}
-        ${accountInput("account-new-email", "newEmail", "email", 'autocomplete="email" autocapitalize="none" spellcheck="false" inputmode="email"')}
-        ${accountInput("account-current-pin", "currentPin", "password", 'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
-        <button type="button" id="account-submit" onclick="requestAccountEmailChange()" class="tap-lg w-full rounded-2xl neon-btn">${escHtml(t("sendCode"))}</button>${accountBackButton()}`, "max-w-sm");
-    }
-    async function requestAccountEmailChange() {
-      const input=byId("account-new-email"),newEmail=input.value.trim().toLowerCase(),currentPin=byId("account-current-pin").value;
-      if (!newEmail || !input.checkValidity() || newEmail === myEmail()) return showToast(t("errEmailInvalid"),true);
-      if (!/^\d{6}$/.test(currentPin)) return showToast(t("errPin6"),true);
-      if (inFlight["account-security"]) return;
-      await runAction("account-security",async function() {
-        setBusyButton("account-submit",true);
-        try {
-          const res=await apiPost({action:"requestEmailChange",currentPin:currentPin,newEmail:newEmail},{silent:true});
-          if (!res || res.staleAuth) return;
-          if (res.success || res.uncertain) {
-            showConfirmEmailModal(newEmail);
-            showToast(t(res.uncertain ? "emailRequestUncertain" : "emailRequested"),!!res.uncertain);
-          } else if (res.error) showToast(res.error,true);
-        } finally {setBusyButton("account-submit",false);}
-      });
-    }
-    function showConfirmEmailModal(newEmail) {
-      renderSheetModal(`${sheetHeader(escHtml(t("confirmEmail")),escHtml(t("emailCodeHelp",{email:newEmail})),"mail")}
-        <p class="text-xs text-slate-400 mb-3">${escHtml(t("securityChangeHelp"))}</p>
-        <input id="account-new-email" type="hidden" value="${escHtml(newEmail)}">
-        ${accountInput("account-email-code","enterCode","text",'maxlength="12" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false"')}
-        ${accountInput("account-current-pin","currentPin","password",'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
-        <button type="button" id="account-submit" onclick="confirmAccountEmailChange()" class="tap-lg w-full rounded-2xl neon-btn">${escHtml(t("confirmEmail"))}</button>${accountBackButton()}`,"max-w-sm");
-    }
-    async function confirmAccountEmailChange() {
-      const newEmail=byId("account-new-email").value,currentPin=byId("account-current-pin").value,code=byId("account-email-code").value.trim();
-      if (!/^\d{6}$/.test(currentPin)) return showToast(t("errPin6"),true);
-      if (!/^[a-f0-9]{12}$/i.test(code)) return showToast(t("errEmailCode"),true);
-      await submitAccountChange({action:"confirmEmailChange",newEmail:newEmail,currentPin:currentPin,code:code},newEmail,"emailChangedLogin");
-    }
-    async function submitAccountChange(payload, loginEmail, successKey) {
-      if (inFlight["account-security"]) return;
-      await runAction("account-security",async function() {
-        setBusyButton("account-submit",true);
-        try {
-          const res=await apiPost(payload,{silent:true});
-          if (!res || res.staleAuth) return;
-          if (res.success || res.uncertain) {
-            logout(true);
-            showLoginModal(loginEmail,t(res.uncertain ? "accountChangeUncertain" : successKey));
-          } else if(res.error) showToast(res.error,true);
-        } finally {setBusyButton("account-submit",false);}
-      });
-    }
-    function showRemoveProfileModal() {
-      if (!currentUser) return showLoginModal();
-      if (isProtectedEmail(myEmail())) return showToast(t("removalAdminLocked"),true);
-      renderSheetModal(`${sheetHeader(escHtml(t("removeProfile")), "", "alert")}
-        <p class="text-sm text-rose-300 mb-4">${escHtml(t("removalWarning"))}</p>
-        <p class="text-sm text-slate-300 mb-4">${escHtml(t("removalFinalWarning"))}</p>
-        ${accountInput("account-current-pin","currentPin","password",'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
-        <button type="button" id="account-submit" onclick="prepareProfileRemoval()" class="tap-lg w-full rounded-2xl bg-rose-950 text-rose-300 border border-rose-800/50 font-bold">${escHtml(t("prepareRemoval"))}</button>${accountBackButton()}`,"max-w-sm");
-    }
-    async function prepareProfileRemoval() {
-      const currentPin=byId("account-current-pin").value;
-      if (!/^\d{6}$/.test(currentPin)) return showToast(t("errPin6"),true);
-      if (inFlight["account-security"]) return;
-      await runAction("account-security",async function() {
-        setBusyButton("account-submit",true);
-        try {
-          const res=await apiPost({action:"prepareAccountRemoval",currentPin:currentPin},{silent:true});
-          if (!res || res.staleAuth) return;
-          if (res.success && /^[a-f0-9]{64}$/i.test(res.recoveryCode || "")) showSaveRecoveryCodeModal(res.recoveryCode);
-          else showToast(res.uncertain ? t("removalPrepareUncertain") : res.error || t("errNetwork"),true);
-        } finally {setBusyButton("account-submit",false);}
-      });
-    }
-    function showSaveRecoveryCodeModal(recoveryCode) {
-      renderSheetModal(`${sheetHeader(escHtml(t("recoveryCode")), "", "key")}
-        <p class="text-sm font-bold text-amber-300 mb-3">${escHtml(t("recoveryWarning"))}</p>
-        <label class="block mb-3"><span class="text-xs text-slate-400">${escHtml(t("recoveryCode"))}</span>
-          <textarea id="removal-recovery-code" rows="4" readonly autocomplete="off" autocapitalize="off" spellcheck="false" class="w-full p-3 rounded-xl bg-[#0b130f] border border-emerald-900 font-mono text-base text-white" style="overflow-wrap:anywhere;word-break:break-all">${escHtml(recoveryCode)}</textarea></label>
-        <label class="flex items-start gap-3 text-sm text-slate-300 mb-4"><input id="removal-code-saved" type="checkbox" class="mt-1 w-5 h-5 shrink-0"><span>${escHtml(t("savedRecoveryCode"))}</span></label>
-        ${accountInput("removal-confirmation","removalPhrase","text",'autocomplete="off" autocapitalize="characters" spellcheck="false"')}
-        ${accountInput("account-current-pin","currentPin","password",'inputmode="numeric" maxlength="6" autocomplete="current-password"')}
-        <button type="button" id="account-submit" onclick="confirmProfileRemoval()" class="tap-lg w-full rounded-2xl bg-rose-950 text-rose-300 border border-rose-800/50 font-bold">${escHtml(t("removeProfile"))}</button>${accountBackButton()}`,"max-w-sm");
-    }
-    async function confirmProfileRemoval() {
-      const recoveryCode=byId("removal-recovery-code").value,currentPin=byId("account-current-pin").value,confirmation=byId("removal-confirmation").value.trim(),savedRecoveryCode=byId("removal-code-saved").checked;
-      if (!savedRecoveryCode || confirmation !== "REMOVE MY PROFILE" || !/^[a-f0-9]{64}$/i.test(recoveryCode)) return showToast(t("removalChecks"),true);
-      if (!/^\d{6}$/.test(currentPin)) return showToast(t("errPin6"),true);
-      // The first screen, saved-code acknowledgment, and typed phrase are independent confirmations.
-      if (inFlight["account-security"]) return;
-      await runAction("account-security",async function() {
-        setBusyButton("account-submit",true);
-        try {
-          const res=await apiPost({action:"removeOwnProfile",currentPin:currentPin,recoveryCode:recoveryCode,confirmation:confirmation,savedRecoveryCode:true},{silent:true});
-          if (!res || res.staleAuth) return;
-          if (res.success || res.uncertain) {
-            logout(true);
-            renderSheetModal(`${sheetHeader(escHtml(t("removeProfile")), "", "user")}
-              <p class="text-sm text-slate-300 mb-4">${escHtml(t(res.uncertain ? "removalUncertain" : "removalDone"))}</p>
-              <button type="button" onclick="showLoginModal()" class="tap-lg w-full rounded-2xl neon-btn">${escHtml(t("removalReturn"))}</button>`,"max-w-sm");
-          } else if(res.error) showToast(res.error,true);
-        } finally {setBusyButton("account-submit",false);}
-      });
-    }
     function confirmLogout() {
       confirmDialog({ icon: "logout", title: t("logoutConfirm"), okLabel: t("logoutBtn"), danger: true, onOk: function() { logout(); } });
     }
     function logout(silent) {
+      resetFinalHourState();
       resetSetupUi();
       const u = currentUser;
       authEpoch++; pushVaultState=null; adminSettingsDraft={}; Object.keys(pendingGameChanges).forEach(function(k){delete pendingGameChanges[k];});
@@ -4458,7 +5571,7 @@ body .settings-account {
           setAppData(res.appData || {});
           closeModal(); applyThemeAndLanguageUI(); renderAuthBar(); switchTab("upcoming");
           fetchWeatherForAllGamesAsync(); initOneSignalSdkIfConfigured();
-          applyEmailRsvpIfReady();
+          applyEmailRsvpIfReady(); applyMatchDeepLinkIfReady();
         } else {
           for (let i = 0; i < 6; i++) { const bx = byId("pin-box-" + i); if (bx) bx.value = ""; }
           const first = byId("pin-box-0"); if (first) first.focus();
@@ -4488,10 +5601,6 @@ body .settings-account {
           <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("repeatPin"))}</span>
             <input id="r-pin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" enterkeyhint="done" class="tap mt-1 w-full px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-xl tracking-[0.4em] text-center font-bold text-white"></label>
         </div>
-        <details class="mb-4"><summary class="tap text-sm font-bold text-slate-300">${escHtml(t("returningPlayer"))}</summary>
-          <p class="text-xs text-slate-400 my-2">${escHtml(t("recoveryRegisterHelp"))}</p>
-          ${accountInput("r-recovery-code","recoveryCode","password",'maxlength="64" autocomplete="off" autocapitalize="none" spellcheck="false"')}
-        </details>
         <button type="button" id="r-btn" onclick="doRegister()" class="tap-lg w-full rounded-2xl neon-btn text-base">${escHtml(t("createProfile"))}</button>
       `, "max-w-sm");
     }
@@ -4500,11 +5609,9 @@ body .settings-account {
       if (fullName.length < 2) { showToast(t("errName"), true); return; }
       if (!/^\d{6}$/.test(pin)) { showToast(t("errPin6"), true); return; }
       if (pin !== pin2) { showToast(t("errPinMatch"), true); return; }
-      const recoveryCode=(byId("r-recovery-code") ? byId("r-recovery-code").value : "").trim();
-      if (recoveryCode && !/^[a-f0-9]{64}$/i.test(recoveryCode)) {showToast(t("errRecoveryCode"),true);return;}
       await runAction("register", async function() {
         setBusyButton("r-btn", true);
-        const res = await apiPost({ action: "register", fullName: fullName, email: pendingInvite.email, position: "MID", pin: pin, inviteToken: pendingInvite.token, recoveryCode: recoveryCode }, { noAuth: true });
+        const res = await apiPost({ action: "register", fullName: fullName, email: pendingInvite.email, position: "MID", pin: pin, inviteToken: pendingInvite.token }, { noAuth: true });
         setBusyButton("r-btn", false);
         if (res && res.success) {
           pendingInvite = null;
@@ -4878,7 +5985,6 @@ body .settings-account {
           const chips = [];
           if (p.role === "Admin") chips.push(`<span class="text-amber-300">${ic("shield", "w-4 h-4")}</span>`);
           if (teams && p.defaultTeam) chips.push(shirtDot(teamShirt(p.defaultTeam === "A" ? "white" : "dark")));
-          if (String(p.status) === "Inactive") chips.push(`<span class="px-1.5 rounded bg-rose-950 text-rose-300 text-[11px] font-bold">${escHtml(t("inactive"))}</span>`);
           if (String(p.status) === "Suspended") chips.push(`<span class="px-1.5 rounded bg-rose-950 text-rose-300 text-[11px] font-bold">${escHtml(t("suspended"))}</span>`);
           if (p.awayUntil && p.awayUntil >= getTodayIso()) chips.push(`<span class="px-1.5 rounded bg-amber-500/20 text-amber-300 text-[11px] font-bold">${escHtml(fmtDate(p.awayUntil, { month: "short", day: "numeric" }))}</span>`);
           if (p.canBringGuests === false && maxGuests() > 0) chips.push(`<span class="px-1.5 rounded bg-slate-800 text-slate-300 text-[11px] font-bold">${escHtml(t("noGuestsShort"))}</span>`);
@@ -4899,8 +6005,7 @@ body .settings-account {
     function openPlayerAdminSheet(email) {
       const p = appData.profiles[email]; if (!p) return;
       const em = escJsArg(email);
-      const privacyRemoved = /^anon_[a-f0-9]+$/i.test(email);
-      const prot = !!p.isProtected || privacyRemoved;
+      const prot = !!p.isProtected;
       const teams = F("featTeams");
       const teamBtn = function(val, label, dot) {
         const on = (p.defaultTeam || "") === val;
@@ -4911,8 +6016,7 @@ body .settings-account {
           <span class="text-sm font-bold text-white inline-flex items-center gap-2">${ic(icon, "w-5 h-5 text-emerald-300")}${escHtml(label)}</span><span class="text-sm font-extrabold ${on ? "text-[#00f59b]" : "text-slate-400"}">${escHtml(on ? t("onWord") : t("offWord"))}</span></button>`;
       };
       const suspended = String(p.status) === "Suspended";
-      const inactive = String(p.status) === "Inactive";
-      const canMessage = !p.isSystemAdminOnly && !privacyRemoved && !inactive && String(p.email).toLowerCase() !== myEmail();
+      const canMessage = !p.isSystemAdminOnly && String(p.email).toLowerCase() !== myEmail();
       const stats = [profileParticipationText(p)];
       if (teams) stats.unshift(t("pos_" + (p.position || "MID")));
       if (reliabilityOn()) stats.push(reliabilityText(p));
@@ -4923,16 +6027,15 @@ body .settings-account {
             <p class="text-xs text-slate-400 mt-0.5">${escHtml(stats.join(" · "))}</p></div>
           ${closeBtn()}
         </div>
-        ${privacyRemoved || p.isSystemAdminOnly || !teams ? "" : `<p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">${escHtml(t("defaultTeamLbl"))}</p>
+        ${p.isSystemAdminOnly || !teams ? "" : `<p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">${escHtml(t("defaultTeamLbl"))}</p>
         <div class="grid grid-cols-3 gap-2 mb-1">${teamBtn("", t("noDefaultTeam"))}${teamBtn("A", teamLabel("white"), shirtDot(teamShirt("white")))}${teamBtn("B", teamLabel("dark"), shirtDot(teamShirt("dark")))}</div>
         <p class="text-xs text-slate-400 mb-4">${escHtml(t("defaultTeamHelp"))}</p>`}
         ${canMessage ? `<button type="button" id="dm-open" onclick="openMessagePlayerSheet('${em}')" class="tap-lg w-full mb-2 px-4 rounded-2xl bg-emerald-950 border border-[#00f59b]/30 text-[#00f59b] font-bold text-sm text-left inline-flex items-center gap-2">${ic("chat", "w-5 h-5")}${escHtml(t("msgPlayerBtn"))}</button>` : ""}
-        ${prot ? `<p class="text-sm text-slate-400 italic">${escHtml(t(privacyRemoved ? "recoveryRegisterHelp" : "protectedAdmin"))}</p>` : `<div class="space-y-2">
+        ${prot ? `<p class="text-sm text-slate-400 italic">${escHtml(t("protectedAdmin"))}</p>` : `<div class="space-y-2">
           ${maxGuests() > 0 ? switchRow("users", t("guestsAllowed"), p.canBringGuests !== false, `mutate('guest-${em}', {action:'adminToggleGuestPrivilege', targetEmail:'${em}', canBring:${p.canBringGuests === false}}, {closeSheet:false, after:function(){ openPlayerAdminSheet('${em}'); }})`) : ""}
           ${switchRow("shield", t("adminRights"), p.role === "Admin", `confirmDialog({icon:'shield', title:t('${p.role === "Admin" ? "demoteConfirm" : "promoteConfirm"}', {name:'${escJsArg(p.fullName)}'}), okLabel:t('confirmBtn'), onOk:function(){ mutate('role-${em}', {action:'adminUpdateUserRole', targetEmail:'${em}', newRole:'${p.role === "Admin" ? "Player" : "Admin"}'}, {button:'confirm-ok-btn'}); }})`)}
-          ${suspended ? `<button type="button" onclick="confirmDialog({icon:'checkCircle', title:t('reactivateConfirm', {name:'${escJsArg(p.fullName)}'}), okLabel:t('confirmBtn'), onOk:function(){ mutate('susp-${em}', {action:'adminToggleSuspendUser', targetEmail:'${em}', newStatus:'Active'}, {button:'confirm-ok-btn'}); }})" class="tap-lg w-full px-4 rounded-2xl bg-emerald-950 text-[#00f59b] font-bold text-sm">${escHtml(t("reactivate"))}</button>` : ""}
-          ${inactive ? `<p class="text-xs text-slate-400">${escHtml(t("inactiveProfileHelp"))}</p>` : ""}
-          <button type="button" onclick="confirmDialog({icon:'${inactive ? "mail" : "ban"}', danger:${!inactive}, title:t('${inactive ? "reinvitePlayerConfirm" : "deactivatePlayerConfirm"}', {name:'${escJsArg(p.fullName)}'}), body:t('${inactive ? "reinvitePlayerHelp" : "deactivatePlayerHelp"}'), okLabel:t('${inactive ? "reinvitePlayer" : "deactivatePlayer"}'), onOk:function(){ mutate('account-${em}', {action:'${inactive ? "adminReinviteUser" : "adminDeactivateUser"}', targetEmail:'${em}'}, {button:'confirm-ok-btn'}); }})" class="tap-lg w-full px-4 rounded-2xl ${inactive ? "bg-emerald-950 text-[#00f59b]" : "bg-rose-950 text-rose-300"} font-bold text-sm text-left inline-flex items-center gap-2">${ic(inactive ? "mail" : "ban", "w-5 h-5")}${escHtml(t(inactive ? "reinvitePlayer" : "deactivatePlayer"))}</button>
+          <button type="button" onclick="confirmDialog({icon:'${suspended ? "checkCircle" : "ban"}', danger:${!suspended}, title:t('${suspended ? "reactivateConfirm" : "suspendConfirm"}', {name:'${escJsArg(p.fullName)}'}), body:${suspended ? "''" : "t('suspendBody')"}, okLabel:t('confirmBtn'), onOk:function(){ mutate('susp-${em}', {action:'adminToggleSuspendUser', targetEmail:'${em}', newStatus:'${suspended ? "Active" : "Suspended"}'}, {button:'confirm-ok-btn'}); }})" class="tap-lg w-full px-4 rounded-2xl ${suspended ? "bg-emerald-950 text-[#00f59b]" : "bg-rose-950 text-rose-300"} font-bold text-sm text-left inline-flex items-center gap-2">${ic(suspended ? "checkCircle" : "ban", "w-5 h-5")}${escHtml(suspended ? t("reactivate") : t("suspend"))}</button>
+          ${!p.hasHistory ? `<button type="button" onclick="confirmDialog({icon:'trash', danger:true, title:t('removeConfirm', {name:'${escJsArg(p.fullName)}'}), okLabel:t('deleteBtn'), onOk:function(){ mutate('del-${em}', {action:'adminDeleteUser', targetEmail:'${em}'}, {button:'confirm-ok-btn'}); }})" class="tap w-full px-4 rounded-2xl text-rose-300 text-sm font-bold inline-flex items-center gap-2">${ic("trash", "w-4 h-4")}${escHtml(t("removePlayer"))}</button>` : ""}
         </div>`}
       `);
     }
@@ -4996,11 +6099,11 @@ body .settings-account {
       ["grpAfter", ["featScores", "featMotm", "featAttendance", "featLateDrops"]],
       ["grpCard", ["featWeather", "featCalendar", "featRules"]],
       ["grpGuests", ["maxGuests"]],
-      ["grpMessages", ["msgDayBefore", "msgMatchDay", "msgGameOn", "msgConfirm", "msgMaybeMorning", "msgTwoHour"]]
+      ["grpMessages", ["msgDayBefore", "msgMatchDay", "msgGameOn", "msgConfirm", "msgMaybeMorning", "msgTwoHour", "msgOneHour"]]
     ];
     const FEATURE_ICONS = { featTeams: "shirt", trackBall: "ball", trackPinnies: "vest", trackGK: "glove", featArrival: "clock", featCaptains: "shield", featAnnouncements: "megaphone", featSmallSided: "bolt",
       featScores: "trophy", featMotm: "star", featAttendance: "clipboard", featLateDrops: "alert", featWeather: "cloud", featCalendar: "calendar", featRules: "book",
-      maxGuests: "users", msgDayBefore: "mail", msgMatchDay: "bell", msgGameOn: "checkCircle", msgConfirm: "check", msgMaybeMorning: "help", msgTwoHour: "clock" };
+      maxGuests: "users", msgDayBefore: "mail", msgMatchDay: "bell", msgGameOn: "checkCircle", msgConfirm: "check", msgMaybeMorning: "help", msgTwoHour: "clock", msgOneHour: "clock" };
     function featureBlockedReason(key) {
       const s = S();
       if (key === "featScores" && !s.featTeams) return t("needsTeams");
@@ -5380,6 +6483,7 @@ body .settings-account {
     }
 
     applyThemeAndLanguageUI();
+    readMatchDeepLink();
     readEmailRsvpLink();
     handleInviteLink();
     renderAuthBar();
