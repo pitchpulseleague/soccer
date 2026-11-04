@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Pitch Pulse 5.5.2: three local design choices, consolidated navigation and final-hour match status. -->
+<!-- Pitch Pulse 5.5.3: private push identities and independent notification controls for each browser/app. -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover, interactive-widget=resizes-content">
@@ -2389,6 +2389,39 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
   "fi_msgOneHour": "Entre 45 y 60 minutos antes del inicio, envía una notificación al teléfono con el estado actual, la cantidad de confirmados y tu respuesta. Va a quienes están en Voy, Tal vez o En espera, y a los organizadores actuales. Omite cuentas ausentes o suspendidas y las preferencias de Solo correo. Requiere notificaciones configuradas y permitidas. No se usa correo como respaldo. La tarjeta de la última hora en la app siempre está disponible."
 });
 
+    // Push delivery preferences belong to the account; subscription controls belong to this browser/app.
+    Object.assign(I18N.en, {
+      phoneNotify: "Push notifications", notifyBoth: "Push notifications and email", notifyPush: "Push notifications only",
+      pushBrowserTitle: "Notifications in this browser/app", pushHereOn: "On", pushHereOff: "Off",
+      pushBrowserHelp: "This controls only this browser or installed app. To avoid two copies on one phone, enable notifications in just one of them.",
+      pushReady: "On here", pushNotReady: "Off here", pushChecking: "Checking this browser/app…",
+      pushUnavailableShort: "Unavailable in this browser/app", pushServerNotReady: "Push notifications are not configured yet. Use email for now.",
+      pushPreferenceWarning: "Push is not ready here. Other browsers or apps you enabled can still receive updates. Choose email too if you need another way to receive them.",
+      pushEmailOnlyHint: "Email only is selected above. Choose push notifications and save if you want pushes on your enabled devices.",
+      pushHelp: "Save the delivery preference above to apply it across your devices. On/Off here takes effect immediately.",
+      pushPermissionOnly: "Permission granted. Finishing subscription setup…", pushIdentityPending: "Connecting notifications to your account…",
+      pushHereSaving: "Updating this browser/app…", pushTurningOff: "Turning notifications off here…",
+      pushSetupError: "Notification setup could not be confirmed. Check your connection and try again.",
+      enablePushHere: "Turn on notifications here", pushOn: "Notifications are on in this browser/app.", pushOff: "Notifications are off in this browser/app.",
+      fd_msgOneHour: "A push notification as kickoff approaches. No email.",
+      fi_msgOneHour: "Between 45 and 60 minutes before kickoff, sends one push update with the latest match status, confirmed count and your answer to each enabled subscription. Goes to players who are In, Maybe or Waitlisted, plus the current organizers. Skips away or suspended accounts and Email-only preferences. Requires push notifications to be configured and allowed. No email fallback. The final-hour card inside the app is always available."
+    });
+    Object.assign(I18N.es, {
+      phoneNotify: "Notificaciones push", notifyBoth: "Notificaciones push y correo", notifyPush: "Solo notificaciones push",
+      pushBrowserTitle: "Notificaciones en este navegador o app", pushHereOn: "Activadas", pushHereOff: "Desactivadas",
+      pushBrowserHelp: "Esto controla solo este navegador o la app instalada. Para evitar dos copias en un teléfono, activa las notificaciones en solo uno de ellos.",
+      pushReady: "Activadas aquí", pushNotReady: "Desactivadas aquí", pushChecking: "Comprobando este navegador o app…",
+      pushUnavailableShort: "No disponibles en este navegador o app", pushServerNotReady: "Las notificaciones push aún no están configuradas. Por ahora usa correo.",
+      pushPreferenceWarning: "Las notificaciones no están listas aquí. Otros navegadores o apps que activaste pueden seguir recibiendo avisos. Elige también correo si necesitas otra forma de recibirlos.",
+      pushEmailOnlyHint: "Arriba está seleccionado Solo correo. Elige notificaciones push y guarda si quieres recibirlas en tus dispositivos activados.",
+      pushHelp: "Guarda la preferencia de entrega de arriba para aplicarla en todos tus dispositivos. Activar o desactivar aquí se aplica al momento.",
+      pushPermissionOnly: "Permiso concedido. Terminando la suscripción…", pushIdentityPending: "Vinculando las notificaciones a tu cuenta…",
+      pushHereSaving: "Actualizando este navegador o app…", pushTurningOff: "Desactivando las notificaciones aquí…",
+      pushSetupError: "No se pudo confirmar la configuración de notificaciones. Revisa tu conexión y vuelve a intentarlo.",
+      enablePushHere: "Activar notificaciones aquí", pushOn: "Las notificaciones están activadas en este navegador o app.", pushOff: "Las notificaciones están desactivadas en este navegador o app.",
+      fi_msgOneHour: "Entre 45 y 60 minutos antes del inicio, envía un aviso push con el estado actual, la cantidad de confirmados y tu respuesta a cada suscripción activada. Va a quienes están en Voy, Tal vez o En espera, y a los organizadores actuales. Omite cuentas ausentes o suspendidas y las preferencias de Solo correo. Requiere notificaciones configuradas y permitidas. No se usa correo como respaldo. La tarjeta de la última hora en la app siempre está disponible."
+    });
+
     function t(key, params) {
       const dict = I18N[currentLang] || I18N.en;
       let s = dict[key] !== undefined ? dict[key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
@@ -2403,7 +2436,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     const SITE_URL = "https://pitchpulseleague.github.io/soccer/";
     const SYSTEM_ADMIN_EMAIL = "pitchpulseleague@gmail.com";
     const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "ralph@me.com"];
-    const APP_VERSION = "5.5.2";
+    const APP_VERSION = "5.5.3";
 
     const ASSET_VERSION = "5.0";
     const ICON_192_FILE = "pitch-pulse-01-classic-stitched-192.png?v=" + ASSET_VERSION;
@@ -2535,10 +2568,19 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     let authEpoch = 0;
     let serverClockOffsetMs = 0;
     let currentUser = null;
+    let authStorageSessionOnly = false;
     try {
       const saved = JSON.parse(lsGet("soccer_user", "null"));
       if (saved && saved.email && saved.pin) currentUser = saved; else lsDel("soccer_user");
     } catch (e) { lsDel("soccer_user"); }
+    function persistCurrentUser() {
+      try {
+        if (currentUser) localStorage.setItem("soccer_user", JSON.stringify(currentUser));
+        else localStorage.removeItem("soccer_user");
+        authStorageSessionOnly = false;
+        return true;
+      } catch (e) { authStorageSessionOnly = true; return false; }
+    }
 
     let activeTab = "upcoming";
     let adminSection = lsGet("soccer_admin_section", "games");
@@ -2578,7 +2620,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     if (currentUser) {
       try {
         const cached = JSON.parse(lsGet("soccer_cached_data_v54", "null"));
-        if (cached && cached.games) appData = normalizeAppData(cached);
+        if (cached && cached.games && cached._clientAccount === myEmail()) appData = normalizeAppData(cached);
       } catch (e) {}
     }
 
@@ -2592,15 +2634,18 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     }
     function setAppData(d) {
       if (!d || (d._clientAuthEpoch !== undefined && d._clientAuthEpoch !== authEpoch)) return false;
+      if (!storedSessionMatchesCurrentUser()) { syncPushAuthFromStorage(); return false; }
       appData = normalizeAppData(d);
       if (Number.isFinite(Number(d.serverNowMs)) && Number(d.serverNowMs) > 0) serverClockOffsetMs = Number(d.serverNowMs) - Date.now();
       if (d.user && currentUser && String(d.user.email || "").toLowerCase() === myEmail()) {
         currentUser = Object.assign({}, currentUser, d.user);
-        lsSet("soccer_user", JSON.stringify(currentUser));
+        currentUser.pushExternalId = validPushExternalId(d.user.pushExternalId);
+        persistCurrentUser();
       }
-      try { const copy = Object.assign({}, appData); delete copy.user; delete copy._clientAuthEpoch; copy._clientFetchedAtMs = Date.now(); lsSet("soccer_cached_data_v54", JSON.stringify(copy)); } catch (e) {}
+      try { const copy = Object.assign({}, appData); delete copy.user; delete copy._clientAuthEpoch; copy._clientAccount = myEmail(); copy._clientFetchedAtMs = Date.now(); lsSet("soccer_cached_data_v54", JSON.stringify(copy)); } catch (e) {}
       recordFinalHourSync(d);
       presentationFreshEpoch = currentUser ? authEpoch : -1; // Only fresh accepted data may trigger a visual reply cue.
+      initOneSignalSdkIfConfigured();
       return true;
     }
 
@@ -2634,6 +2679,14 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     function teamShirt(side) { return side === "dark" ? S().teamBShirt : S().teamAShirt; }
     function findGame(id) { return (appData.games || []).find(function(g) { return String(g.GameID) === String(id); }); }
     function myEmail() { return currentUser ? String(currentUser.email || "").toLowerCase() : ""; }
+    function storedSessionMatchesCurrentUser() {
+      if (authStorageSessionOnly) return true;
+      let raw, saved;
+      try { raw = localStorage.getItem("soccer_user"); } catch (e) { return true; }
+      try { saved = JSON.parse(raw || "null"); } catch (e) { return false; }
+      const email = saved && saved.email ? String(saved.email).toLowerCase().trim() : "";
+      return email === myEmail() && String(saved && saved.pin || "") === String(currentUser && currentUser.pin || "");
+    }
     // Other players' cards are keyed by a private id (not their email); look them up as given.
     function profileFor(key) { const k = String(key || "").trim(); return (appData.profiles || {})[k] || (appData.profiles || {})[k.toLowerCase()] || null; }
 
@@ -2740,6 +2793,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
 
     async function apiPost(payload, opts) {
       opts = opts || {}; payload = Object.assign({}, payload);
+      if (!opts.noAuth && !storedSessionMatchesCurrentUser()) { syncPushAuthFromStorage(); return {success:false,staleAuth:true}; }
       const requestEpoch = authEpoch, requestEmail = myEmail();
       if (currentUser && !opts.noAuth) {
         if (!payload.requesterEmail) payload.requesterEmail = currentUser.email;
@@ -2753,7 +2807,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       try {
         const response = await fetch(API_URL, {method:"POST",redirect:"follow",signal:controller.signal,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
         const raw = await response.text();
-        if (requestEpoch !== authEpoch || (!opts.noAuth && requestEmail !== myEmail())) return {success:false,staleAuth:true};
+        if (requestEpoch !== authEpoch || (!opts.noAuth && (requestEmail !== myEmail() || !storedSessionMatchesCurrentUser()))) { if(!opts.noAuth)syncPushAuthFromStorage();return {success:false,staleAuth:true}; }
         let parsed;
         try { parsed = JSON.parse(raw); } catch (e) {
           if (!opts.silent) showToast(!uncertainWrite ? t("errDeploy") : t("saveUncertain"),true);
@@ -2764,7 +2818,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
         if (parsed.success === false && parsed.authError && !isRead && !opts.noAuth) { logout(true); showToast(parsed.error || t("errSession"),true); }
         return parsed;
       } catch (err) {
-        if (requestEpoch !== authEpoch || (!opts.noAuth && requestEmail !== myEmail())) return {success:false,staleAuth:true};
+        if (requestEpoch !== authEpoch || (!opts.noAuth && (requestEmail !== myEmail() || !storedSessionMatchesCurrentUser()))) { if(!opts.noAuth)syncPushAuthFromStorage();return {success:false,staleAuth:true}; }
         if (!isRead) lastMutationDoneAt = Date.now();
         const uncertain = uncertainWrite;
         const msg = uncertain ? t("saveUncertain") : (err && err.name === "AbortError" ? t("errTimeout") : t("errNetwork"));
@@ -2859,7 +2913,10 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       isSyncInFlight=false; if(btn)btn.classList.remove("animate-spin");
       if(epoch!==authEpoch || (data && data.staleAuth))return;
       if(data && data.success){
-        if(lastMutationDoneAt>startedAt || Object.keys(inFlight).length || editingSurfaceBusy()){if(ind)ind.textContent="";return;}
+        if(lastMutationDoneAt>startedAt || Object.keys(inFlight).length){if(ind)ind.textContent="";return;}
+        // A profile sheet can stay open while startup sync finishes. Accept only its
+        // push/account credentials here; keep every unsaved visible field in place.
+        if(editingSurfaceBusy()){acceptOwnPushState(data);if(ind)ind.textContent="";return;}
         setAppData(data);if(ind)ind.textContent="";
         initOneSignalSdkIfConfigured();applyThemeAndLanguageUI();renderAuthBar();renderCurrentTab();fetchWeatherForAllGamesAsync();applyEmailRsvpIfReady();applyMatchDeepLinkIfReady();
       }else if(data && data.authError){logout(true);showToast(data.error||t("errSession"),true);}
@@ -3121,21 +3178,89 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     let oneSignalInitialized = false;
     let oneSignalLinkedAs = "";
     let oneSignalSdk = null;
+    let oneSignalInitPromise = null;
+    let oneSignalOperationTail = Promise.resolve();
+    let oneSignalStarting = false;
+    let oneSignalActionBusy = false;
+    let oneSignalIssue = false;
+    const PUSH_BROWSER_PREF_KEY = "soccer_push_browser_v1";
+    const PUSH_BROWSER_REVISION_KEY = "soccer_push_browser_revision_v1";
+    let oneSignalChoiceRevision = 0;
+    let oneSignalBrowserChoice = lsGet(PUSH_BROWSER_PREF_KEY, "");
+    let oneSignalChoiceSessionOnly = false;
+    function validPushExternalId(value) {
+      return typeof value === "string" && /^ppl_push_v1_[A-Za-z0-9_-]{43}$/.test(value) ? value : "";
+    }
+    function currentPushExternalId() {
+      return currentUser && currentUser.email && currentUser.pin ? validPushExternalId(currentUser.pushExternalId) : "";
+    }
+    function pushBrowserPreference() {
+      if (!oneSignalChoiceSessionOnly) oneSignalBrowserChoice = lsGet(PUSH_BROWSER_PREF_KEY, oneSignalBrowserChoice);
+      return oneSignalBrowserChoice === "off" ? "off" : (oneSignalBrowserChoice === "on" ? "on" : "");
+    }
+    function setPushBrowserPreference(value) {
+      oneSignalBrowserChoice = value;
+      try {
+        localStorage.setItem(PUSH_BROWSER_PREF_KEY, value);
+        // A second explicit Off must also cancel a pending permission prompt in
+        // another tab, even if the previous stored value was already Off.
+        localStorage.setItem(PUSH_BROWSER_REVISION_KEY, Date.now() + ":" + Math.random().toString(36).slice(2));
+        oneSignalChoiceSessionOnly = false;
+      }
+      catch (e) { oneSignalChoiceSessionOnly = true; }
+    }
+    function acceptOwnPushState(data) {
+      const user = data && data.user;
+      if (!currentUser || !user || String(user.email || "").toLowerCase().trim() !== myEmail() ||
+          (data._clientAuthEpoch !== undefined && data._clientAuthEpoch !== authEpoch)) return false;
+      if (!storedSessionMatchesCurrentUser()) { syncPushAuthFromStorage(); return false; }
+      currentUser.pushExternalId = validPushExternalId(user.pushExternalId);
+      if (user.pin) { currentUser.pin = user.pin; currentUser.sessionToken = user.sessionToken || user.pin; }
+      if (typeof data.pushConfigured === "boolean") appData.pushConfigured = data.pushConfigured;
+      if (typeof data.oneSignalAppId === "string") appData.oneSignalAppId = data.oneSignalAppId;
+      persistCurrentUser();
+      initOneSignalSdkIfConfigured();
+      renderProfilePushState();
+      return true;
+    }
     function pushDeviceState() {
       if(!appData.pushConfigured || !appData.oneSignalAppId)return "server";
       if(devicePlatform()==="ios"&&!isStandalone())return "install";
       if(typeof Notification==="undefined")return "unavailable";
       if(Notification.permission==="denied")return "blocked";
       const sub=oneSignalSdk&&oneSignalSdk.User&&oneSignalSdk.User.PushSubscription;
-      if(sub && sub.id && sub.optedIn===true && oneSignalLinkedAs===myEmail() && Notification.permission==="granted")return "ready";
+      if(oneSignalIssue)return "error";
+      if(pushBrowserPreference()==="off")return sub&&sub.optedIn===false?"off":"turningOff";
+      if(!currentPushExternalId())return "identity";
+      if(oneSignalStarting || !oneSignalInitialized)return "checking";
+      if(sub && sub.id && sub.optedIn===true && oneSignalLinkedAs===currentPushExternalId() &&
+         oneSignalSdk.User.externalId===currentPushExternalId() && Notification.permission==="granted")return "ready";
+      if(sub && sub.optedIn===false)return "off";
       if(Notification.permission==="granted")return "pending";
       return "off";
     }
     function profilePushStateHtml(pref) {
-      const state=pushDeviceState(),key={server:"pushServerNotReady",install:"pushNeedsInstall",unavailable:"pushUnavailableShort",blocked:"pushDeniedShort",ready:"pushReady",pending:"pushPermissionOnly",off:"pushNotReady"}[state];
-      return `<p class="text-sm font-semibold ${state==="ready"?"text-emerald-300":"text-slate-300"}">${escHtml(t(key))}</p><p class="text-xs text-slate-400 mt-1">${escHtml(t("pushHelp"))}</p>${pref==="Push"&&state!=="ready"?`<p class="text-xs text-amber-300 mt-1">${escHtml(t("pushPreferenceWarning"))}</p>`:""}`;
+      const state=pushDeviceState(),key=oneSignalActionBusy?"pushHereSaving":{server:"pushServerNotReady",install:"pushNeedsInstall",unavailable:"pushUnavailableShort",blocked:"pushDeniedShort",ready:"pushReady",pending:"pushPermissionOnly",off:"pushNotReady",checking:"pushChecking",identity:"pushIdentityPending",turningOff:"pushTurningOff",error:"pushSetupError"}[state];
+      const on=state==="ready",off=state==="off",disabled=oneSignalActionBusy?"disabled":"";
+      return `<div class="p-3 rounded-2xl bg-[#0b130f] border border-emerald-900">
+        <p class="text-sm font-bold text-white">${escHtml(t("pushBrowserTitle"))}</p>
+        <p class="text-xs mt-1 ${on?"text-emerald-300":state==="error"?"text-amber-300":"text-slate-400"}" role="status">${escHtml(t(key))}</p>
+        <div class="grid grid-cols-2 gap-2 mt-2" role="group" aria-label="${escHtml(t("pushBrowserTitle"))}">
+          <button id="profile-push-on" type="button" onclick="enablePushTapped()" aria-pressed="${on}" ${disabled} class="tap rounded-xl border text-sm font-bold ${on?"bg-emerald-950 text-[#00f59b] border-[#00f59b]/60":"seg-off"}">${escHtml(t("pushHereOn"))}</button>
+          <button id="profile-push-off" type="button" onclick="disablePushTapped()" aria-pressed="${off}" class="tap rounded-xl border text-sm font-bold ${off?"bg-emerald-950 text-[#00f59b] border-[#00f59b]/60":"seg-off"}">${escHtml(t("pushHereOff"))}</button>
+        </div>
+        <p class="text-xs text-slate-400 mt-2">${escHtml(t("pushBrowserHelp"))}</p>
+        <p class="text-xs text-slate-400 mt-1">${escHtml(t("pushHelp"))}</p>
+        ${pref==="Email"?`<p class="text-xs text-amber-300 mt-1">${escHtml(t("pushEmailOnlyHint"))}</p>`:pref==="Push"&&!on?`<p class="text-xs text-amber-300 mt-1">${escHtml(t("pushPreferenceWarning"))}</p>`:""}
+      </div>`;
     }
-    function renderProfilePushState() {const el=byId("profile-push-state"),select=byId("prof-notify-pref");if(el)el.innerHTML=profilePushStateHtml(select?select.value:(currentUser&&currentUser.notifyPref)||"Both");}
+    function renderProfilePushState() {
+      const el=byId("profile-push-state"),select=byId("prof-notify-pref");
+      if(!el)return;
+      const focused=document.activeElement&&document.activeElement.id;
+      el.innerHTML=profilePushStateHtml(select?select.value:(currentUser&&currentUser.notifyPref)||"Both");
+      if(focused==="profile-push-on"||focused==="profile-push-off"){const button=byId(focused);if(button&&!button.disabled)try{button.focus({preventScroll:true});}catch(e){button.focus();}}
+    }
 
     (function initPwaManifest() {
       try {
@@ -3159,36 +3284,128 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     window.addEventListener("beforeinstallprompt", function(e) { e.preventDefault(); deferredPwaPrompt = e; });
     window.addEventListener("appinstalled", function() { deferredPwaPrompt = null; applyThemeAndLanguageUI(); });
 
-    // Starts push once per page, and keeps this phone linked to whoever is logged in now
-    // (switching accounts re-links it; logging out unlinks it).
-    let oneSignalStarting = false;
-    function initOneSignalSdkIfConfigured() {
+    // One browser profile shares its session and push subscription across tabs.
+    // Re-read the current session before SDK work so a sleeping old tab cannot
+    // relink the subscription to the account that just signed out.
+    function syncPushAuthFromStorage() {
+      if (authStorageSessionOnly) return false;
+      let raw, saved;
+      try { raw = localStorage.getItem("soccer_user"); } catch (e) { return false; }
+      try { saved = JSON.parse(raw || "null"); } catch (e) { saved = null; }
+      if (!saved || !saved.email || !saved.pin) saved = null;
+      const savedEmail = saved ? String(saved.email).toLowerCase().trim() : "";
+      if (savedEmail === myEmail() && String(saved && saved.pin || "") === String(currentUser && currentUser.pin || "")) {
+        if (currentUser && saved) currentUser = Object.assign({}, currentUser, saved, { pushExternalId: validPushExternalId(saved.pushExternalId) });
+        return false;
+      }
+      resetFinalHourState(); resetSetupUi();
+      authEpoch++; oneSignalChoiceRevision++; oneSignalActionBusy = false;
+      pushVaultState = null; adminSettingsDraft = {};
+      Object.keys(pendingGameChanges).forEach(function(k) { delete pendingGameChanges[k]; });
+      currentUser = saved;
+      appData = JSON.parse(JSON.stringify(EMPTY_APP));
+      closeModal(); renderAuthBar(); applyThemeAndLanguageUI(); renderCurrentTab();
+      if (currentUser) setTimeout(function() { syncFromBackend(true); }, 0);
+      return true;
+    }
+    function pushAccountMatches(epoch, email, externalId) {
+      return epoch === authEpoch && email === myEmail() && externalId === currentPushExternalId() && storedSessionMatchesCurrentUser();
+    }
+    function onOneSignalSubscriptionChange() {
+      renderProfilePushState();
+      const sub = oneSignalSdk && oneSignalSdk.User && oneSignalSdk.User.PushSubscription;
+      if (pushBrowserPreference() === "off" && sub && sub.optedIn === true) initOneSignalSdkIfConfigured();
+    }
+    function onOneSignalUserChange() {
+      const actual = oneSignalSdk && oneSignalSdk.User && String(oneSignalSdk.User.externalId || "");
+      if (actual !== currentPushExternalId()) { oneSignalLinkedAs = ""; initOneSignalSdkIfConfigured(); }
+      renderProfilePushState();
+    }
+    function ensureOneSignalSdk() {
+      if (oneSignalInitialized && oneSignalSdk) return Promise.resolve(oneSignalSdk);
+      if (oneSignalInitPromise) return oneSignalInitPromise;
       const appId = appData.pushConfigured ? appData.oneSignalAppId : "";
-      const who = currentUser && currentUser.email ? currentUser.email.toLowerCase().trim() : "";
-      if (!appId || !who || (oneSignalInitialized && oneSignalLinkedAs === who) || oneSignalStarting) return;
+      if (!appId || typeof Notification === "undefined" || (devicePlatform() === "ios" && !isStandalone())) return Promise.resolve(null);
       oneSignalStarting = true;
-      try {
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        window.OneSignalDeferred.push(async function(OneSignal) {
-          try {
-            if (!oneSignalInitialized) {
+      oneSignalInitPromise = new Promise(function(resolve) {
+        try {
+          window.OneSignalDeferred = window.OneSignalDeferred || [];
+          window.OneSignalDeferred.push(async function(OneSignal) {
+            try {
               await OneSignal.init({ appId: appId, serviceWorkerPath: "/soccer/OneSignalSDKWorker.js", serviceWorkerParam: { scope: "/soccer/" }, allowLocalhostAsSecureOrigin: true });
-              oneSignalInitialized = true; oneSignalSdk = OneSignal;
-              OneSignal.User.PushSubscription.addEventListener("change",renderProfilePushState);
-              OneSignal.Notifications.addEventListener("permissionChange",renderProfilePushState);
-            }
-            const now = currentUser && currentUser.email ? currentUser.email.toLowerCase().trim() : "";
-            if (now && now !== oneSignalLinkedAs) { const epoch=authEpoch; await OneSignal.login(now); if(epoch===authEpoch && myEmail()===now)oneSignalLinkedAs=now; else {await OneSignal.logout();oneSignalLinkedAs="";} }
-            renderProfilePushState();
-          } finally { oneSignalStarting = false; }
-        });
-      } catch (e) { oneSignalStarting = false; }
+              oneSignalInitialized = true; oneSignalSdk = OneSignal; oneSignalIssue = false;
+              OneSignal.User.PushSubscription.addEventListener("change", onOneSignalSubscriptionChange);
+              OneSignal.Notifications.addEventListener("permissionChange", onOneSignalSubscriptionChange);
+              if (OneSignal.User.addEventListener) OneSignal.User.addEventListener("change", onOneSignalUserChange);
+              resolve(OneSignal);
+            } catch (e) { oneSignalIssue = true; resolve(null); }
+            finally { oneSignalStarting = false; renderProfilePushState(); }
+          });
+        } catch (e) { oneSignalIssue = true; oneSignalStarting = false; resolve(null); }
+      }).then(function(sdk) { if (!sdk) oneSignalInitPromise = null; return sdk; });
+      return oneSignalInitPromise;
     }
-    function unlinkOneSignal() {
-      if (!oneSignalInitialized || !oneSignalLinkedAs) return;
-      oneSignalLinkedAs = "";
-      try { window.OneSignalDeferred.push(async function(OneSignal) { try { await OneSignal.logout(); } catch (e) {} }); } catch (e) {}
+    async function reconcileOneSignalIdentity(sdk) {
+      for (let attempt = 0; attempt < 8; attempt++) {
+        syncPushAuthFromStorage();
+        const epoch = authEpoch, email = myEmail(), desired = currentPushExternalId();
+        const actual = String(sdk.User.externalId || oneSignalLinkedAs || "");
+        if (actual && actual !== desired) {
+          oneSignalLinkedAs = "";
+          await sdk.logout();
+          syncPushAuthFromStorage();
+          if (!pushAccountMatches(epoch, email, desired)) continue;
+        }
+        if (desired && oneSignalLinkedAs !== desired) {
+          await sdk.login(desired);
+          oneSignalLinkedAs = desired;
+          syncPushAuthFromStorage();
+          if (!pushAccountMatches(epoch, email, desired)) continue;
+        } else if (!desired) oneSignalLinkedAs = "";
+        const sub = sdk.User.PushSubscription;
+        if (pushBrowserPreference() === "off" && sub.optedIn !== false) await sub.optOut();
+        syncPushAuthFromStorage();
+        if (pushAccountMatches(epoch, email, desired)) return true;
+      }
+      throw new Error("Notification account changed during setup.");
     }
+    function queueOneSignalOperation(action) {
+      // Start initialization now so logout can finish even after appData is cleared.
+      const ready = ensureOneSignalSdk();
+      const work = oneSignalOperationTail.catch(function() {}).then(async function() {
+        const sdk = await ready;
+        if (!sdk) return false;
+        const apply = async function() {
+          await reconcileOneSignalIdentity(sdk);
+          if (action) await action(sdk);
+          await reconcileOneSignalIdentity(sdk);
+          oneSignalIssue = false; renderProfilePushState();
+          return true;
+        };
+        // When available, the Web Lock also serializes identity operations from
+        // other tabs of this origin. Other browsers remain independent devices.
+        if (navigator.locks && typeof navigator.locks.request === "function") return navigator.locks.request("pitch-pulse-push-identity-v1", apply);
+        return apply();
+      });
+      oneSignalOperationTail = work.catch(function() { oneSignalIssue = true; renderProfilePushState(); return false; });
+      return oneSignalOperationTail;
+    }
+    function initOneSignalSdkIfConfigured() { return queueOneSignalOperation(); }
+    function unlinkOneSignal() { return queueOneSignalOperation(); }
+    window.addEventListener("storage", function(e) {
+      if (e.key === "soccer_user" || e.key === null) syncPushAuthFromStorage();
+      if (e.key === PUSH_BROWSER_PREF_KEY || e.key === PUSH_BROWSER_REVISION_KEY || e.key === null) {
+        oneSignalChoiceSessionOnly = false; oneSignalChoiceRevision++; oneSignalActionBusy = false;
+        oneSignalBrowserChoice = lsGet(PUSH_BROWSER_PREF_KEY, "");
+      }
+      if (e.key === "soccer_user" || e.key === PUSH_BROWSER_PREF_KEY || e.key === PUSH_BROWSER_REVISION_KEY || e.key === null) {
+        initOneSignalSdkIfConfigured(); renderProfilePushState();
+      }
+    });
+    document.addEventListener("visibilitychange", function() {
+      if (document.visibilityState !== "visible") return;
+      syncPushAuthFromStorage(); initOneSignalSdkIfConfigured(); renderProfilePushState();
+    });
 
     // iPhones only allow web notifications from the Home Screen app, so explain that first.
     function enablePushTapped() {
@@ -3204,18 +3421,50 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       subscribeCurrentDeviceToPush();
     }
     async function subscribeCurrentDeviceToPush() {
+      if(oneSignalActionBusy)return;
+      syncPushAuthFromStorage();
       if(!appData.pushConfigured || !appData.oneSignalAppId){showToast(t("pushServerNotReady"));return;}
+      if(!currentPushExternalId()){
+        showToast(t("pushIdentityPending"));
+        const fresh=await apiPost({action:"getLeagueData"},{silent:true});
+        if(fresh&&fresh.success)acceptOwnPushState(fresh);else if(fresh&&fresh.authError)logout(true);
+        return;
+      }
       if(!oneSignalSdk || !oneSignalInitialized){initOneSignalSdkIfConfigured();showToast(t("pushChecking"));return;}
+      const epoch=authEpoch,email=myEmail(),externalId=currentPushExternalId(),revision=++oneSignalChoiceRevision;
+      const previousChoiceStamp=lsGet(PUSH_BROWSER_REVISION_KEY,"");
+      oneSignalActionBusy=true; oneSignalIssue=false;
       try {
-        const sdk=oneSignalSdk, epoch=authEpoch, who=myEmail();
+        const sdk=oneSignalSdk;
         if(!sdk.Notifications.isPushSupported()){showToast(t("pushUnavailable"),true);return;}
-        if(who && oneSignalLinkedAs!==who){await sdk.login(who);if(epoch!==authEpoch)return;oneSignalLinkedAs=who;}
+        // Keep this call before the first await: Safari requires the user's tap.
+        // No server request or SDK login is awaited before the native prompt.
         await sdk.Notifications.requestPermission();
-        if(epoch!==authEpoch)return;
-        if(sdk.Notifications.permission===true)await sdk.User.PushSubscription.optIn();
+        syncPushAuthFromStorage();
+        if(!pushAccountMatches(epoch,email,externalId) || revision!==oneSignalChoiceRevision || lsGet(PUSH_BROWSER_REVISION_KEY,"")!==previousChoiceStamp){initOneSignalSdkIfConfigured();return;}
+        if(sdk.Notifications.permission===true){
+          setPushBrowserPreference("on");
+          await queueOneSignalOperation(async function(activeSdk){
+            if(pushAccountMatches(epoch,email,externalId) && revision===oneSignalChoiceRevision && pushBrowserPreference()!=="off")await activeSdk.User.PushSubscription.optIn();
+          });
+        }
+        if(!pushAccountMatches(epoch,email,externalId) || revision!==oneSignalChoiceRevision)return;
         renderProfilePushState();
-        const state=pushDeviceState();showToast(t(state==="ready"?"pushOn":state==="blocked"?"pushDenied":"pushPermissionOnly"),state==="blocked");
-      }catch(e){showToast(t("pushUnavailable"),true);renderProfilePushState();}
+        const state=pushDeviceState();showToast(t(state==="ready"?"pushOn":state==="blocked"?"pushDenied":state==="error"?"pushSetupError":"pushPermissionOnly"),state==="blocked"||state==="error");
+      }catch(e){oneSignalIssue=true;if(pushAccountMatches(epoch,email,externalId))showToast(t("pushSetupError"),true);}
+      finally{if(revision===oneSignalChoiceRevision)oneSignalActionBusy=false;renderProfilePushState();}
+    }
+    async function disablePushTapped() {
+      const revision=++oneSignalChoiceRevision;
+      setPushBrowserPreference("off");
+      oneSignalActionBusy=true; oneSignalIssue=false; renderProfilePushState();
+      try {
+        const completed=await queueOneSignalOperation();
+        if(revision!==oneSignalChoiceRevision)return;
+        const sub=oneSignalSdk&&oneSignalSdk.User&&oneSignalSdk.User.PushSubscription;
+        if(completed&&sub&&sub.optedIn===false)showToast(t("pushOff"));
+        else showToast(t("pushSetupError"),true);
+      }finally{if(revision===oneSignalChoiceRevision)oneSignalActionBusy=false;renderProfilePushState();}
     }
 
 
@@ -5461,7 +5710,6 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
               <option value="Email" ${curPref === "Email" ? "selected" : ""}>${escHtml(t("notifyEmail"))}</option>
             </select></label>
           <div id="profile-push-state">${profilePushStateHtml(curPref)}</div>
-          <button type="button" onclick="enablePushTapped()" class="tap w-full px-4 rounded-2xl bg-emerald-950 border border-[#00f59b]/40 text-[#00f59b] text-sm font-bold text-left inline-flex items-center gap-2">${ic("bell", "w-5 h-5")}${escHtml(t("enablePushHere"))}</button>
           ${isSys ? "" : `<label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("awayUntil"))}</span>
             <input id="prof-away-input" type="date" min="${getTodayIso()}" value="${escHtml(currentUser.awayUntil || "")}" class="tap mt-1 w-full px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
             <span class="block text-xs text-slate-400 mt-1">${escHtml(t("awayHelp"))}</span></label>`}
@@ -5500,10 +5748,12 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       resetSetupUi();
       const u = currentUser;
       authEpoch++; pushVaultState=null; adminSettingsDraft={}; Object.keys(pendingGameChanges).forEach(function(k){delete pendingGameChanges[k];});
+      oneSignalChoiceRevision++; oneSignalActionBusy=false;
       if (u && !silent) apiPost({ action: "logout", requesterEmail: u.email, requesterPin: u.pin }, { silent: true, noAuth: true });
-      unlinkOneSignal(); // this phone stops getting that player's pushes
-      lsDel("soccer_user"); lsDel("soccer_cached_data_v54"); lsDel("soccer_cached_data_v51");
       currentUser = null;
+      persistCurrentUser();
+      unlinkOneSignal(); // Unlink this browser/app; other devices retain their subscriptions.
+      lsDel("soccer_cached_data_v54"); lsDel("soccer_cached_data_v51");
       appData = JSON.parse(JSON.stringify(EMPTY_APP));
       closeModal();
       renderAuthBar();
@@ -5567,7 +5817,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
         setBusyButton("l-btn", false);
         if (res && res.success) {
           authEpoch++; currentUser = res.user;
-          lsSet("soccer_user", JSON.stringify(currentUser));
+          persistCurrentUser();
           setAppData(res.appData || {});
           closeModal(); applyThemeAndLanguageUI(); renderAuthBar(); switchTab("upcoming");
           fetchWeatherForAllGamesAsync(); initOneSignalSdkIfConfigured();
@@ -5616,7 +5866,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
         if (res && res.success) {
           pendingInvite = null;
           try { history.replaceState(history.state, "", location.pathname); } catch (e) {}
-          authEpoch++; currentUser = res.user; lsSet("soccer_user", JSON.stringify(currentUser));
+          authEpoch++; currentUser = res.user; persistCurrentUser();
           setAppData(res.appData || {});
           closeModal(); applyThemeAndLanguageUI(); renderAuthBar(); switchTab("upcoming");
           showToast(t("welcome", { name: fullName.split(" ")[0] }));
