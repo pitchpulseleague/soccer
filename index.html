@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Pitch Pulse 5.5.3: private push identities and independent notification controls for each browser/app. -->
+<!-- Pitch Pulse 5.5.4: responsive forms and readable narrow-screen layouts. Compatible with Code.gs 5.5.3. -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover, interactive-widget=resizes-content">
@@ -1710,6 +1710,165 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
 }
 
   </style>
+
+  <style id="responsive-forms-v554">
+/* Layout depends on available content space, not a phone's name or orientation.
+ * Keep native date inputs, user zoom, all three skins, and existing motion rules.
+ * Reflow controls rather than hiding horizontal overflow or reducing text size.
+ */
+body :is(#sheet-panel, #view-container) :is(label, fieldset, .grid > *) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+body :is(#sheet-panel, #view-container) :is(input, select, textarea) {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+body .form-field { display: block; min-width: 0; }
+body .form-field > span { overflow-wrap: anywhere; }
+body :is(#sheet-panel, #view-container) input[type="date"] {
+  display: block;
+  width: 100%;
+  inline-size: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 48px;
+  padding-inline: 12px;
+  font-size: max(16px, 1rem);
+}
+body :is(#sheet-panel, #view-container) input[type="date"]::-webkit-date-and-time-value {
+  min-width: 0;
+  text-align: start;
+}
+body :is(#sheet-panel, #view-container) select,
+body :is(#sheet-panel, #view-container) textarea {
+  font-size: max(16px, 1rem);
+}
+body .date-pair,
+body .match-date-time,
+body .form-pair,
+body .compact-pair,
+body .action-pair,
+body .teams-editor,
+body .position-options {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+}
+/* Auto-fit also responds to larger default text. A date gets at least 13.25rem
+ * before it shares a row. A single field can always use 100% of a small sheet.
+ */
+@supports (width: min(100%, 1rem)) {
+  body .date-pair { grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.25rem), 1fr)); }
+  body #sheet-panel .match-date-time { grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+  body .form-pair { grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); }
+  body .compact-pair { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
+  body .action-pair { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+  body .teams-editor { grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
+  body .position-options { grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
+}
+body .time-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) minmax(5rem, .9fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+body .time-controls > select { width: 100%; min-height: 48px; padding-inline: 8px; }
+body .time-controls > span { text-align: center; }
+@container sheet (max-width: 18rem) {
+  body .time-controls { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  body .time-controls > select:last-child { grid-column: 1 / -1; }
+}
+body .weekday-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+body .weekday-options > label { min-height: 48px; padding: 6px 2px; gap: 2px; }
+@container sheet (min-width: 20.75rem) {
+  body .weekday-options { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+body .pin-entry { display: grid; grid-template-columns: repeat(3, minmax(44px, 46px)); justify-content: center; gap: 6px; }
+body #sheet-panel .pin-entry > .pin-box { width: 100%; min-width: 44px; max-width: 46px; }
+@container sheet (min-width: 284px) {
+  body .pin-entry { grid-template-columns: repeat(6, minmax(44px, 46px)); gap: 4px; justify-content: space-between; }
+}
+@container sheet (min-width: 306px) {
+  body .pin-entry { gap: 6px; }
+}
+body .sheet-heading { display: grid; grid-template-columns: 40px minmax(0, 1fr) 44px; align-items: center; gap: 8px 12px; }
+body .sheet-heading--plain { grid-template-columns: minmax(0, 1fr) 44px; }
+body .sheet-heading > h3 { min-width: 0; overflow-wrap: anywhere; }
+body .sheet-heading > .sheet-subtitle { grid-column: 1 / -1; margin: 0; line-height: 1.5; overflow-wrap: anywhere; }
+body .sheet-close { width: 44px; min-width: 44px; min-height: 44px; align-self: start; }
+body .sheet-icon { width: 40px; height: 40px; }
+body :is(#sheet-panel, .setup-body) button:not(.info-btn):not(.sheet-close):not(.map-style-switch button):not(.score-team button) {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  padding-block: 8px;
+}
+body .input-action-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; min-width: 0; }
+body .input-action-row > :is(input, select) { flex: 1 1 12rem; width: 100%; }
+body .input-action-row > button { flex: 1 1 auto; max-width: 100%; min-height: 44px; }
+body #sheet-panel .score-team > div > button { min-width: 44px; min-inline-size: 44px; flex-shrink: 0; }
+body #sheet-panel .score-team input { width: max(44px, 3ch); min-inline-size: 44px; }
+body .career-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+body .career-form { flex-wrap: wrap; }
+body .career-form > div { flex-wrap: wrap; }
+@container sheet (min-width: 25rem) {
+  body .career-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+body .feature-group { container-type: inline-size; container-name: features; min-width: 0; }
+body .feature-row { display: grid; grid-template-columns: 36px minmax(0, 1fr) 44px 55px; align-items: center; }
+body .feature-symbol { flex-shrink: 0; }
+body .feature-copy { overflow-wrap: anywhere; }
+body .feature-toggle { justify-self: end; }
+body .feature-guests { min-width: 0; }
+@container features (max-width: 23rem) {
+  body .feature-row { grid-template-columns: minmax(0, 1fr) 44px 55px; gap: 4px 8px; padding: 10px 12px; }
+  body .feature-row > .feature-symbol,
+  body .feature-guests .feature-symbol { display: none; }
+  body .feature-row > .feature-copy { grid-column: 1 / -1; grid-row: 1; }
+  body .feature-row > .info-btn { grid-column: 2; grid-row: 2; }
+  body .feature-row > .feature-toggle { grid-column: 3; grid-row: 2; }
+}
+body .history-match-header { flex-wrap: wrap; align-items: start; }
+body .history-match-main { flex: 1 1 13rem; }
+body .history-score-meta { flex: 0 1 13rem; min-width: 0; max-width: 100%; margin-inline-start: auto; }
+body .history-score-names { white-space: normal; overflow-wrap: anywhere; }
+body .announcement-text,
+body #how-we-play-body,
+body #toast-root > div > span { min-width: 0; overflow-wrap: anywhere; }
+body :is(#sheet-panel, .setup-body) :is(p, h3, h4) { overflow-wrap: anywhere; }
+body .roster-person { flex-wrap: wrap; }
+body .roster-person-name { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+@container match-side (max-width: 22.5rem) {
+  body .roster-person-name { flex-basis: 100%; }
+}
+body #info-pop {
+  max-height: calc(var(--pp-visual-height, var(--pp-viewport-height, 100vh)) - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 359px) {
+  body #sheet-panel { padding-inline: 14px; }
+  body #sheet-panel .sheet-grabber { margin-inline: -14px; }
+}
+/* Conservative fallbacks: small devices never depend on container-query support. */
+@supports not (container-type: inline-size) {
+  body .score-entry { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  body .score-divider { display: none; }
+  body .time-controls { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  body .time-controls > select:last-child { grid-column: 1 / -1; }
+  body .feature-row { grid-template-columns: minmax(0, 1fr) 44px 55px; }
+  body .feature-row > .feature-symbol { display: none; }
+  body .feature-row > .feature-copy { grid-column: 1 / -1; }
+  body .feature-row > .info-btn { grid-column: 2; }
+  body .feature-row > .feature-toggle { grid-column: 3; }
+}
+  </style>
+
   <script>
     // Safety net: if the page ever shows a class the pre-built block above doesn't cover
     // (for example one added to this file later), Tailwind's CDN is loaded once to fill it in.
@@ -2436,7 +2595,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     const SITE_URL = "https://pitchpulseleague.github.io/soccer/";
     const SYSTEM_ADMIN_EMAIL = "pitchpulseleague@gmail.com";
     const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "ralph@me.com"];
-    const APP_VERSION = "5.5.3";
+    const APP_VERSION = "5.5.4";
 
     const ASSET_VERSION = "5.0";
     const ICON_192_FILE = "pitch-pulse-01-classic-stitched-192.png?v=" + ASSET_VERSION;
@@ -2944,10 +3103,10 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       root.innerHTML = `<div role="${isError ? "alert" : "status"}" class="pointer-events-auto max-w-md w-full ${isError ? "toast-err" : "toast-ok"} toast-in rounded-2xl pl-3.5 pr-2 py-2.5 text-sm font-semibold shadow-2xl flex items-center gap-2.5">
         ${ic(isError ? "alert" : "checkCircle", "w-5 h-5 shrink-0")}
         <span class="flex-1 py-0.5">${escHtml(msg)}</span>
-        <button type="button" onclick="hideToast()" class="shrink-0 w-9 h-9 rounded-lg opacity-80 inline-flex items-center justify-center" aria-label="${escHtml(t("closeBtn"))}">${ic("x", "w-4 h-4")}</button></div>`;
+        <button type="button" onclick="hideToast()" class="shrink-0 w-11 min-h-[44px] rounded-lg opacity-80 inline-flex items-center justify-center" aria-label="${escHtml(t("closeBtn"))}">${ic("x", "w-4 h-4")}</button></div>`;
       // a sheet covers the bottom of the screen, so show the toast at the top while one is open
       const sheetOpen = byId("modal-root") && byId("modal-root").innerHTML !== "";
-      root.style.top = sheetOpen ? "calc(12px + env(safe-area-inset-top))" : "auto";
+      root.style.top = sheetOpen ? "calc(var(--pp-visual-top, 0px) + 12px + env(safe-area-inset-top))" : "auto";
       root.style.bottom = sheetOpen ? "auto" : "calc(86px + env(safe-area-inset-bottom))";
       clearTimeout(toastTimer);
       toastTimer = setTimeout(hideToast, isError ? 9000 : 4200);
@@ -3070,13 +3229,14 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       scheduleRsvpAttention();
     }
     function closeBtn() {
-      return `<button type="button" onclick="closeModal()" class="tap w-11 shrink-0 rounded-full bg-slate-800 text-slate-300 inline-flex items-center justify-center" aria-label="${escHtml(t("closeBtn"))}">${ic("x", "w-5 h-5", 2.4)}</button>`;
+      return `<button type="button" onclick="closeModal()" class="sheet-close tap w-11 shrink-0 rounded-full bg-slate-800 text-slate-300 inline-flex items-center justify-center" aria-label="${escHtml(t("closeBtn"))}">${ic("x", "w-5 h-5", 2.4)}</button>`;
     }
     function sheetHeader(title, sub, icon) {
-      return `<div class="flex items-start justify-between gap-3 mb-4">
-        <div class="min-w-0 flex items-start gap-3">${icon ? `<span class="mt-0.5 w-10 h-10 shrink-0 rounded-2xl bg-emerald-950 text-[#00f59b] inline-flex items-center justify-center">${ic(icon, "w-5 h-5")}</span>` : ""}
-          <div class="min-w-0"><h3 class="text-xl font-extrabold text-white leading-snug">${title}</h3>${sub ? `<p class="text-sm text-slate-400 mt-0.5">${sub}</p>` : ""}</div></div>
+      return `<div class="sheet-heading ${icon ? "" : "sheet-heading--plain"} mb-4">
+        ${icon ? `<span class="sheet-icon rounded-2xl bg-emerald-950 text-[#00f59b] inline-flex items-center justify-center" aria-hidden="true">${ic(icon, "w-5 h-5")}</span>` : ""}
+        <h3 class="text-xl font-extrabold text-white leading-snug">${title}</h3>
         ${closeBtn()}
+        ${sub ? `<p class="sheet-subtitle text-sm text-slate-400">${sub}</p>` : ""}
       </div>`;
     }
     let pendingConfirm = null;
@@ -3090,7 +3250,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
           ${iconHtml}
           <h3 class="text-lg font-extrabold text-white mb-1.5">${escHtml(opts.title)}</h3>
           ${opts.body ? `<p class="text-sm text-slate-300 mb-4 leading-relaxed">${escHtml(opts.body)}</p>` : ""}
-          <div class="grid grid-cols-2 gap-2.5 mt-4">
+          <div class="action-pair grid grid-cols-2 gap-2.5 mt-4">
             <button type="button" onclick="closeModal(); pendingConfirm = null;" class="tap-lg rounded-2xl bg-slate-800 text-slate-200 font-bold text-base">${escHtml(opts.cancelLabel || t("cancelBtn"))}</button>
             <button type="button" id="confirm-ok-btn" onclick="runPendingConfirm()" class="tap-lg rounded-2xl font-extrabold text-base ${opts.danger ? "bg-rose-500 text-white" : "neon-btn"}">${escHtml(opts.okLabel || t("okBtn"))}</button>
           </div>
@@ -3151,12 +3311,19 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     function positionInfoPop() {
       const pop = byId("info-pop"), btn = infoAnchor;
       if (!pop || !btn) return;
-      const r = btn.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
-      if (!btn.isConnected || r.bottom < 0 || r.top > vh) { hideInfoPop(); return; }
+      const viewport = window.visualViewport;
+      const vw = viewport && viewport.width > 0 ? viewport.width : document.documentElement.clientWidth;
+      const vh = viewport && viewport.height > 0 ? viewport.height : window.innerHeight;
+      const ox = viewport ? viewport.offsetLeft || 0 : 0, oy = viewport ? viewport.offsetTop || 0 : 0;
+      const r = btn.getBoundingClientRect();
+      if (!btn.isConnected || r.bottom < oy || r.top > oy + vh || r.right < ox || r.left > ox + vw) { hideInfoPop(); return; }
+      pop.style.maxWidth = Math.max(0, Math.min(320, vw - 24)) + "px";
+      pop.style.maxHeight = Math.max(0, vh - 24) + "px";
       const pw = pop.offsetWidth, ph = pop.offsetHeight;
-      const left = Math.max(12, Math.min(r.left + r.width / 2 - pw / 2, vw - pw - 12));
+      const left = Math.max(ox + 12, Math.min(r.left + r.width / 2 - pw / 2, ox + vw - pw - 12));
       let top = r.bottom + 4;
-      if (top + ph > vh - 12) top = Math.max(12, r.top - ph - 4);
+      if (top + ph > oy + vh - 12) top = r.top - ph - 4;
+      top = Math.max(oy + 12, Math.min(top, oy + vh - ph - 12));
       pop.style.left = left + "px"; pop.style.top = top + "px";
     }
     function hideInfoPop() {
@@ -3170,6 +3337,10 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     window.addEventListener("scroll", function() { if (byId("info-pop")) positionInfoPop(); }, { passive: true });
     window.addEventListener("resize", function() { if (byId("info-pop")) positionInfoPop(); });
     document.addEventListener("scroll", function(e) { if (byId("info-pop") && e.target && e.target.id === "sheet-panel") positionInfoPop(); }, { passive: true, capture: true });
+    if (window.visualViewport && window.visualViewport.addEventListener) {
+      window.visualViewport.addEventListener("resize", positionInfoPop, { passive: true });
+      window.visualViewport.addEventListener("scroll", positionInfoPop, { passive: true });
+    }
 
     // =========================================================================
     // INSTALLABLE PWA & ONESIGNAL PUSH
@@ -5010,7 +5181,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
             <span class="text-sm font-bold text-white truncate">${escHtml(b.senderName)} <span class="text-xs font-normal text-slate-400">· ${escHtml(b.timestamp || "")}</span></span>
             ${isAdmin ? `<button type="button" onclick="toggleBlastVisibility('${escJsArg(b.blastId)}', ${!b.hidden})" class="tap px-3 rounded-xl bg-slate-800 text-xs font-bold text-slate-200 shrink-0">${escHtml(b.hidden ? t("show") : t("hide"))}</button>` : ""}
           </div>
-          <div class="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">${escHtml(b.message)}</div></div>`;
+          <div class="announcement-text text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">${escHtml(b.message)}</div></div>`;
       };
       return `<section class="mt-4">
         <h3 class="text-sm font-extrabold uppercase tracking-wide text-[#00f59b] mb-2 inline-flex items-center gap-1.5">${ic("megaphone", "w-4 h-4")}${escHtml(t("announcements"))}</h3>
@@ -5038,7 +5209,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
         const pos = r.playPosition || effectivePos(r.position, r.playGK, game);
         const gear = (fBall && r.bringBall ? ic("ball", "w-3.5 h-3.5 text-emerald-300") : "") + (fPin && r.bringPinnies ? ic("vest", "w-3.5 h-3.5 text-emerald-300") : "") + (fGk && r.playGK ? ic("glove", "w-3.5 h-3.5 text-amber-300") : "");
         const inner = `${renderAvatarBadge(r.fullName, teamsOn ? pos : "")}
-          <span class="min-w-0 flex-1"><span class="flex items-center gap-1 text-sm font-bold text-white min-w-0"><span class="truncate">${i !== undefined ? (i + 1) + ". " : ""}${escHtml(r.fullName)}</span>${teamsOn ? ` <span class="text-[11px] font-mono text-slate-400 shrink-0">${escHtml(pos)}</span>` : ""}${gear ? `<span class="inline-flex gap-0.5 shrink-0">${gear}</span>` : ""}</span>
+          <span class="min-w-0 flex-1"><span class="roster-person flex items-center gap-1 text-sm font-bold text-white min-w-0"><span class="roster-person-name">${i !== undefined ? (i + 1) + ". " : ""}${escHtml(r.fullName)}</span>${teamsOn ? ` <span class="text-[11px] font-mono text-slate-400 shrink-0">${escHtml(pos)}</span>` : ""}${gear ? `<span class="inline-flex gap-0.5 shrink-0">${gear}</span>` : ""}</span>
           ${r.needsReconfirm ? `<span class="block text-xs text-amber-300">${escHtml(t("awaitingReconfirm"))}</span>` : ""}${r.attendanceStatus === "NoShow" ? `<span class="block text-xs text-rose-300">${escHtml(t("noShowLabel"))}</span>` : ""}
           ${r.guestNames && r.guestNames.length ? `<span class="block text-xs text-emerald-300">+${r.guestNames.length}: ${escHtml(r.guestNames.join(", "))}</span>` : ""}
           ${arrival && r.availabilityNote ? `<span class="block text-xs text-amber-300 truncate">${escHtml(timingLabel(r.availabilityNote))}</span>` : ""}</span>`;
@@ -5386,7 +5557,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
           <button type="button" id="tm-defaults" onclick="generateTeams('${id}','defaults')" class="tap-lg rounded-2xl bg-[#111c16] border border-emerald-900/60 text-white font-bold text-base inline-flex items-center justify-center gap-2">${ic("home", "w-5 h-5 text-emerald-300")}${escHtml(t("useDefaults"))}</button>
           <p class="text-xs text-slate-400 leading-relaxed">${escHtml(t("teamsHelp", { n: withDefault, total: yesPlayers.length }))}</p>
         </div>
-        ${has ? `<p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">${escHtml(t("tapToMove"))}</p><div class="grid grid-cols-2 gap-2">${list("white")}${list("dark")}</div>` : `<p class="text-sm text-slate-400">${escHtml(t("noLineupYet"))}</p>`}
+        ${has ? `<p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">${escHtml(t("tapToMove"))}</p><div class="teams-editor grid grid-cols-2 gap-2">${list("white")}${list("dark")}</div>` : `<p class="text-sm text-slate-400">${escHtml(t("noLineupYet"))}</p>`}
         <button type="button" onclick="closeModal()" class="tap-lg w-full mt-4 rounded-2xl bg-slate-800 text-slate-200 font-bold text-base">${escHtml(t("doneBtn"))}</button>
       `, "max-w-lg");
     }
@@ -5418,7 +5589,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       renderSheetModal(`${sheetHeader(escHtml(t("toolAttendance")),escHtml(g.Title)+" · "+escHtml(fmtDate(g.Date)),"clipboard")}
         <p class="text-sm text-slate-400 mb-3">${escHtml(t("attendanceHelp"))}</p>
         <label class="text-xs font-bold uppercase tracking-wide text-slate-400 block mb-1.5" for="walkin-select">${escHtml(t("addWalkIn"))}</label>
-        <div class="flex gap-2 mb-1"><select id="walkin-select" class="tap flex-1 min-w-0 px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"><option value="">${escHtml(t("pickPlayer"))}</option>${others.map(function(p){return `<option value="${escHtml(p.key)}">${escHtml(p.fullName)}</option>`;}).join("")}</select><button type="button" id="walkin-add" onclick="submitAttendanceChange('${id}',byId('walkin-select').value,'Yes','walkin-add')" class="tap px-5 rounded-2xl neon-btn text-base">${escHtml(t("addBtn"))}</button></div>
+        <div class="input-action-row mb-1"><select id="walkin-select" class="tap flex-1 min-w-0 px-3 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"><option value="">${escHtml(t("pickPlayer"))}</option>${others.map(function(p){return `<option value="${escHtml(p.key)}">${escHtml(p.fullName)}</option>`;}).join("")}</select><button type="button" id="walkin-add" onclick="submitAttendanceChange('${id}',byId('walkin-select').value,'Yes','walkin-add')" class="tap px-5 rounded-2xl neon-btn text-base">${escHtml(t("addBtn"))}</button></div>
         ${g.yesCount>=g.MaxCap?`<p class="text-xs text-amber-300 mb-2">${escHtml(t("walkInOverCap"))}</p>`:""}
         ${!started?`<p class="text-xs text-slate-400 mt-2">${escHtml(t("attendanceNotStarted"))}</p>`:""}
         <h4 class="text-xs font-bold uppercase tracking-wide text-slate-400 mt-4 mb-2">${escHtml(t("playingNow",{n:playing.length}))}</h4><div class="space-y-2">${playing.map(function(r){return row(r,false);}).join("")||`<p class="text-sm text-slate-500">${escHtml(t("noneYet"))}</p>`}</div>
@@ -5574,12 +5745,12 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       if (canManage && att) tools.push(`<button type="button" onclick="openAttendanceSheet('${id}')" class="tap rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-sm font-bold inline-flex items-center justify-center gap-1.5">${ic("clipboard", "w-4 h-4")}${escHtml(t("toolAttendance"))}</button>`);
       if (canManage && scores) tools.push(`<button type="button" onclick="openScoreSheet('${id}')" class="tap rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-sm font-bold inline-flex items-center justify-center gap-1.5">${ic("trophy", "w-4 h-4")}${escHtml(g.hasScore ? t("toolScoreEdit") : t("toolScore"))}</button>`);
       return `<div id="history-game-${escHtml(g.GameID)}" class="bg-[#0b130f] p-3.5 rounded-2xl border border-emerald-950">
-        <div class="flex items-start justify-between gap-2">
-          <div class="min-w-0">
+        <div class="history-match-header flex items-start justify-between gap-2">
+          <div class="history-match-main min-w-0">
             <div class="text-sm font-extrabold text-white truncate">${escHtml(g.Title)}</div>
             <div class="text-xs text-slate-400">${escHtml(fmtDate(g.Date))} · ${escHtml(fmtTime(g.Time))} · ${escHtml(t(g.attendanceRecorded ? "verifiedN" : "signedUpN", { n: g.attendanceRecorded ? (g.verifiedAttendeeCount || 0) : (g.yesCount || yes.length) }))}</div>
           </div>
-          ${g.hasScore ? `<div class="shrink-0 text-right"><div class="text-base font-extrabold text-white whitespace-nowrap">${escHtml(g.ScoreWhite)} – ${escHtml(g.ScoreDark)}</div><div class="text-[11px] text-slate-400 whitespace-nowrap">${escHtml(teamLabel("white"))} · ${escHtml(teamLabel("dark"))}</div></div>` : (scores ? `<span class="shrink-0 text-xs font-bold text-slate-400">${escHtml(t("noScore"))}</span>` : "")}
+          ${g.hasScore ? `<div class="history-score-meta text-right"><div class="text-base font-extrabold text-white whitespace-nowrap">${escHtml(g.ScoreWhite)} – ${escHtml(g.ScoreDark)}</div><div class="history-score-names text-[11px] text-slate-400">${escHtml(teamLabel("white"))} · ${escHtml(teamLabel("dark"))}</div></div>` : (scores ? `<span class="shrink-0 text-xs font-bold text-slate-400">${escHtml(t("noScore"))}</span>` : "")}
         </div>
         <details class="mt-1.5"><summary class="tap flex items-center text-sm font-semibold text-emerald-300 cursor-pointer">${escHtml(t("whoPlayed"))}</summary>
           <p class="text-sm text-slate-300 pb-1">${escHtml(yes.map(function(r) { return r.fullName; }).join(", ")) || escHtml(t("noneWord"))}</p></details>
@@ -5633,10 +5804,10 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
           </div>
           ${closeBtn()}
         </div>
-        ${scores ? `<div class="grid grid-cols-4 gap-2 mb-3">
+        ${scores ? `<div class="career-stats grid grid-cols-4 gap-2 mb-3">
           ${stat(t("ptsShort"), prof.points || 0, "text-[#00f59b]")}${stat(t(F("featAttendance") ? "verifiedPresentShort" : "signedUpShort"), F("featAttendance") ? (prof.verifiedGamesPlayed || 0) : (prof.rsvpGamesCount || 0))}${stat(t("winPct"), winRate + "%")}${stat("★", prof.motmCount || 0, "text-amber-300")}
         </div>
-        <div class="bg-[#0b130f] p-3 rounded-2xl border border-emerald-950 mb-2 flex items-center justify-between gap-2">
+        <div class="career-form bg-[#0b130f] p-3 rounded-2xl border border-emerald-950 mb-2 flex items-center justify-between gap-2">
           <span class="text-sm font-bold text-slate-300">${escHtml(t("last5"))}</span><div class="flex gap-1">${pills || `<span class="text-sm text-slate-500 italic">${escHtml(t("noMatchesYet"))}</span>`}</div>
         </div>` : ""}
         ${reliabilityOn() ? `<div class="text-sm text-slate-400 px-1">${escHtml(reliabilityText(prof))}</div>` : ""}
@@ -5771,7 +5942,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
         <label class="block mb-3"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("emailLbl"))}</span>
           <input id="l-email" type="email" ${prefillEmail ? "" : "autofocus"} autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" enterkeyhint="next" value="${escHtml(prefillEmail || "")}" class="tap mt-1 w-full px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white"></label>
         <span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("pinLbl"))}</span>
-        <div class="flex justify-between gap-1.5 mt-1 mb-4">
+        <div class="pin-entry mt-1 mb-4">
           ${[0, 1, 2, 3, 4, 5].map(function(i) { return `<input id="pin-box-${i}" ${i === 0 && prefillEmail ? "autofocus" : ""} type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="${i === 0 ? "one-time-code" : "off"}" aria-label="${escHtml(t("pinDigit", { n: i + 1 }))}" class="pin-box" oninput="onPinInput(${i}, event)" onkeydown="onPinKey(${i}, event)" onpaste="onPinPaste(event)">`; }).join("")}
         </div>
         <button type="button" id="l-btn" onclick="doLogin()" class="tap-lg w-full rounded-2xl neon-btn text-base">${escHtml(t("loginBtn"))}</button>
@@ -5881,7 +6052,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       };
       renderSheetModal(`
         ${sheetHeader(escHtml(t("posPromptTitle")), escHtml(t("posPromptSub")), "shirt")}
-        <div class="grid grid-cols-2 gap-2">${["MID", "DEF", "FWD", "GK"].map(opt).join("")}</div>
+        <div class="position-options grid grid-cols-2 gap-2">${["MID", "DEF", "FWD", "GK"].map(opt).join("")}</div>
       `, "max-w-sm");
     }
 
@@ -5959,14 +6130,14 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
     }
     function fieldInput(id, label, value, opts) {
       opts = opts || {};
-      return `<label class="block ${opts.cls || ""}"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(label)}</span>
+      return `<label class="form-field block ${opts.cls || ""}"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(label)}</span>
         <input id="${id}" type="${opts.type || "text"}" ${opts.attrs || ""} value="${escHtml(value === undefined || value === null ? "" : value)}" class="tap mt-1 w-full px-3.5 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white">
         ${opts.help ? `<span class="block text-xs text-slate-400 mt-1">${escHtml(opts.help)}</span>` : ""}</label>`;
     }
     function timeSelects(prefix, timeStr) {
       const p = parseTimeParts(timeStr);
       const sel = "tap px-2 rounded-2xl bg-[#0b130f] border border-emerald-900 text-base text-white font-semibold";
-      return `<div class="flex items-center gap-1.5 mt-1">
+      return `<div class="time-controls mt-1">
         <select id="${prefix}-hr" class="${sel} flex-1" aria-label="${escHtml(t("hourLbl"))}">${["1","2","3","4","5","6","7","8","9","10","11","12"].map(function(h) { return `<option value="${h}" ${p.hr === h ? "selected" : ""}>${h}</option>`; }).join("")}</select>
         <span class="text-slate-400 font-bold">:</span>
         <select id="${prefix}-min" class="${sel} flex-1" aria-label="${escHtml(t("minuteLbl"))}">${["00","15","30","45"].map(function(m) { return `<option value="${m}" ${p.min === m ? "selected" : ""}>${m}</option>`; }).join("")}</select>
@@ -6028,7 +6199,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
             ${fieldInput("g-date", t("dateLbl"), g ? g.Date : nextWeekdayIso(), { type: "date" })}
             <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("kickoffLbl"))}</span>${timeSelects("g-time", g ? g.Time : "12:15 PM")}</label>
           </div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="compact-pair grid grid-cols-2 gap-2">
             ${fieldInput("g-min", t("minPlayers"), g ? g.MinThreshold : s.defaultMin, { type: "number", attrs: 'inputmode="numeric" min="2" max="60"' })}
             ${fieldInput("g-max", t("maxPlayers"), g ? g.MaxCap : s.defaultMax, { type: "number", attrs: 'inputmode="numeric" min="2" max="60"' })}
           </div>
@@ -6099,23 +6270,23 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
           ${fieldInput("rec-title", t("titleLbl"), sr ? sr.Title : t("defaultMatchTitle"), { attrs: 'maxlength="60" autocapitalize="words" placeholder="' + escHtml(t("seriesTitlePh")) + '"' })}
           <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("fieldLbl"))}</span>${fieldSelect("rec-loc", sr ? sr.LocationName : preferredFieldName())}</label>
           <fieldset><legend class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">${escHtml(t("daysLbl"))}</legend>
-            <div class="grid grid-cols-7 gap-1">${order.map(function(d) {
+            <div class="weekday-options grid grid-cols-7 gap-1">${order.map(function(d) {
               return `<label class="tap flex flex-col items-center justify-center rounded-xl border border-emerald-900 bg-[#0b130f] cursor-pointer text-xs font-bold text-white has-[:checked]:bg-emerald-950 has-[:checked]:text-[#00f59b]">
                 <input type="checkbox" name="rec-day" value="${d}" ${days.indexOf(d) !== -1 ? "checked" : ""} class="w-4 h-4 accent-[#00f59b] mb-0.5">${names[Number(d)]}</label>`;
             }).join("")}</div></fieldset>
           <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("kickoffLbl"))}</span>${timeSelects("rec-time", sr ? sr.Time : "12:15 PM")}</label>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="date-pair grid grid-cols-2 gap-2">
             ${fieldInput("rec-start", t("startDate"), sr ? sr.StartDate : nextWeekdayIso(), { type: "date" })}
             ${fieldInput("rec-end", t("endDate"), sr ? sr.EndDate : addDaysIso(getTodayIso(), 90), { type: "date" })}
           </div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="compact-pair grid grid-cols-2 gap-2">
             ${fieldInput("rec-min", t("minPlayers"), sr ? sr.MinThreshold : s.defaultMin, { type: "number", attrs: 'inputmode="numeric" min="2" max="60"' })}
             ${fieldInput("rec-max", t("maxPlayers"), sr ? sr.MaxCap : s.defaultMax, { type: "number", attrs: 'inputmode="numeric" min="2" max="60"' })}
           </div>
           ${sr ? `<p class="text-sm text-amber-300">${escHtml(t("editingScheduledFrom",{date:fmtDate(seriesEditEffectiveDate(sr))}))}</p>` + fieldInput("rec-effective", t("applyFrom"), seriesEditEffectiveDate(sr), { type: "date", help: t("applyFromHelp") }) : ""}
         </div>
         <button type="button" id="rec-save" onclick="submitSeriesForm('${escJsArg(seriesId || "")}')" class="tap-lg w-full rounded-2xl neon-btn text-base">${escHtml(sr ? t("saveBtn") : t("createMatches"))}</button>
-      `);
+      `, "max-w-lg");
     }
     function submitSeriesForm(seriesId) {
       const title = byId("rec-title").value.trim();
@@ -6168,7 +6339,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
         <div class="space-y-3 mb-4">
           ${fieldInput("loc-name", t("fieldName"), l ? l.Name : "", { attrs: 'maxlength="50" autocapitalize="words"' })}
           ${fieldInput("loc-addr", t("address"), l ? l.Address : "", { attrs: 'maxlength="200"' })}
-          <div class="grid grid-cols-2 gap-2">
+          <div class="form-pair grid grid-cols-2 gap-2">
             ${fieldInput("loc-lat", t("latitude"), l ? l.Latitude : "33.1434", { attrs: 'inputmode="decimal"' })}
             ${fieldInput("loc-lng", t("longitude"), l ? l.Longitude : "-117.1661", { attrs: 'inputmode="decimal"' })}
           </div>
@@ -6361,10 +6532,10 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       return "";
     }
     function featureRow(key) {
-      const iconBox = `<span class="w-9 h-9 shrink-0 rounded-xl bg-emerald-950 text-[#00f59b] inline-flex items-center justify-center">${ic(FEATURE_ICONS[key], "w-[18px] h-[18px]")}</span>`;
+      const iconBox = `<span class="feature-symbol w-9 h-9 shrink-0 rounded-xl bg-emerald-950 text-[#00f59b] inline-flex items-center justify-center">${ic(FEATURE_ICONS[key], "w-[18px] h-[18px]")}</span>`;
       if (key === "maxGuests") {
         const n = maxGuests();
-        return `<div class="pl-3 pr-1.5 py-1.5 rounded-2xl bg-[#0b130f] border border-emerald-950">
+        return `<div class="feature-guests pl-3 pr-1.5 py-1.5 rounded-2xl bg-[#0b130f] border border-emerald-950">
           <div class="flex items-center gap-2">
             ${iconBox}
             <div class="min-w-0 flex-1 py-1"><span class="block text-sm font-bold text-white">${escHtml(t("f_maxGuests"))}</span><span class="block text-xs text-slate-400 leading-snug">${escHtml(t("fd_maxGuests"))}</span></div>
@@ -6377,18 +6548,18 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
         </div>`;
       }
       const s = S(), blocked = featureBlockedReason(key), on = !!s[key] && !blocked;
-      return `<div class="flex items-center gap-2 pl-3 pr-1.5 py-1.5 rounded-2xl bg-[#0b130f] border border-emerald-950">
+      return `<div class="feature-row flex items-center gap-2 pl-3 pr-1.5 py-1.5 rounded-2xl bg-[#0b130f] border border-emerald-950">
         ${iconBox}
-        <label for="ft-${key}" class="min-w-0 flex-1 cursor-pointer py-1 ${blocked ? "opacity-60" : ""}"><span class="block text-sm font-bold text-white">${escHtml(t("f_" + key))}</span><span class="block text-xs leading-snug ${blocked ? "text-amber-300" : "text-slate-400"}">${escHtml(blocked || t("fd_" + key))}</span></label>
+        <label for="ft-${key}" class="feature-copy min-w-0 flex-1 cursor-pointer py-1 ${blocked ? "opacity-60" : ""}"><span class="block text-sm font-bold text-white">${escHtml(t("f_" + key))}</span><span class="block text-xs leading-snug ${blocked ? "text-amber-300" : "text-slate-400"}">${escHtml(blocked || t("fd_" + key))}</span></label>
         ${infoBtn("fi_" + key, t("f_" + key))}
-        <label class="switch-hit pr-1" for="ft-${key}"><span class="switch"><input id="ft-${key}" type="checkbox" role="switch" ${on ? "checked" : ""} ${blocked ? "disabled" : ""} onchange="setFeature('${key}', this.checked, this)" aria-label="${escHtml(t("f_" + key))}"><span class="track"><span class="thumb"></span></span></span></label>
+        <label class="feature-toggle switch-hit pr-1" for="ft-${key}"><span class="switch"><input id="ft-${key}" type="checkbox" role="switch" ${on ? "checked" : ""} ${blocked ? "disabled" : ""} onchange="setFeature('${key}', this.checked, this)" aria-label="${escHtml(t("f_" + key))}"><span class="track"><span class="thumb"></span></span></span></label>
       </div>`;
     }
     function renderAdminFeatures() {
       return adminCard("toggle", escHtml(t("adm_features")), `
         <div class="p-3 rounded-2xl bg-emerald-950/50 border border-emerald-800/40 text-sm text-emerald-300 leading-snug">${escHtml(t("featuresIntro"))}</div>
         ${FEATURE_GROUPS.map(function(grp) {
-          return `<h3 class="text-xs font-bold uppercase tracking-wide text-slate-400 mt-5 mb-2">${escHtml(t(grp[0]))}</h3><div class="space-y-1.5">${grp[1].map(featureRow).join("")}</div>`;
+          return `<h3 class="text-xs font-bold uppercase tracking-wide text-slate-400 mt-5 mb-2">${escHtml(t(grp[0]))}</h3><div class="feature-group space-y-1.5">${grp[1].map(featureRow).join("")}</div>`;
         }).join("")}
         <p class="text-xs text-slate-400 mt-3 leading-relaxed">${escHtml(t("featuresAlways"))}</p>
       `, "", "hi_features");
@@ -6423,15 +6594,19 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       return adminCard("sliders", escHtml(t("adm_settings")), `
         ${subHead("shirt", t("teamsSetting"), "hi_teamsSetting")}
         ${teams ? `<p class="text-xs text-slate-400 mb-2">${escHtml(t("teamsSettingHelp"))}</p>
-        <div class="grid grid-cols-2 gap-2 mb-2">
-          ${fieldInput("st-a-name", t("team1Name"), s.teamAName, { attrs: 'maxlength="24" autocapitalize="words"' })}
-          <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("shirtLbl"))}</span>${shirtSelect("st-a-shirt", s.teamAShirt)}</label>
-          ${fieldInput("st-b-name", t("team2Name"), s.teamBName, { attrs: 'maxlength="24" autocapitalize="words"' })}
-          <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("shirtLbl"))}</span>${shirtSelect("st-b-shirt", s.teamBShirt)}</label>
+        <div class="space-y-3 mb-2">
+          <div class="form-pair grid grid-cols-2 gap-2">
+            ${fieldInput("st-a-name", t("team1Name"), s.teamAName, { attrs: 'maxlength="24" autocapitalize="words"' })}
+            <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("shirtLbl"))}</span>${shirtSelect("st-a-shirt", s.teamAShirt)}</label>
+          </div>
+          <div class="form-pair grid grid-cols-2 gap-2">
+            ${fieldInput("st-b-name", t("team2Name"), s.teamBName, { attrs: 'maxlength="24" autocapitalize="words"' })}
+            <label class="block"><span class="text-xs font-bold uppercase tracking-wide text-slate-400">${escHtml(t("shirtLbl"))}</span>${shirtSelect("st-b-shirt", s.teamBShirt)}</label>
+          </div>
         </div>` : `<div class="p-3 rounded-2xl bg-[#0b130f] border border-emerald-950 text-sm text-slate-400">${escHtml(t("teamsOffHint"))}
           <button type="button" onclick="switchAdminSection('features')" class="tap mt-2 w-full rounded-xl bg-emerald-950 text-[#00f59b] font-bold text-sm inline-flex items-center justify-center gap-1.5">${ic("toggle", "w-4 h-4")}${escHtml(t("adm_features"))}</button></div>`}
         ${subHead("users", t("matchDefaults"), "hi_matchDefaults")}
-        <div class="grid grid-cols-2 gap-2">
+        <div class="compact-pair grid grid-cols-2 gap-2">
           ${fieldInput("st-min", t("minPlayers"), s.defaultMin, { type: "number", attrs: 'inputmode="numeric" min="2" max="60"' })}
           ${fieldInput("st-max", t("maxPlayers"), s.defaultMax, { type: "number", attrs: 'inputmode="numeric" min="2" max="60"' })}
         </div>
@@ -6472,7 +6647,7 @@ body[data-design="android"] .match-hour-action { border-radius: 999px; }
       if (!pushVaultState) {
         return `<div class="p-4 rounded-2xl bg-[#0b130f] border border-emerald-950">
           <p class="text-sm text-slate-300 mb-2 flex gap-2">${ic("lock", "w-4 h-4 mt-0.5 shrink-0")}<span>${escHtml(t("vaultLocked"))}</span></p>
-          <div class="flex gap-2"><input id="vault-pin-input" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••" class="tap flex-1 min-w-0 px-3.5 rounded-2xl bg-[#111c16] border border-emerald-900 text-center text-lg font-bold tracking-[0.3em] text-white">
+          <div class="input-action-row"><input id="vault-pin-input" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••" class="tap flex-1 min-w-0 px-3.5 rounded-2xl bg-[#111c16] border border-emerald-900 text-center text-lg font-bold tracking-[0.3em] text-white">
           <button type="button" id="vault-unlock" onclick="unlockPushVault()" class="tap px-5 rounded-2xl neon-btn text-base">${escHtml(t("unlockBtn"))}</button></div></div>`;
       }
       return `<div class="p-4 rounded-2xl bg-[#0b130f] border border-emerald-950 space-y-3">
