@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Pitch Pulse 5.5.4: responsive forms and readable narrow-screen layouts. Compatible with Code.gs 5.5.3. -->
+<!-- Pitch Pulse 5.5.5: guest-ready sharing, optional local-photo story cards and manual lineup notices. Responsive v5.5.4 layouts preserved. -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover, interactive-widget=resizes-content">
@@ -1921,6 +1921,67 @@ body #info-pop {
       }
     });
   </script>
+  <style id="sharing-v555">
+    .pp-share-actions, .lineup-notice-control { min-width: 0; }
+    .pp-share-actions button, .pp-share-actions a, .lineup-notice-control button { white-space: normal; overflow-wrap: anywhere; padding-top: 10px; padding-bottom: 10px; }
+    .pp-share-actions button > span, .pp-share-actions a > span, .lineup-notice-control button > span { min-width: 0; }
+    .lineup-notice-control button:disabled { opacity: .58; }
+    .lineup-notice-control p { overflow-wrap: anywhere; }
+  </style>
+  <!-- STORY-CARD-CSS-V555-START -->
+  <style id="story-card-v555">
+/* Local story-card composer. Its exported PNG has its own fixed canvas layout. */
+#sheet-panel.pp-story-wide { max-width: 860px; }
+.pp-story-sheet { --sc-surface:#101b15; --sc-line:#314239; --sc-text:#ecf4ef; --sc-muted:#b1c1b7; min-width:0; }
+body.light-mode .pp-story-sheet { --sc-surface:#f2f5f3; --sc-line:#d1dbd4; --sc-text:#16261c; --sc-muted:#52665a; }
+.pp-story-layout { display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1fr); gap:24px; align-items:start; }
+.pp-story-preview-column, .pp-story-controls, .pp-story-group { min-width:0; }
+.pp-story-preview-wrap { display:flex; justify-content:center; min-height:120px; padding:10px; border:1px solid var(--sc-line); border-radius:20px; background:var(--sc-surface); }
+.pp-story-preview { display:block; width:100%; max-width:330px; height:auto; aspect-ratio:9/16; object-fit:contain; border-radius:10px; background:#f4f6f2; box-shadow:0 7px 24px rgba(0,0,0,.16); }
+.pp-story-preview[hidden] { display:none; }
+.pp-story-placeholder { display:flex; align-items:center; justify-content:center; min-height:240px; text-align:center; padding:20px; color:var(--sc-muted); font-size:15px; }
+.pp-story-pages { display:grid; grid-template-columns:44px minmax(0,1fr) 44px; align-items:center; gap:8px; margin:10px 0; }
+.pp-story-page-label { text-align:center; color:var(--sc-text); font-size:14px; font-weight:700; }
+.pp-story-nav { min-height:44px; border:1px solid var(--sc-line); border-radius:12px; color:var(--sc-text); background:var(--sc-surface); display:inline-flex; align-items:center; justify-content:center; }
+.pp-story-nav:disabled { opacity:.35; }
+#pp-story-prev .ic { transform:rotate(180deg); }
+.pp-story-controls { display:flex; flex-direction:column; gap:16px; }
+.pp-story-group { display:flex; flex-direction:column; gap:8px; }
+.pp-story-label { display:block; color:var(--sc-text); font-size:15px; font-weight:750; line-height:1.4; }
+.pp-story-note { color:var(--sc-muted); font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
+.pp-story-checkbox { min-height:48px; display:flex; align-items:flex-start; gap:12px; padding:12px; background:var(--sc-surface); border:1px solid var(--sc-line); border-radius:16px; }
+.pp-story-checkbox input { flex-shrink:0; width:22px; height:22px; margin:1px 0 0; accent-color:#16815b; }
+.pp-story-checkbox-text { min-width:0; display:flex; flex-direction:column; gap:4px; }
+.pp-story-file { display:block; width:100%; max-width:100%; min-width:0; min-height:48px; color:var(--sc-text); font-size:16px; border-radius:12px; }
+.pp-story-file::file-selector-button { min-height:44px; max-width:100%; margin-right:8px; padding:8px 12px; border:1px solid var(--sc-line); border-radius:10px; background:var(--sc-surface); color:var(--sc-text); font-family:inherit; font-size:14px; font-weight:600; line-height:1.4; cursor:pointer; }
+.pp-story-select { display:block; box-sizing:border-box; width:100%; min-width:0; max-width:100%; min-height:48px; padding:10px 12px; font-size:16px; color:var(--sc-text); background:var(--sc-surface); border:1px solid var(--sc-line); border-radius:12px; }
+.pp-story-crop { display:grid; gap:10px; }
+.pp-story-range-label { color:var(--sc-text); font-size:14px; }
+.pp-story-range { display:block; box-sizing:border-box; width:100%; max-width:100%; min-width:0; min-height:44px; padding:0; accent-color:#16815b; touch-action:pan-y; }
+.pp-story-actions { display:grid; gap:8px; }
+.pp-story-button { box-sizing:border-box; min-height:48px; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-width:0; padding:10px 14px; border:1px solid var(--sc-line); border-radius:14px; background:var(--sc-surface); color:var(--sc-text); font-size:15px; font-weight:750; line-height:1.35; text-align:center; overflow-wrap:anywhere; }
+.pp-story-primary { background:#08754e; border-color:#08754e; color:#fff; }
+body.light-mode .pp-story-primary { background:#08754e; border-color:#08754e; color:#fff; }
+.pp-story-button:disabled, .pp-story-button[aria-disabled="true"] { opacity:.45; cursor:default; }
+.pp-story-small { min-height:44px; font-size:14px; padding:8px 12px; }
+.pp-story-status { min-height:21px; font-size:13px; line-height:1.5; color:var(--sc-muted); }
+.pp-story-status[data-error="true"] { color:#ffb4b9; }
+body.light-mode .pp-story-status[data-error="true"] { color:#a32332; }
+.pp-story-text { margin-top:12px; color:var(--sc-muted); font-size:13px; }
+.pp-story-text summary { display:flex; align-items:center; min-height:44px; font-weight:700; cursor:pointer; }
+.pp-story-text pre { white-space:pre-wrap; overflow-wrap:anywhere; font:400 13px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+.pp-story-sheet [hidden] { display:none !important; }
+@media (max-width:680px) {
+  .pp-story-layout { grid-template-columns:minmax(0,1fr); gap:18px; }
+  .pp-story-preview { max-width:300px; }
+  .pp-story-preview-wrap { padding:8px; }
+}
+@media (max-height:500px) and (min-width:600px) {
+  .pp-story-layout { grid-template-columns:minmax(0,.8fr) minmax(0,1fr); gap:18px; }
+  .pp-story-preview { max-width:250px; }
+}
+  </style>
+  <!-- STORY-CARD-CSS-V555-END -->
 </head>
 <body class="light-mode min-h-screen pb-28">
   <script>
@@ -2581,6 +2642,288 @@ body #info-pop {
       fi_msgOneHour: "Entre 45 y 60 minutos antes del inicio, envía un aviso push con el estado actual, la cantidad de confirmados y tu respuesta a cada suscripción activada. Va a quienes están en Voy, Tal vez o En espera, y a los organizadores actuales. Omite cuentas ausentes o suspendidas y las preferencias de Solo correo. Requiere notificaciones configuradas y permitidas. No se usa correo como respaldo. La tarjeta de la última hora en la app siempre está disponible."
     });
 
+    // Release 5.5.5: sharing, guest details and manual lineup notices.
+    Object.assign(I18N.en, {
+  "f_featStoryCards": "Story cards",
+  "fd_featStoryCards": "Share match images and post-game photos.",
+  "fi_featStoryCards": "Off by default. Members can preview and share a match or result as an image. After the game, they can add a photo from their device. Photos stay in that browser while preparing the card; they are not uploaded to the league. Player names are optional and start off. Applies immediately to upcoming and loaded past matches.",
+  "featuresIntro": "Choose what the league uses. Match-day options follow each match until kickoff, then keep their saved settings. Display and sharing options apply immediately, including to past matches.",
+  "shareMatch": "Share match",
+  "storyOpen": "Create match card",
+  "shareResult": "Share result",
+  "shareTextBtn": "Share text…",
+  "shareGuestDetails": "Copy details for guests",
+  "shareGuestDetailsHelp": "Date, time, address and directions. No roster and no app login needed to read the copied details.",
+  "shareGuestCopied": "Guest details copied. Paste them into your message.",
+  "shareTextUnavailable": "Sharing could not open here. Use Copy summary or Copy details for guests.",
+  "sharePlayerName": "Player",
+  "shareGuestName": "Guest",
+  "shareNeedPlayers": "{n} more to confirm",
+  "shareNeedBall": "ball volunteer",
+  "shareNeedPinnies": "pinnies volunteer",
+  "shareNeedGoalie": "goalkeeper volunteer",
+  "shareStillNeeded": "Still needed: {items}",
+  "shareWearShirt": "wear {shirt}",
+  "shareLineupProvisional": "Lineup may need review after roster changes.",
+  "shareNoAssignments": "No players assigned yet.",
+  "shareUnassigned": "Awaiting team assignment",
+  "shareMatchRoster": "Match roster",
+  "shareMotmLeader": "Player-of-the-match vote leader: {name} ({n} votes)",
+  "shareMotmTied": "Player-of-the-match vote tied: {names} ({n} votes each)",
+  "shareMotmTieCount": "Player-of-the-match vote: {count} players tied on {n} votes",
+  "shareGuestShirts": "Bring {a} and {b} shirts unless your host confirms your team.",
+  "shareGuestReservation": "Ask the player inviting you to reserve your guest spot before coming. A shared message does not reserve a place.",
+  "shareGuestOrganizer": "Ask the organizer to confirm your place before coming. A shared message does not reserve a place.",
+  "shareMembersLink": "League app (members)",
+  "lineupNoticeButton": "Notify players of teams",
+  "lineupNoticeHelp": "Push only, in each player's language. Email-only preferences and players awaiting reconfirmation are skipped. The one-hour reminder still runs separately.",
+  "lineupNoticeReady": "Queue team and shirt notices for {n} eligible player(s).",
+  "lineupNoticeCooldown": "You can send another lineup notice in about {n} min.",
+  "lineupNoticeAlreadyQueued": "This lineup has already been queued. Update the lineup before sending another notice.",
+  "lineupNoticeNoEligible": "No eligible players to notify. Check confirmations and notification preferences.",
+  "lineupNoticeUnavailable": "Set up push notifications in Settings before sending lineup notices.",
+  "lineupNoticeNoTeams": "Save a lineup first.",
+  "lineupNoticeTeamsOff": "Teams are off for this match.",
+  "lineupNoticeClosed": "Lineup notices are available before kickoff, while the match is open.",
+  "lineupNoticePending": "An earlier queue attempt is incomplete. Tap to finish the remaining notices.",
+  "lineupNoticeUpdateNeeded": "Refresh after updating the backend to enable lineup notices."
+});
+    Object.assign(I18N.es, {
+  "f_featStoryCards": "Tarjetas para compartir",
+  "fd_featStoryCards": "Comparte imágenes del partido y fotos después de jugar.",
+  "fi_featStoryCards": "Desactivadas por defecto. Los miembros pueden previsualizar y compartir una imagen del partido o resultado. Después de jugar pueden agregar una foto de su dispositivo. La foto se queda en ese navegador mientras se prepara la tarjeta; no se sube a la liga. Los nombres son opcionales y empiezan ocultos. Se aplica al momento a partidos próximos y anteriores cargados.",
+  "featuresIntro": "Elige qué usa la liga. Las opciones de juego se aplican a cada partido hasta el inicio; después conserva sus ajustes. Las opciones de visualización y de compartir se aplican al momento, incluso a partidos anteriores.",
+  "shareMatch": "Compartir partido",
+  "storyOpen": "Crear tarjeta del partido",
+  "shareResult": "Compartir resultado",
+  "shareTextBtn": "Compartir texto…",
+  "shareGuestDetails": "Copiar datos para invitados",
+  "shareGuestDetailsHelp": "Fecha, hora, dirección e indicaciones. Sin lista de jugadores y sin iniciar sesión para leer los datos copiados.",
+  "shareGuestCopied": "Datos para invitados copiados. Pégalos en tu mensaje.",
+  "shareTextUnavailable": "No se pudo abrir Compartir. Usa Copiar resumen o Copiar datos para invitados.",
+  "sharePlayerName": "Jugador",
+  "shareGuestName": "Invitado",
+  "shareNeedPlayers": "{n} más por confirmar",
+  "shareNeedBall": "alguien que lleve balón",
+  "shareNeedPinnies": "alguien que lleve chalecos",
+  "shareNeedGoalie": "alguien que juegue de portero",
+  "shareStillNeeded": "Aún falta: {items}",
+  "shareWearShirt": "camiseta {shirt}",
+  "shareLineupProvisional": "Puede hacer falta revisar los equipos tras los cambios en la lista.",
+  "shareNoAssignments": "Todavía no hay jugadores asignados.",
+  "shareUnassigned": "Pendientes de equipo",
+  "shareMatchRoster": "Lista del partido",
+  "shareMotmLeader": "Líder de la votación a figura del partido: {name} ({n} votos)",
+  "shareMotmTied": "Empate en la votación a figura del partido: {names} ({n} votos cada uno)",
+  "shareMotmTieCount": "Votación a figura del partido: {count} jugadores empatados con {n} votos",
+  "shareGuestShirts": "Trae camisetas {a} y {b}, salvo que quien te invitó confirme tu equipo.",
+  "shareGuestReservation": "Pide a quien te invitó que reserve tu lugar de invitado antes de venir. Un mensaje compartido no reserva un lugar.",
+  "shareGuestOrganizer": "Pide al organizador que confirme tu lugar antes de venir. Un mensaje compartido no reserva un lugar.",
+  "shareMembersLink": "App de la liga (miembros)",
+  "lineupNoticeButton": "Avisar a los jugadores sus equipos",
+  "lineupNoticeHelp": "Solo push, en el idioma de cada jugador. Se omiten quienes eligen Solo correo o deben reconfirmar. El recordatorio de una hora sigue por separado.",
+  "lineupNoticeReady": "Preparar avisos de equipo y camiseta para {n} jugador(es).",
+  "lineupNoticeCooldown": "Puedes enviar otro aviso de equipos en unos {n} min.",
+  "lineupNoticeAlreadyQueued": "Este equipo ya tiene avisos en cola. Actualiza los equipos antes de enviar otro aviso.",
+  "lineupNoticeNoEligible": "No hay jugadores que puedan recibir el aviso. Revisa confirmaciones y preferencias.",
+  "lineupNoticeUnavailable": "Configura las notificaciones push en Ajustes antes de avisar los equipos.",
+  "lineupNoticeNoTeams": "Primero guarda los equipos.",
+  "lineupNoticeTeamsOff": "Los equipos están desactivados para este partido.",
+  "lineupNoticeClosed": "Los avisos de equipos están disponibles antes del inicio, mientras el partido está abierto.",
+  "lineupNoticePending": "Un intento anterior quedó incompleto. Toca para preparar los avisos pendientes.",
+  "lineupNoticeUpdateNeeded": "Actualiza la página después de actualizar el servidor para activar estos avisos."
+});
+
+    // STORY-CARD-I18N-V555-START
+    Object.assign(I18N.en, {
+  "storyTitle": "Share a match card",
+  "storySub": "Preview your image, then share or save it.",
+  "storyFeatureOff": "Match cards are turned off for this league.",
+  "storyUnavailable": "This match is no longer available.",
+  "storyPrivacy": "The date and field appear in the image. Add player names only when sharing with your group. Photos stay on this device.",
+  "storyIncludeNames": "Include player names",
+  "storyNamesHelp": "Adds roster images and the current player-of-the-match vote leader, when available.",
+  "storyPreparing": "Preparing your image…",
+  "storyReady": "Image ready",
+  "storyReadyPages": "{n} images ready",
+  "storyUpdated": "Match information changed. The preview has been updated.",
+  "storyRenderError": "The image could not be prepared. Try again or copy the match text.",
+  "storyRetry": "Try image again",
+  "storyPhotoTitle": "Add a match photo",
+  "storyPhotoIncluded": "Match photo included",
+  "storyPhotoHelp": "Choose a photo or use your camera if offered. It is added to this image only, with no upload.",
+  "storyPhotoFormats": "JPEG, PNG, WebP, AVIF, or HEIC if this browser supports it. Up to 20 MB.",
+  "storyPhotoWorking": "Preparing your photo…",
+  "storyRemovePhoto": "Remove photo",
+  "storyPhotoFit": "Photo framing",
+  "storyCropFill": "Fill the frame",
+  "storyCropFit": "Show the whole photo",
+  "storyCropHorizontal": "Left / right",
+  "storyCropVertical": "Up / down",
+  "storyCropReset": "Center photo",
+  "storyFileType": "Choose a JPEG, PNG, WebP, AVIF, or a HEIC photo supported by this browser.",
+  "storyFileSize": "Choose a photo smaller than 20 MB.",
+  "storyDecodeError": "This browser could not read the photo. Try JPEG or PNG, or export the HEIC photo as JPEG first.",
+  "storyPhotoTooLarge": "This photo is too large to process here. Choose a smaller copy.",
+  "storyPageCount": "Image {n} of {total}",
+  "storyPrevious": "Previous image",
+  "storyNext": "Next image",
+  "storyPreviewAlt": "Image {n} of {total}: {title}. A text version is available below.",
+  "storyDetails": "Text version of this image",
+  "storyShare": "Share image",
+  "storyShareAll": "Share all {n} images",
+  "storyShareSelected": "Share this image",
+  "storyShareScope": "Images to share",
+  "storyScopeAll": "All images",
+  "storyScopeCurrent": "This image",
+  "storyShareFallback": "This browser can share one image at a time. Use the arrows to choose another image.",
+  "storySave": "Save image",
+  "storySaveSelected": "Save this image",
+  "storyDownloadHint": "To save every image, use the arrows and save each one.",
+  "storyCopy": "Copy match text",
+  "storyCopied": "Match text copied. Player names follow the choice above.",
+  "storyShareError": "Sharing could not open. You can save the image instead.",
+  "storySaveError": "The image could not be saved directly. Try Share image, or touch and hold the preview to save it.",
+  "storySnapshot": "Snapshot · {date}",
+  "storyMatchday": "Matchday",
+  "storyLineups": "Saved lineups",
+  "storyRoster": "Match roster",
+  "storyUnassigned": "Not assigned to a team",
+  "storyContinued": "{team} · continued",
+  "storyGuest": "Guest",
+  "storyPlayer": "Player",
+  "storyAwaiting": "Reconfirm",
+  "storyAwaitingN": "{n} awaiting reconfirmation",
+  "storyConfirmedN": "{n} confirmed",
+  "storyReservedN": "{n} places held",
+  "storySpotsN": "{n} spots open",
+  "storyFull": "No open spots",
+  "storyOverCapacity": "{n} above capacity",
+  "storyMinNeeded": "{n} more confirmations needed",
+  "storyGameOn": "Game on",
+  "storyLive": "Playing now",
+  "storyFinal": "Final score",
+  "storyFinished": "Match finished",
+  "storyNoScore": "Score not recorded",
+  "storyCancelled": "Cancelled",
+  "storyCancelledDetail": "This match was cancelled.",
+  "storyKickoffWeather": "Kickoff forecast",
+  "storyDailyWeather": "Daily high / low",
+  "storyRivalry": "Current league rivalry",
+  "storyRetainedGames": "{n} scored matches",
+  "storyWinsN": "{n} wins",
+  "storyDrawsN": "{n} draws",
+  "storyDraw": "Draw",
+  "storyWins": "{team} win",
+  "storyMOTM": "MOTM vote leader",
+  "storyMOTMTie": "MOTM vote tied",
+  "storyMOTMTieN": "{n} players · {votes} votes each",
+  "storyVotesN": "{n} votes",
+  "storyShirt": "Wear {color}",
+  "storyMinPlayers": "Minimum {n}",
+  "storyLineupsStale": "Lineup changes pending",
+  "storyLineupsStaleDetail": "Saved lineups may change.",
+  "storyNamesNext": "Roster on the following images",
+  "storyNoNamesAvailable": "No confirmed names to include yet.",
+  "storyRosterLimit": "{n} of {total} names shown",
+  "storyRosterLimitHelp": "More than 60 players are listed. The images include the first 60; use the app for the full roster.",
+  "storyCanvasUnsupported": "Image export is unavailable in this browser. You can still copy the match text."
+});
+    Object.assign(I18N.es, {
+  "storyTitle": "Compartir tarjeta del partido",
+  "storySub": "Revisa la imagen y compártela o guárdala.",
+  "storyFeatureOff": "Las tarjetas están desactivadas para esta liga.",
+  "storyUnavailable": "Este partido ya no está disponible.",
+  "storyPrivacy": "La fecha y la cancha aparecen en la imagen. Agrega nombres solo para compartirla con tu grupo. Las fotos se quedan en este dispositivo.",
+  "storyIncludeNames": "Incluir nombres de jugadores",
+  "storyNamesHelp": "Agrega imágenes con la lista y quien lidera la votación a figura del partido, si hay votos.",
+  "storyPreparing": "Preparando la imagen…",
+  "storyReady": "Imagen lista",
+  "storyReadyPages": "{n} imágenes listas",
+  "storyUpdated": "Cambió la información del partido. La vista previa está actualizada.",
+  "storyRenderError": "No se pudo preparar la imagen. Inténtalo de nuevo o copia el texto del partido.",
+  "storyRetry": "Intentar la imagen de nuevo",
+  "storyPhotoTitle": "Agregar una foto del partido",
+  "storyPhotoIncluded": "Incluye una foto del partido",
+  "storyPhotoHelp": "Elige una foto o usa la cámara si aparece esa opción. Solo se agrega a esta imagen; no se sube a ningún servidor.",
+  "storyPhotoFormats": "JPEG, PNG, WebP, AVIF o HEIC si este navegador lo admite. Hasta 20 MB.",
+  "storyPhotoWorking": "Preparando la foto…",
+  "storyRemovePhoto": "Quitar foto",
+  "storyPhotoFit": "Encuadre de la foto",
+  "storyCropFill": "Llenar el marco",
+  "storyCropFit": "Mostrar la foto completa",
+  "storyCropHorizontal": "Izquierda / derecha",
+  "storyCropVertical": "Arriba / abajo",
+  "storyCropReset": "Centrar foto",
+  "storyFileType": "Elige una foto JPEG, PNG, WebP, AVIF o HEIC que este navegador admita.",
+  "storyFileSize": "Elige una foto de menos de 20 MB.",
+  "storyDecodeError": "Este navegador no pudo abrir la foto. Prueba JPEG o PNG, o convierte la foto HEIC a JPEG primero.",
+  "storyPhotoTooLarge": "La foto es demasiado grande para procesarla aquí. Elige una copia más pequeña.",
+  "storyPageCount": "Imagen {n} de {total}",
+  "storyPrevious": "Imagen anterior",
+  "storyNext": "Imagen siguiente",
+  "storyPreviewAlt": "Imagen {n} de {total}: {title}. Abajo hay una versión en texto.",
+  "storyDetails": "Versión en texto de esta imagen",
+  "storyShare": "Compartir imagen",
+  "storyShareAll": "Compartir las {n} imágenes",
+  "storyShareSelected": "Compartir esta imagen",
+  "storyShareScope": "Imágenes para compartir",
+  "storyScopeAll": "Todas las imágenes",
+  "storyScopeCurrent": "Esta imagen",
+  "storyShareFallback": "Este navegador comparte una imagen a la vez. Usa las flechas para elegir otra.",
+  "storySave": "Guardar imagen",
+  "storySaveSelected": "Guardar esta imagen",
+  "storyDownloadHint": "Para guardar todas, usa las flechas y guarda cada imagen.",
+  "storyCopy": "Copiar texto del partido",
+  "storyCopied": "Texto copiado. Los nombres siguen la opción de arriba.",
+  "storyShareError": "No se pudo abrir Compartir. Puedes guardar la imagen.",
+  "storySaveError": "No se pudo guardar directamente. Prueba Compartir imagen, o mantén presionada la vista previa para guardarla.",
+  "storySnapshot": "Datos al momento · {date}",
+  "storyMatchday": "Día de partido",
+  "storyLineups": "Equipos guardados",
+  "storyRoster": "Lista del partido",
+  "storyUnassigned": "Sin equipo asignado",
+  "storyContinued": "{team} · continuación",
+  "storyGuest": "Invitado",
+  "storyPlayer": "Jugador",
+  "storyAwaiting": "Reconfirmar",
+  "storyAwaitingN": "{n} por reconfirmar",
+  "storyConfirmedN": "{n} confirmados",
+  "storyReservedN": "{n} lugares reservados",
+  "storySpotsN": "{n} lugares libres",
+  "storyFull": "Sin lugares libres",
+  "storyOverCapacity": "{n} sobre el máximo",
+  "storyMinNeeded": "Faltan {n} confirmaciones",
+  "storyGameOn": "Hay partido",
+  "storyLive": "En juego",
+  "storyFinal": "Marcador final",
+  "storyFinished": "Partido terminado",
+  "storyNoScore": "Sin marcador registrado",
+  "storyCancelled": "Cancelado",
+  "storyCancelledDetail": "Este partido fue cancelado.",
+  "storyKickoffWeather": "Clima al inicio",
+  "storyDailyWeather": "Máxima / mínima del día",
+  "storyRivalry": "Rivalidad actual de la liga",
+  "storyRetainedGames": "{n} partidos con marcador",
+  "storyWinsN": "{n} victorias",
+  "storyDrawsN": "{n} empates",
+  "storyDraw": "Empate",
+  "storyWins": "Gana {team}",
+  "storyMOTM": "Líder de la votación a figura",
+  "storyMOTMTie": "Votación a figura empatada",
+  "storyMOTMTieN": "{n} jugadores · {votes} votos cada uno",
+  "storyVotesN": "{n} votos",
+  "storyShirt": "Camiseta {color}",
+  "storyMinPlayers": "Mínimo {n}",
+  "storyLineupsStale": "Cambios de equipos pendientes",
+  "storyLineupsStaleDetail": "Los equipos guardados pueden cambiar.",
+  "storyNamesNext": "Lista en las siguientes imágenes",
+  "storyNoNamesAvailable": "Aún no hay nombres confirmados para incluir.",
+  "storyRosterLimit": "Se muestran {n} de {total} nombres",
+  "storyRosterLimitHelp": "Hay más de 60 jugadores. Las imágenes incluyen los primeros 60; abre la app para ver toda la lista.",
+  "storyCanvasUnsupported": "Este navegador no puede exportar imágenes. Puedes copiar el texto del partido."
+});
+    // STORY-CARD-I18N-V555-END
     function t(key, params) {
       const dict = I18N[currentLang] || I18N.en;
       let s = dict[key] !== undefined ? dict[key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
@@ -2595,7 +2938,7 @@ body #info-pop {
     const SITE_URL = "https://pitchpulseleague.github.io/soccer/";
     const SYSTEM_ADMIN_EMAIL = "pitchpulseleague@gmail.com";
     const PROTECTED_ADMINS = ["pitchpulseleague@gmail.com", "ralph@me.com"];
-    const APP_VERSION = "5.5.4";
+    const APP_VERSION = "5.5.6";
 
     const ASSET_VERSION = "5.0";
     const ICON_192_FILE = "pitch-pulse-01-classic-stitched-192.png?v=" + ASSET_VERSION;
@@ -2686,6 +3029,7 @@ body #info-pop {
       scale: '<path d="M12 4v16M7 20h10M5 7h14M5 7l-2.5 6a3 3 0 0 0 5 0L5 7zM19 7l-2.5 6a3 3 0 0 0 5 0L19 7z"/>',
       home: '<path d="M4 11l8-7 8 7v9.5a.5.5 0 0 1-.5.5H15v-6H9v6H4.5a.5.5 0 0 1-.5-.5V11z"/>',
       dots: '<circle cx="5.5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="18.5" cy="12" r="1.6" fill="currentColor"/>',
+      image: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="M3 17l6-6 4 4 3-3 5 5"/>',
       cloud: '<path d="M7 18.5h10a4 4 0 0 0 .5-8 5.5 5.5 0 0 0-10.6-1.2A4.5 4.5 0 0 0 7 18.5z"/>'
     };
     function ic(name, cls, sw) {
@@ -2769,7 +3113,7 @@ body #info-pop {
     const EMPTY_APP = {
       settings: { teamAName: "White", teamAShirt: "white", teamBName: "Dark", teamBShirt: "black", defaultMin: 14, defaultMax: 18, maxGuests: 3,
         featTeams: false, featScores: false, featMotm: false, featAttendance: false, featLateDrops: false, trackBall: false, trackPinnies: false, trackGK: false,
-        featArrival: false, featCaptains: false, featAnnouncements: true, featWeather: true, featCalendar: true, featRules: true,
+        featArrival: false, featCaptains: false, featAnnouncements: true, featWeather: true, featCalendar: true, featStoryCards: false, featRules: true,
         msgDayBefore: true, msgMatchDay: true, msgGameOn: true, msgConfirm: false, msgMaybeMorning: true, msgTwoHour: false, msgOneHour: true },
       requirePinnies: false, howWePlayRules: "", oneSignalAppId: "", pushConfigured: false,
       rivalryStats: { whiteWins: 0, darkWins: 0, draws: 0, whiteGoals: 0, darkGoals: 0, totalMatchesScored: 0 },
@@ -2803,6 +3147,7 @@ body #info-pop {
       }
       try { const copy = Object.assign({}, appData); delete copy.user; delete copy._clientAuthEpoch; copy._clientAccount = myEmail(); copy._clientFetchedAtMs = Date.now(); lsSet("soccer_cached_data_v54", JSON.stringify(copy)); } catch (e) {}
       recordFinalHourSync(d);
+      if (typeof storyCardContextChanged === "function") storyCardContextChanged();
       presentationFreshEpoch = currentUser ? authEpoch : -1; // Only fresh accepted data may trigger a visual reply cue.
       initOneSignalSdkIfConfigured();
       return true;
@@ -3145,6 +3490,8 @@ body #info-pop {
     });
     document.addEventListener("focusin",function(e){const panel=byId("sheet-panel");if(panel && !panel.contains(e.target))panel.focus({preventScroll:true});});
     function renderSheetModal(innerHtml, maxWidthClass) {
+      if (typeof disposeStoryCard === "function") disposeStoryCard();
+      clearLineupNoticeTimer();
       const mw = maxWidthClass || "max-w-md";
       const root = byId("modal-root");
       if (!root.innerHTML) lastFocusBeforeModal = document.activeElement;
@@ -3215,6 +3562,8 @@ body #info-pop {
       panel.addEventListener("touchcancel", end);
     }
     function closeModal(fromPop) {
+      if (typeof disposeStoryCard === "function") disposeStoryCard();
+      clearLineupNoticeTimer();
       hideInfoPop();
       byId("modal-root").innerHTML = "";
       destroyCardMaps();
@@ -5018,10 +5367,10 @@ body #info-pop {
       }
 
 
-      const cal = F("featCalendar");
+      const cal = F("featCalendar") || F("featStoryCards");
       html += `<div class="match-secondary-actions mt-4 grid ${cal ? "grid-cols-2" : "grid-cols-1"} gap-2">
           <button type="button" onclick="openDirectionsSheet('${escJsArg(id)}')" class="tap-lg press rounded-2xl bg-[#111c16] border border-emerald-900/60 text-white font-bold text-sm inline-flex items-center justify-center gap-2">${ic("nav", "w-[18px] h-[18px] text-emerald-300")}${escHtml(t("directions"))}</button>
-          ${cal ? `<button type="button" onclick="openCalendarShareSheet('${escJsArg(id)}')" class="tap-lg press rounded-2xl bg-[#111c16] border border-emerald-900/60 text-white font-bold text-sm inline-flex items-center justify-center gap-2">${ic("calendar", "w-[18px] h-[18px] text-emerald-300")}${escHtml(t("calShareBtn"))}</button>` : ""}
+          ${cal ? `<button type="button" onclick="openCalendarShareSheet('${escJsArg(id)}')" class="tap-lg press rounded-2xl bg-[#111c16] border border-emerald-900/60 text-white font-bold text-sm inline-flex items-center justify-center gap-2">${ic("calendar", "w-[18px] h-[18px] text-emerald-300")}${escHtml(t(F("featCalendar") ? "calShareBtn" : "shareMatch"))}</button>` : ""}
         </div>`;
       if (m.canManage) {
         html += `<button type="button" onclick="openOrganizerTools('${escJsArg(id)}')" class="tap-lg press w-full mt-2 rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-500/40 font-extrabold text-base inline-flex items-center justify-center gap-2">${ic("bolt", "w-5 h-5")}<span>${escHtml(t("organizerTools"))}${m.isGameCaptain ? " · " + escHtml(t("youAreCaptain")) : ""}</span></button>`;
@@ -5419,40 +5768,222 @@ body #info-pop {
       const a=document.createElement("a");a.href=url;a.download="pitch-pulse-"+game.Date+".ics";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},2000);
     }
 
-    function matchSummaryText(game) {
-      const m = gameMeta(game);
-      const names = m.yesList.map(function(r) { return r.fullName + (r.guestNames && r.guestNames.length ? " (+" + r.guestNames.length + ")" : ""); }).join(", ") || t("noneYet");
-      const status = m.isCancelled ? t("pillCancelled") : (m.isConfirmed ? t("pillOn") : t("pillNeeds", { n: Math.max(0, m.minThreshold - m.confirmedCount) }));
-      return "⚽ *" + game.Title + "*\n🗓️ " + whenLabel(game) + "\n📍 " + game.LocationName + "\n📊 " + status + " (" + m.yesCount + "/" + m.maxCap + ")\n✅ " + names + "\n👉 " + SITE_URL;
+    // Shared exports use display fields and the public app URL, never the current
+    // address bar (which may contain an invitation or signed answer token).
+    function shareTextValue(value) {
+      return String(value == null ? "" : value).replace(/[\r\n]+/g, " ").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "").trim();
+    }
+    function shareDisplayName(value, guest) {
+      const name = shareTextValue(value);
+      return !name || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(name) ? t(guest ? "shareGuestName" : "sharePlayerName") : name;
+    }
+    function shareMatchWhen(game) {
+      let zone = leagueTimeZone();
+      try {
+        const part = new Intl.DateTimeFormat(locale(), { timeZone: zone, timeZoneName: "short" }).formatToParts(gameStartDate(game)).find(function(p) { return p.type === "timeZoneName"; });
+        if (part) zone = part.value;
+      } catch (e) {}
+      return fmtDate(game.Date, { weekday: "long", month: "short", day: "numeric", year: "numeric" }) + " · " + fmtTime(game.Time) + " " + zone;
+    }
+    function shareDirectionsUrl(game) {
+      const ld = game.locationDetails || {};
+      const lat = Number(ld.lat), lng = Number(ld.lng);
+      const pin = ld.lat !== "" && ld.lat != null && ld.lng !== "" && ld.lng != null && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+      const destination = pin ? lat + "," + lng : shareTextValue(ld.address || game.LocationName);
+      return destination ? "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(destination) : "";
+    }
+    function shareMotmText(game) {
+      if (!game.hasScore || !gf(game, "motm")) return "";
+      const tally = game.motmTally || {};
+      const keys = Object.keys(tally).filter(function(k) { return Number.isFinite(Number(tally[k])) && Number(tally[k]) > 0; });
+      const votes = keys.length ? Math.max.apply(null, keys.map(function(k) { return Number(tally[k]); })) : Number(game.motmWinnerVotes || 0);
+      const leaders = keys.filter(function(k) { return Number(tally[k]) === votes; });
+      if (leaders.length > 1) {
+        const names = leaders.map(function(k) { const p = profileFor(k); return p && p.fullName ? shareDisplayName(p.fullName, false) : ""; }).filter(Boolean);
+        return names.length === leaders.length ? t("shareMotmTied", { names: names.join(", "), n: votes }) : t("shareMotmTieCount", { count: leaders.length, n: votes });
+      }
+      return game.motmWinnerName && votes > 0 ? t("shareMotmLeader", { name: shareDisplayName(game.motmWinnerName, false), n: votes }) : "";
+    }
+    function shareRosterGroups(game) {
+      const ended = isGameDisplayFinished(game);
+      const rows = (game.roster || []).filter(function(r) { return ended ? isRecordedParticipant(r) : r.status === "Yes"; });
+      const people = [], byKey = Object.create(null), used = new Set();
+      const keyFor = function(guest, email, name) { return (guest ? "g:" : "p:") + String(email || "").toLowerCase() + (guest ? "|" + String(name || "").toLowerCase() : ""); };
+      rows.forEach(function(r, index) {
+        const pending = !ended && !!r.needsReconfirm;
+        const p = { key: keyFor(false, r.email || "row-" + index), name: shareDisplayName(r.fullName, false), guest: false, pending: pending };
+        if (!byKey[p.key]) { people.push(p); byKey[p.key] = p; }
+        (Array.isArray(r.guestNames) ? r.guestNames : []).forEach(function(name) {
+          const guest = { key: keyFor(true, r.email || "row-" + index, name), name: shareDisplayName(name, true), guest: true, pending: pending };
+          if (!byKey[guest.key]) { people.push(guest); byKey[guest.key] = guest; }
+        });
+      });
+      const groups = { white: [], dark: [], unassigned: [], hasTeams: false };
+      if (gf(game, "teams") && game.teams) ["white", "dark"].forEach(function(side) {
+        (Array.isArray(game.teams[side]) ? game.teams[side] : []).forEach(function(p) {
+          const key = keyFor(!!p.isGuest, p.isGuest ? p.hostEmail : p.email || p.key, p.fullName);
+          if (byKey[key] && !used.has(key)) { groups[side].push(byKey[key]); used.add(key); }
+        });
+      });
+      groups.hasTeams = groups.white.length + groups.dark.length > 0;
+      groups.unassigned = people.filter(function(p) { return !used.has(p.key); });
+      return groups;
+    }
+    function matchSummaryText(game, options) {
+      if (!game) return "";
+      const opts = options || {}, includeRoster = opts.includeRoster !== false;
+      const m = gameMeta(game), ended = isGameDisplayFinished(game);
+      const scored = !!game.hasScore && gf(game, "scores") && !m.isCancelled;
+      const active = !m.isCancelled && !game.hasScore && !ended;
+      const ld = game.locationDetails || {}, lines = ["⚽ *" + shareTextValue(game.Title) + "*", "🗓️ " + shareMatchWhen(game), "📍 " + shareTextValue(game.LocationName)];
+      const addr = shareTextValue(ld.address), notes = shareTextValue(ld.notes);
+      if (addr && addr !== shareTextValue(game.LocationName)) lines.push(addr);
+      const directions = shareDirectionsUrl(game);
+      if (directions) lines.push(t("directions") + ": " + directions);
+      if (notes) lines.push(t("arrivalNotes") + ": " + notes);
+      lines.push("");
+      if (m.isCancelled) lines.push("🚫 " + t("pillCancelled"));
+      else if (scored) lines.push("🏁 " + t("pillFinal") + ": " + shareTextValue(teamLabel("white")) + " " + Number(game.ScoreWhite) + " – " + Number(game.ScoreDark) + " " + shareTextValue(teamLabel("dark")));
+      else if (ended) lines.push("🏁 " + t("pillFinished") + (gf(game, "scores") ? " · " + t("noScore") : ""));
+      else {
+        const status = m.kickedOff ? t("pillLive") : (m.isConfirmed ? t("pillOn") : t("pillNeeds", { n: Math.max(0, m.minThreshold - m.confirmedCount) }));
+        lines.push("📊 " + status + " · " + t("confirmedN", { n: m.confirmedCount }) + " / " + m.maxCap);
+        if (m.pendingReconfirmCount) lines.push(t("pendingReconfirmN", { n: m.pendingReconfirmCount }));
+        lines.push(m.yesCount >= m.maxCap ? t("pillFullNoWait") : t("spotsLeft", { n: Math.max(0, m.maxCap - m.yesCount) }));
+        if (m.waitlist.length) lines.push(t("waitlistN", { n: m.waitlist.length }));
+      }
+      if (active) {
+        const confirmed = m.yesList.filter(function(r) { return !r.needsReconfirm && r.attendanceStatus !== "NoShow"; });
+        const needed = [];
+        if (m.confirmedCount < m.minThreshold) needed.push(t("shareNeedPlayers", { n: Math.max(0, m.minThreshold - m.confirmedCount) }));
+        if (gf(game, "ball") && !confirmed.some(function(r) { return !!r.bringBall; })) needed.push(t("shareNeedBall"));
+        if (gf(game, "pinnies") && !confirmed.some(function(r) { return !!r.bringPinnies; })) needed.push(t("shareNeedPinnies"));
+        if (gf(game, "gk") && !confirmed.some(function(r) { return !!r.playGK; })) needed.push(t("shareNeedGoalie"));
+        if (needed.length) lines.push("⚠️ " + t("shareStillNeeded", { items: needed.join(" · ") }));
+      }
+      if (includeRoster && !m.isCancelled) {
+        const groups = shareRosterGroups(game);
+        const person = function(p) { return "• " + p.name + (p.guest ? " (" + t("shareGuestName") + ")" : "") + (p.pending ? " · " + t("awaitingReconfirm") : ""); };
+        if (groups.hasTeams) {
+          if (game.teamsStale && active) lines.push("", t("shareLineupProvisional"));
+          ["white", "dark"].forEach(function(side) {
+            lines.push("", "👕 *" + shareTextValue(teamLabel(side)) + "* · " + t("shareWearShirt", { shirt: shirtName(teamShirt(side)) }));
+            lines.push.apply(lines, groups[side].length ? groups[side].map(person) : [t("shareNoAssignments")]);
+          });
+          if (groups.unassigned.length) {
+            lines.push("", t("shareUnassigned"));
+            lines.push.apply(lines, groups.unassigned.map(person));
+          }
+        } else {
+          lines.push("", "*" + t(ended ? "shareMatchRoster" : "rosterTitle") + "*");
+          lines.push.apply(lines, groups.unassigned.length ? groups.unassigned.map(person) : [t(ended ? "noneWord" : "noneYet")]);
+        }
+        const motm = shareMotmText(game);
+        if (motm) lines.push("", "⭐ " + motm);
+      }
+      if (opts.forGuests && active) {
+        if (gf(game, "teams")) lines.push("", "👕 " + t("shareGuestShirts", { a: shirtName(teamShirt("white")), b: shirtName(teamShirt("dark")) }));
+        lines.push("", t(maxGuests() > 0 ? "shareGuestReservation" : "shareGuestOrganizer"));
+      }
+      lines.push("", t("shareMembersLink") + ": " + SITE_URL);
+      return lines.join("\n");
+    }
+    function copyGuestDetails(gameId) {
+      const g = findGame(gameId);
+      if (!g || !currentUser || !(F("featCalendar") || F("featStoryCards"))) return;
+      copyText(matchSummaryText(g, { includeRoster: false, forGuests: true }), t("shareGuestCopied"));
     }
     function openCalendarShareSheet(gameId) {
-      const g = findGame(gameId); if (!g) return;
-      const canShare = !!navigator.share;
-      const row = function(icon, label, attrs, primary) {
-        return `<${attrs.href ? "a" : "button type=\"button\""} ${attrs.href ? `href="${escHtml(attrs.href)}" target="_blank" rel="noopener"` : `onclick="${attrs.onclick}"`} class="tap-lg w-full rounded-2xl ${primary ? "neon-btn" : "bg-[#111c16] border border-emerald-900/60 text-white font-bold"} text-sm flex items-center gap-3 px-4">${ic(icon, "w-5 h-5 " + (primary ? "" : "text-emerald-300"))}${escHtml(label)}</${attrs.href ? "a" : "button"}>`;
+      const g = findGame(gameId);
+      if (!g || !currentUser || !(F("featCalendar") || F("featStoryCards"))) return;
+      const id = escJsArg(gameId), calendar = F("featCalendar"), story = F("featStoryCards");
+      const row = function(icon, label, attrs, primary, idAttr) {
+        const tag = attrs.href ? "a" : 'button type="button"';
+        const action = attrs.href ? 'href="' + escHtml(attrs.href) + '" target="_blank" rel="noopener"' : 'onclick="' + attrs.onclick + '"';
+        return "<" + tag + " " + action + (idAttr ? ' id="' + idAttr + '"' : "") + ' class="tap-lg w-full rounded-2xl ' + (primary ? "neon-btn" : "bg-[#111c16] border border-emerald-900/60 text-white font-bold") + ' text-sm flex items-center gap-3 px-4">' + ic(icon, "w-5 h-5 shrink-0 " + (primary ? "" : "text-emerald-300")) + '<span class="min-w-0">' + escHtml(label) + "</span></" + (attrs.href ? "a" : "button") + ">";
       };
-      // One "Add to calendar" for everyone. It uses what the phone's own calendar understands:
-      // Android → Google Calendar (its app can't open event files); iPhone, iPad and computers → an
-      // event file, which Apple Calendar, Outlook and most others open. The small link covers the rest.
-      const android = devicePlatform() === "android";
-      const icsCall = "downloadIcsCalendar('" + escJsArg(gameId) + "')";
-      const altLink = android
-        ? `<button type="button" onclick="${icsCall}" class="tap w-full flex items-center justify-center text-sm font-bold text-emerald-300">${escHtml(t("addCalUseFile"))}</button>`
-        : `<a href="${escHtml(buildGoogleCalendarUrl(g))}" target="_blank" rel="noopener" class="tap w-full flex items-center justify-center text-sm font-bold text-emerald-300">${escHtml(t("addCalUseGoogle"))}</a>`;
-      renderSheetModal(`
-        ${sheetHeader(escHtml(t("calendarShare")), escHtml(g.Title) + " · " + escHtml(whenLabel(g)), "calendar")}
-        <div class="space-y-2">
-          ${g.Status === "Cancelled" ? `<p class="text-sm text-slate-400">${escHtml(t("calendarCancelled"))}</p>` : row("calendar", t("addToCal"), android ? { href: buildGoogleCalendarUrl(g) } : { onclick: icsCall })}
-          ${g.Status === "Cancelled" ? "" : altLink + `<p class="text-xs text-slate-400">${escHtml(t("calendarOneTime"))}</p>`}
-          ${row("chat", t("copyForChat"), { onclick: "copyText(matchSummaryText(findGame('" + escJsArg(gameId) + "')), t('summaryCopied'))" })}
-          ${canShare ? row("share", t("shareEllipsis"), { onclick: "nativeShare('" + escJsArg(gameId) + "')" }, true) : ""}
-        </div>
-      `);
+      let inner = sheetHeader(escHtml(calendar ? t("calendarShare") : t("shareMatch")), escHtml(g.Title) + " · " + escHtml(shareMatchWhen(g)), "share");
+      inner += '<div class="pp-share-actions space-y-2">';
+      if (calendar && g.Status !== "Cancelled" && !isGameDisplayFinished(g)) {
+        const android = devicePlatform() === "android", icsCall = "downloadIcsCalendar('" + id + "')";
+        inner += row("calendar", t("addToCal"), android ? { href: buildGoogleCalendarUrl(g) } : { onclick: icsCall });
+        inner += android ? row("calendar", t("addCalUseFile"), { onclick: icsCall }) : '<a href="' + escHtml(buildGoogleCalendarUrl(g)) + '" target="_blank" rel="noopener" class="tap w-full flex items-center justify-center text-sm font-bold text-emerald-300">' + escHtml(t("addCalUseGoogle")) + "</a>";
+        inner += '<p class="text-xs text-slate-400">' + escHtml(t("calendarOneTime")) + "</p>";
+      }
+      inner += row("chat", t("copyForChat"), { onclick: "copyText(matchSummaryText(findGame('" + id + "')), t('summaryCopied'))" }, false, "share-copy-full");
+      inner += row("users", t("shareGuestDetails"), { onclick: "copyGuestDetails('" + id + "')" }, false, "share-copy-guests");
+      inner += '<p class="text-xs text-slate-400">' + escHtml(t("shareGuestDetailsHelp")) + "</p>";
+      if (navigator.share) inner += row("share", t("shareTextBtn"), { onclick: "nativeShare('" + id + "')" }, false, "share-text-native");
+      if (story) inner += row("image", t("storyOpen"), { onclick: "openStoryCardSheet('" + id + "')" }, true, "share-story-open");
+      inner += "</div>";
+      renderSheetModal(inner);
     }
     function nativeShare(gameId) {
-      const g = findGame(gameId); if (!g || !navigator.share) return;
-      navigator.share({ title: g.Title, text: matchSummaryText(g) }).catch(function() {});
+      const g = findGame(gameId);
+      if (!g || !currentUser || !(F("featCalendar") || F("featStoryCards")) || !navigator.share) return;
+      const epoch = authEpoch;
+      navigator.share({ title: shareTextValue(g.Title), text: matchSummaryText(g) }).catch(function(e) {
+        if (epoch === authEpoch && (!e || e.name !== "AbortError")) showToast(t("shareTextUnavailable"), true);
+      });
     }
+
+    // Manual lineup notices use the server's queue/cooldown state. The countdown
+    // is cosmetic; authorization and duplicate protection remain on the server.
+    let lineupNoticeTimer = null;
+    function clearLineupNoticeTimer() {
+      if (lineupNoticeTimer !== null) clearTimeout(lineupNoticeTimer);
+      lineupNoticeTimer = null;
+    }
+    function lineupNoticeUi(game) {
+      const notice = game.lineupNotice;
+      if (!notice) return { enabled: false, text: t("lineupNoticeUpdateNeeded") };
+      const remaining = Math.max(0, Number(notice.cooldownUntilMs || 0) - leagueNowMs());
+      let reason = notice.reason || "ready";
+      if (reason === "cooldown" && remaining <= 0) reason = notice.currentAlreadyQueued ? "alreadyQueued" : "ready";
+      if (game.hasScore || hasKickedOff(game) || game.Status === "Cancelled") reason = "closed";
+      const enabled = (reason === "ready" || reason === "pending") && gameMeta(game).canManage && !game.hasScore && !hasKickedOff(game) && game.Status !== "Cancelled" && gf(game, "teams");
+      const words = {
+        teamsOff: "lineupNoticeTeamsOff", closed: "lineupNoticeClosed", noTeams: "lineupNoticeNoTeams",
+        pushUnavailable: "lineupNoticeUnavailable", noEligiblePlayers: "lineupNoticeNoEligible",
+        alreadyQueued: "lineupNoticeAlreadyQueued", pending: "lineupNoticePending"
+      };
+      const message = reason === "cooldown" ? t("lineupNoticeCooldown", { n: Math.max(1, Math.ceil(remaining / 60000)) }) :
+        (words[reason] ? t(words[reason]) : t("lineupNoticeReady", { n: Number(notice.eligibleCount || 0) }));
+      return { enabled: enabled, text: message, remaining: remaining };
+    }
+    function lineupNoticeButton(game) {
+      if (!gameMeta(game).canManage || !gf(game, "teams")) return "";
+      const state = lineupNoticeUi(game), id = escJsArg(game.GameID);
+      return '<div class="lineup-notice-control mt-4"><button type="button" id="tm-notify" data-game-id="' + escHtml(game.GameID) + '" onclick="notifyTeams(\'' + id + '\')" ' + (state.enabled ? "" : "disabled ") +
+        'aria-describedby="tm-notify-status" class="tap-lg w-full px-3 rounded-2xl bg-emerald-950 border border-emerald-800/50 text-emerald-300 font-bold text-sm inline-flex items-center justify-center gap-2">' +
+        ic("bell", "w-5 h-5 shrink-0") + '<span class="min-w-0">' + escHtml(t("lineupNoticeButton")) + '</span></button><p id="tm-notify-status" class="text-xs text-slate-400 mt-1.5" aria-live="polite">' + escHtml(state.text) +
+        '</p><p class="text-xs text-slate-400 mt-1">' + escHtml(t("lineupNoticeHelp")) + "</p></div>";
+    }
+    function updateLineupNoticeControl(gameId) {
+      clearLineupNoticeTimer();
+      const button = byId("tm-notify"), status = byId("tm-notify-status"), g = findGame(gameId);
+      if (!button || !g || button.getAttribute("data-game-id") !== String(gameId)) return;
+      const state = lineupNoticeUi(g);
+      button.disabled = !state.enabled || !!inFlight["notify-teams-" + gameId];
+      if (status) status.textContent = state.text;
+      const untilKickoff = gameStartDate(g).getTime() - leagueNowMs();
+      const nextUpdate = Math.min(state.remaining > 0 ? state.remaining + 50 : Infinity, untilKickoff > 0 ? untilKickoff + 50 : Infinity);
+      if (Number.isFinite(nextUpdate)) lineupNoticeTimer = setTimeout(function() { updateLineupNoticeControl(gameId); }, Math.min(60000, nextUpdate));
+    }
+    async function notifyTeams(gameId) {
+      const g = findGame(gameId);
+      if (!g || !currentUser || !gameMeta(g).canManage) return;
+      if (!lineupNoticeUi(g).enabled) { updateLineupNoticeControl(gameId); return; }
+      const button = byId("tm-notify"), epoch = authEpoch;
+      await mutate("notify-teams-" + gameId, { action: "adminNotifyTeams", gameId: gameId }, { button: "tm-notify", closeSheet: false,
+        after: function() { if (authEpoch === epoch && byId("tm-notify") === button) openTeamsSheet(gameId); },
+        onError: function(res) {
+          const current = findGame(gameId);
+          if (authEpoch === epoch && current && res && res.lineupNotice) current.lineupNotice = res.lineupNotice;
+        } });
+      if (authEpoch === epoch) updateLineupNoticeControl(gameId);
+    }
+
 
     // =========================================================================
     // ORGANIZER TOOLS (captain or admin) — only the tools for switched-on features
@@ -5558,8 +6089,10 @@ body #info-pop {
           <p class="text-xs text-slate-400 leading-relaxed">${escHtml(t("teamsHelp", { n: withDefault, total: yesPlayers.length }))}</p>
         </div>
         ${has ? `<p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">${escHtml(t("tapToMove"))}</p><div class="teams-editor grid grid-cols-2 gap-2">${list("white")}${list("dark")}</div>` : `<p class="text-sm text-slate-400">${escHtml(t("noLineupYet"))}</p>`}
+        ${has ? lineupNoticeButton(g) : ""}
         <button type="button" onclick="closeModal()" class="tap-lg w-full mt-4 rounded-2xl bg-slate-800 text-slate-200 font-bold text-base">${escHtml(t("doneBtn"))}</button>
       `, "max-w-lg");
+      updateLineupNoticeControl(gameId);
     }
     function generateTeams(gameId, strategy) {
       const g = findGame(gameId); if (!g) return;
@@ -5762,6 +6295,7 @@ body #info-pop {
               ${candidates.map(function(p) { return `<option value="${escHtml(p.email)}" ${myEntry.motmVote === p.email ? "selected" : ""}>${escHtml(p.fullName)}</option>`; }).join("")}
             </select></label>` : ""}
         ${tools.length ? `<div class="grid ${tools.length > 1 ? "grid-cols-2" : "grid-cols-1"} gap-2 mt-2.5">${tools.join("")}</div>` : ""}
+        ${F("featCalendar") || F("featStoryCards") ? `<button type="button" onclick="openCalendarShareSheet('${id}')" class="tap w-full mt-2.5 px-3 rounded-xl bg-[#111c16] border border-emerald-900/60 text-emerald-300 font-bold text-sm inline-flex items-center justify-center gap-2">${ic("share", "w-4 h-4")}${escHtml(t("shareResult"))}</button>` : ""}
       </div>`;
     }
 
@@ -6518,12 +7052,12 @@ body #info-pop {
     const FEATURE_GROUPS = [
       ["grpMatchDay", ["featTeams", "trackBall", "trackPinnies", "trackGK", "featArrival", "featCaptains", "featAnnouncements", "featSmallSided"]],
       ["grpAfter", ["featScores", "featMotm", "featAttendance", "featLateDrops"]],
-      ["grpCard", ["featWeather", "featCalendar", "featRules"]],
+      ["grpCard", ["featWeather", "featCalendar", "featStoryCards", "featRules"]],
       ["grpGuests", ["maxGuests"]],
       ["grpMessages", ["msgDayBefore", "msgMatchDay", "msgGameOn", "msgConfirm", "msgMaybeMorning", "msgTwoHour", "msgOneHour"]]
     ];
     const FEATURE_ICONS = { featTeams: "shirt", trackBall: "ball", trackPinnies: "vest", trackGK: "glove", featArrival: "clock", featCaptains: "shield", featAnnouncements: "megaphone", featSmallSided: "bolt",
-      featScores: "trophy", featMotm: "star", featAttendance: "clipboard", featLateDrops: "alert", featWeather: "cloud", featCalendar: "calendar", featRules: "book",
+      featScores: "trophy", featMotm: "star", featAttendance: "clipboard", featLateDrops: "alert", featWeather: "cloud", featCalendar: "calendar", featStoryCards: "image", featRules: "book",
       maxGuests: "users", msgDayBefore: "mail", msgMatchDay: "bell", msgGameOn: "checkCircle", msgConfirm: "check", msgMaybeMorning: "help", msgTwoHour: "clock", msgOneHour: "clock" };
     function featureBlockedReason(key) {
       const s = S();
@@ -6886,6 +7420,748 @@ body #info-pop {
       }, 60);
     }
 
+    // STORY-CARD-JS-V555-START
+// Story cards v5.5.5. Inline after the app helpers and before boot.
+// Integration: disposeStoryCard() at the start of renderSheetModal()/closeModal(),
+// and storyCardContextChanged() after account/app-data changes. No network or storage.
+function storyCardCleanText(value, fallback, limit) {
+  if (typeof value !== "string" && typeof value !== "number") return fallback || "";
+  const text = String(value).replace(/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/g, " ").replace(/\s+/g, " ").trim();
+  // A missing display name must never turn an email/private identifier into exported text.
+  if (!text || text.indexOf("@") !== -1 || /^(?:p_|u_|guest_)[a-f0-9_-]{16,}$/i.test(text)) return fallback || "";
+  return Array.from(text).slice(0, limit || 160).join("");
+}
+function storyCardNumber(value, maximum) {
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.max(0, Math.min(maximum || 100000, Math.floor(n))) : 0;
+}
+function storyCardLabel(model, key, values) {
+  let value = model.labels[key] || key;
+  Object.keys(values || {}).forEach(function(k) { value = value.split("{" + k + "}").join(String(values[k])); });
+  return value;
+}
+function createStoryCardModel(game, capturedAt) {
+  const m = gameMeta(game), labels = {};
+  Object.keys(I18N.en).forEach(function(k) { if (k.indexOf("story") === 0) labels[k] = t(k); });
+  const cancelled = m.isCancelled, finished = !!m.ended || !!game.hasScore;
+  const validScore = function(v) { return v !== "" && v !== null && v !== undefined && Number.isInteger(Number(v)) && Number(v) >= 0 && Number(v) <= 99; };
+  const scored = !cancelled && !!game.hasScore && validScore(game.ScoreWhite) && validScore(game.ScoreDark);
+  const at = Number(capturedAt) || Date.now();
+  let stamp;
+  try { stamp = new Intl.DateTimeFormat(typeof locale === "function" ? locale() : "en-US", { timeZone:leagueTimeZone(), month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit", timeZoneName:"short" }).format(new Date(at)); }
+  catch (e) { stamp = new Date(at).toISOString().replace("T", " ").slice(0, 16) + " UTC"; }
+  let when = typeof shareMatchWhen === "function" ? shareMatchWhen(game) : fmtDate(game.Date, { weekday:"short", month:"short", day:"numeric", year:"numeric" }) + " · " + fmtTime(game.Time);
+  const sides = ["white", "dark"].map(function(side) {
+    const shirt = teamShirt(side);
+    return { side:side, title:storyCardCleanText(teamLabel(side), side === "white" ? t("team1Name") : t("team2Name"), 60), shirt:storyCardCleanText(shirtName(shirt), "", 40), color:SHIRT_HEX[shirt] || "#64748b" };
+  });
+  const roster = cancelled ? [] : (game.roster || []).filter(function(r) {
+    return finished ? isRecordedParticipant(r) : r.status === "Yes";
+  });
+  const entities = [];
+  roster.forEach(function(r, ri) {
+    const host = String(r.email || "row-" + ri), pending = !finished && !!r.needsReconfirm;
+    entities.push({ id:"p:" + host, host:host, sourceName:String(r.fullName || ""), name:storyCardCleanText(r.fullName, labels.storyPlayer || "Player", 80), guest:false, pending:pending });
+    (Array.isArray(r.guestNames) ? r.guestNames : []).forEach(function(name, gi) {
+      entities.push({ id:"g:" + host + ":" + gi, host:host, sourceName:String(name || ""), name:storyCardCleanText(name, labels.storyGuest, 80), guest:true, pending:pending });
+    });
+  });
+  const totalNames = entities.length, limited = entities.slice(0, 60), assigned = new Set(), groups = [];
+  const publicRow = function(e) { return { name:e.name, guest:e.guest, pending:e.pending }; };
+  if (gf(game, "teams") && game.teams) {
+    sides.forEach(function(side) {
+      const rows = [];
+      (Array.isArray(game.teams[side.side]) ? game.teams[side.side] : []).forEach(function(p) {
+        const entity = limited.find(function(e) {
+          if (assigned.has(e.id)) return false;
+          return p.isGuest ? e.guest && e.host === String(p.hostEmail || "") && e.sourceName === String(p.fullName || "")
+            : !e.guest && e.host === String(p.email || p.key || "");
+        });
+        if (entity) { assigned.add(entity.id); rows.push(publicRow(entity)); }
+      });
+      if (rows.length) groups.push({ title:side.title, shirt:side.shirt, color:side.color, rows:rows });
+    });
+  }
+  const remaining = limited.filter(function(e) { return !assigned.has(e.id); }).map(publicRow);
+  if (remaining.length) groups.push({ title:groups.length ? labels.storyUnassigned : labels.storyRoster, shirt:"", color:"#547663", rows:remaining });
+  const hasLineups = groups.some(function(group) { return !!group.shirt; });
+  let weather = null;
+  if (!cancelled && !finished && typeof weatherInfo === "function") {
+    const w = weatherInfo(game);
+    if (w && w.text) {
+      // Existing weatherInfo uses a slash only for its daily high/low fallback.
+      weather = { title:labels[w.text.indexOf("/") !== -1 ? "storyDailyWeather" : "storyKickoffWeather"], value:storyCardCleanText(w.text, "", 48), sub:storyCardCleanText(w.sub, "", 100) };
+    }
+  }
+  let motm = null;
+  if (scored && gf(game, "motm")) {
+    const tally = game.motmTally && typeof game.motmTally === "object" ? Object.values(game.motmTally).map(function(v) { return storyCardNumber(v); }) : [];
+    const top = tally.length ? Math.max.apply(null, tally) : storyCardNumber(game.motmWinnerVotes);
+    const tied = top ? tally.filter(function(v) { return v === top; }).length : 0;
+    const name = storyCardCleanText(game.motmWinnerName, "", 80);
+    if (tied > 1) motm = { tied:tied, votes:top, name:"" };
+    else if (name && top > 0) motm = { tied:0, votes:top, name:name };
+  }
+  const r = typeof appData !== "undefined" && appData.rivalryStats || {};
+  const rivalry = { a:storyCardNumber(r.whiteWins), draws:storyCardNumber(r.draws), b:storyCardNumber(r.darkWins), total:storyCardNumber(r.totalMatchesScored) };
+  const min = storyCardNumber(m.minThreshold, 1000), cap = Math.max(1, storyCardNumber(m.maxCap, 1000));
+  const confirmed = storyCardNumber(m.confirmedCount, 1000), reserved = storyCardNumber(m.yesCount, 1000), pending = storyCardNumber(m.pendingReconfirmCount, 1000);
+  return {
+    labels:labels, capturedAt:at, stamp:stamp,
+    title:storyCardCleanText(game.Title, "Pitch Pulse", 120), date:storyCardCleanText(when, "", 180), field:storyCardCleanText(game.LocationName, "", 100),
+    fileDate:String(game.Date || "match").replace(/[^0-9A-Za-z-]/g, "").slice(0, 24),
+    kind:cancelled ? "cancelled" : scored ? "scored" : finished ? "finished" : m.kickedOff ? "live" : "upcoming",
+    confirmed:confirmed, reserved:reserved, pending:pending, capacity:cap, minimum:min, spots:Math.max(0, cap - reserved), needed:Math.max(0, min - confirmed),
+    teamsEnabled:!!gf(game, "teams"), sides:sides, score:scored ? [Number(game.ScoreWhite), Number(game.ScoreDark)] : null,
+    groups:groups, totalNames:totalNames, namesShown:limited.length, hasLineups:hasLineups, teamsStale:hasLineups && !!game.teamsStale,
+    weather:weather, motm:motm, rivalry:scored && rivalry.total > 0 ? rivalry : null,
+    photoAllowed:!cancelled && finished
+  };
+}
+function storyCardPages(model, includeNames) {
+  const pages = [{ kind:"summary" }], columns = [];
+  if (includeNames && model.kind !== "cancelled") model.groups.forEach(function(group) {
+    for (let i = 0; i < group.rows.length; i += 8) {
+      columns.push({ title:i ? storyCardLabel(model, "storyContinued", { team:group.title }) : group.title, shirt:group.shirt, color:group.color, rows:group.rows.slice(i, i + 8) });
+    }
+  });
+  for (let i = 0; i < columns.length; i += 2) pages.push({ kind:"roster", columns:columns.slice(i, i + 2) });
+  pages.forEach(function(page, i) { page.index = i; page.total = pages.length; });
+  return pages;
+}
+function storyCardStatus(model) {
+  const key = { cancelled:"storyCancelled", scored:"storyFinal", finished:"storyFinished", live:"storyLive" }[model.kind];
+  return key ? storyCardLabel(model, key) : !model.needed ? storyCardLabel(model, "storyGameOn") : storyCardLabel(model, "storyMinNeeded", { n:model.needed });
+}
+function storyCardTextVersion(model, page, options) {
+  options = options || {};
+  const L = function(k, p) { return storyCardLabel(model, k, p); };
+  const out = ["Pitch Pulse", model.title, model.date, model.field, storyCardStatus(model)];
+  if (page.kind === "roster") {
+    if (model.teamsStale) out.push(L("storyLineupsStaleDetail"));
+    page.columns.forEach(function(col) {
+      out.push("", col.title + (col.shirt ? " · " + L("storyShirt", { color:col.shirt }) : ""));
+      col.rows.forEach(function(row) { out.push(row.name + (row.guest ? " · " + L("storyGuest") : "") + (row.pending ? " · " + L("storyAwaiting") : "")); });
+    });
+  } else if (model.kind === "cancelled") out.push(L("storyCancelledDetail"));
+  else if (model.kind === "scored") {
+    out.push(model.sides[0].title + " " + model.score[0] + " – " + model.score[1] + " " + model.sides[1].title);
+    if (options.photo) out.push(L("storyPhotoIncluded"));
+    if (options.includeNames && model.motm) out.push(model.motm.tied ? L("storyMOTMTie") + ": " + L("storyMOTMTieN", { n:model.motm.tied, votes:model.motm.votes }) : L("storyMOTM") + ": " + model.motm.name + " · " + L("storyVotesN", { n:model.motm.votes }));
+    if (model.rivalry) out.push(L("storyRivalry"), model.sides[0].title + ": " + L("storyWinsN", { n:model.rivalry.a }), L("storyDrawsN", { n:model.rivalry.draws }), model.sides[1].title + ": " + L("storyWinsN", { n:model.rivalry.b }), L("storyRetainedGames", { n:model.rivalry.total }));
+  } else if (model.kind === "finished") {
+    out.push(L("storyNoScore"));
+    if (options.photo) out.push(L("storyPhotoIncluded"));
+  } else {
+    out.push(L("storyConfirmedN", { n:model.confirmed }) + " / " + model.capacity);
+    if (model.pending) out.push(L("storyReservedN", { n:model.reserved }), L("storyAwaitingN", { n:model.pending }));
+    out.push(model.spots ? L("storySpotsN", { n:model.spots }) : L("storyFull"));
+    if (model.reserved > model.capacity) out.push(L("storyOverCapacity", { n:model.reserved - model.capacity }));
+    out.push(L("storyMinPlayers", { n:model.minimum }));
+    if (model.weather) out.push(model.weather.title + ": " + model.weather.value + (model.weather.sub ? " · " + model.weather.sub : ""));
+    if (model.teamsEnabled) model.sides.forEach(function(side) { out.push(side.title + " · " + L("storyShirt", { color:side.shirt })); });
+    if (model.teamsStale) out.push(L("storyLineupsStaleDetail"));
+    if (options.includeNames && model.namesShown) out.push(L("storyNamesNext"));
+  }
+  if (options.includeNames && model.totalNames > model.namesShown) out.push(L("storyRosterLimit", { n:model.namesShown, total:model.totalNames }));
+  out.push("", L("storySnapshot", { date:model.stamp }), L("storyPageCount", { n:page.index + 1, total:page.total }));
+  return out.filter(function(v) { return v !== undefined && v !== null; }).join("\n");
+}
+
+// Pure canvas renderer: no DOM reads, identifiers, URLs, network, or image loading.
+// Receives a canvas (including @napi-rs/canvas in tests) and an already-downsampled photo.
+function drawStoryCard(canvas, model, page, options) {
+  options = options || {};
+  canvas.width = 1080; canvas.height = 1920;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("canvas-unavailable");
+  const C = { paper:"#f4f6f2", ink:"#172a20", green:"#086344", muted:"#566a5c", line:"#d5dfd6", pale:"#e2ece3", amber:"#80551c", amberPale:"#f1e7d2", white:"#ffffff" };
+  const L = function(k, p) { return storyCardLabel(model, k, p); };
+  const font = function(size, weight) {
+    // Hundred-step weights also work with non-variable system fonts and native canvas adapters.
+    const standardWeight = Math.max(400, Math.min(800, Math.round((Number(weight) || 600) / 100) * 100));
+    ctx.font = standardWeight + " " + size + 'px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+  };
+  function roundRect(x, y, w, h, radius, color) {
+    const r = Math.min(radius || 0, w / 2, h / 2);
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+    if (color) { ctx.fillStyle = color; ctx.fill(); }
+  }
+  function linesFor(text, width, size, weight) {
+    font(size, weight);
+    const lines = [], words = String(text || "").split(/\s+/), fit = function(s) { return ctx.measureText(s).width <= width; };
+    let line = "";
+    words.forEach(function(word) {
+      if (!word) return;
+      if (line && fit(line + " " + word)) { line += " " + word; return; }
+      if (line) { lines.push(line); line = ""; }
+      if (fit(word)) { line = word; return; }
+      Array.from(word).forEach(function(ch) { if (line && !fit(line + ch)) { lines.push(line); line = ""; } line += ch; });
+    });
+    if (line || !lines.length) lines.push(line);
+    return lines;
+  }
+  function text(value, x, y, width, size, lineHeight, maxLines, color, weight, align) {
+    let lines = linesFor(value, width, size, weight), limited = lines.length > maxLines;
+    lines = lines.slice(0, maxLines);
+    font(size, weight);
+    if (limited) {
+      let last = Array.from(lines[lines.length - 1]);
+      while (last.length && ctx.measureText(last.join("") + "…").width > width) last.pop();
+      lines[lines.length - 1] = last.join("") + "…";
+    }
+    ctx.save(); ctx.beginPath(); ctx.rect(x - 1, y - 2, width + 2, maxLines * lineHeight + 4); ctx.clip();
+    ctx.fillStyle = color || C.ink; ctx.textBaseline = "top"; ctx.textAlign = align || "left";
+    const tx = align === "center" ? x + width / 2 : align === "right" ? x + width : x;
+    lines.forEach(function(line, i) { ctx.fillText(line, tx, y + i * lineHeight); }); ctx.restore();
+    return lines.length * lineHeight;
+  }
+  function dot(x, y, color, radius) {
+    ctx.beginPath(); ctx.arc(x, y, radius || 12, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); ctx.strokeStyle = "#789084"; ctx.lineWidth = 2; ctx.stroke();
+  }
+  function line(y) { ctx.fillStyle = C.line; ctx.fillRect(72, y, 936, 2); }
+  function photoBox(x, y, w, h) {
+    const photo = options.photo;
+    if (!photo || !photo.width || !photo.height) return;
+    ctx.save(); roundRect(x, y, w, h, 30); ctx.clip(); ctx.fillStyle = "#e1e9e2"; ctx.fillRect(x, y, w, h);
+    const cover = options.photoMode !== "contain", scale = cover ? Math.max(w / photo.width, h / photo.height) : Math.min(w / photo.width, h / photo.height);
+    const dw = photo.width * scale, dh = photo.height * scale;
+    const fx = cover ? Math.max(0, Math.min(1, Number.isFinite(Number(options.focalX)) ? Number(options.focalX) : .5)) : .5;
+    const fy = cover ? Math.max(0, Math.min(1, Number.isFinite(Number(options.focalY)) ? Number(options.focalY) : .5)) : .5;
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(photo, x + (w - dw) * fx, y + (h - dh) * fy, dw, dh); ctx.restore();
+  }
+  function motmBand(y) {
+    if (!options.includeNames || !model.motm) return;
+    const motm = model.motm;
+    text(L(motm.tied ? "storyMOTMTie" : "storyMOTM"), 72, y, 936, 28, 35, 1, C.muted, 650);
+    text(motm.tied ? L("storyMOTMTieN", { n:motm.tied, votes:motm.votes }) : motm.name + " · " + L("storyVotesN", { n:motm.votes }), 72, y + 43, 936, 39, 46, 2, C.ink, 750);
+  }
+  function rivalry(y) {
+    if (!model.rivalry) return;
+    const r = model.rivalry, total = r.a + r.draws + r.b;
+    text(L("storyRivalry"), 72, y, 936, 30, 38, 1, C.ink, 750);
+    const segs = [{ n:r.a, color:C.green }, { n:r.draws, color:"#b9c7bc" }, { n:r.b, color:"#26392f" }];
+    ctx.save(); roundRect(72, y + 49, 936, 15, 7, C.line); ctx.clip(); let x = 72;
+    segs.forEach(function(seg) { const w = total ? 936 * seg.n / total : 0; ctx.fillStyle = seg.color; ctx.fillRect(x, y + 49, w, 15); x += w; }); ctx.restore();
+    text(model.sides[0].title + " " + r.a + " · " + L("storyDrawsN", { n:r.draws }) + " · " + model.sides[1].title + " " + r.b, 72, y + 78, 936, 28, 34, 1, C.ink, 650);
+    text(L("storyRetainedGames", { n:r.total }), 72, y + 119, 936, 25, 32, 1, C.muted, 500);
+  }
+  ctx.fillStyle = C.paper; ctx.fillRect(0, 0, 1080, 1920);
+  // Small code-native pitch mark, avoiding external assets and canvas taint.
+  roundRect(72, 64, 64, 64, 18, C.green); ctx.strokeStyle = C.white; ctx.lineWidth = 2;
+  ctx.strokeRect(86, 77, 36, 38); ctx.beginPath(); ctx.moveTo(86, 96); ctx.lineTo(122, 96); ctx.stroke(); ctx.beginPath(); ctx.arc(104, 96, 8, 0, Math.PI * 2); ctx.stroke();
+  text("PITCH PULSE", 155, 80, 580, 31, 40, 1, C.ink, 800);
+  text(page.kind === "roster" ? L("storyRoster") : model.kind === "scored" ? L("storyFinal") : L("storyMatchday"), 720, 84, 288, 25, 32, 1, C.muted, 650, "right");
+  text(model.title, 72, 178, 936, 73, 84, 2, C.ink, 800);
+  text(model.date, 72, 365, 936, 35, 44, 2, C.muted, 600);
+  text(model.field, 72, 470, 936, 36, 43, 2, C.ink, 650);
+  line(580);
+  if (page.kind === "roster") {
+    page.columns.forEach(function(col, ci) {
+      const x = ci ? 560 : 72, width = 448;
+      dot(x + 12, 623, col.color);
+      text(col.title, x + 36, 603, width - 36, 32, 38, 2, C.ink, 750);
+      if (col.shirt) text(L("storyShirt", { color:col.shirt }), x, 683, width, 25, 31, 1, C.muted, 550);
+      col.rows.forEach(function(row, ri) {
+        const y = 732 + ri * 130, nameSize = linesFor(row.name, width - 12, 36, 650).length > 2 ? 32 : 36;
+        const nameHeight = text(row.name, x, y, width - 12, nameSize, nameSize === 32 ? 34 : 39, 3, C.ink, 650);
+        const tags = [row.guest ? L("storyGuest") : "", row.pending ? L("storyAwaiting") : ""].filter(Boolean).join(" · ");
+        if (tags) text(tags, x, y + Math.min(104, nameHeight + 8), width - 12, 22, 26, 1, row.pending ? C.amber : C.muted, 650);
+      });
+    });
+  } else if (model.kind === "cancelled") {
+    roundRect(72, 662, 936, 308, 36, "#e9eeea");
+    text(L("storyCancelled"), 112, 730, 856, 76, 90, 2, C.ink, 800);
+    text(L("storyCancelledDetail"), 72, 1030, 936, 40, 53, 3, C.muted, 550);
+  } else if (model.kind === "scored") {
+    roundRect(72, 620, 936, 254, 36, C.green);
+    model.sides.forEach(function(side, i) {
+      const x = i ? 592 : 112;
+      dot(x + 12, 666, side.color);
+      text(side.title, x + 38, 644, 330, 34, 40, 2, C.white, 700);
+      text(String(model.score[i]), x, 725, 376, 104, 118, 1, C.white, 800, "center");
+    });
+    text("–", 500, 732, 80, 72, 90, 1, "#c3ddcf", 500, "center");
+    const showMotm = options.includeNames && model.motm;
+    if (options.photo) photoBox(72, 913, 936, model.rivalry ? (showMotm ? 536 : 650) : (showMotm ? 620 : 810));
+    else {
+      const result = model.score[0] === model.score[1] ? L("storyDraw") : L("storyWins", { team:model.sides[model.score[0] > model.score[1] ? 0 : 1].title });
+      text(result, 72, 1025, 936, 78, 92, 3, C.ink, 800);
+    }
+    motmBand(model.rivalry ? 1474 : 1600); rivalry(1640);
+  } else if (model.kind === "finished") {
+    text(L("storyFinished"), 72, 634, 936, 62, 76, 2, C.ink, 800);
+    text(L("storyNoScore"), 72, 805, 936, 36, 45, 2, C.muted, 600);
+    if (options.photo) photoBox(72, 932, 936, 816);
+  } else {
+    text(storyCardStatus(model), 72, 633, 936, 40, 51, 2, model.needed ? C.amber : C.green, 750);
+    text(model.confirmed + " / " + model.capacity, 72, 765, 936, 112, 130, 1, C.ink, 800);
+    text(L("storyConfirmedN", { n:model.confirmed }) + " · " + L("storyMinPlayers", { n:model.minimum }), 72, 905, 936, 32, 41, 2, C.muted, 600);
+    roundRect(72, 1012, 936, 20, 10, C.line);
+    ctx.save(); roundRect(72, 1012, 936, 20, 10); ctx.clip();
+    const confirmedWidth = 936 * Math.min(1, model.confirmed / model.capacity), heldWidth = 936 * Math.min(1, model.reserved / model.capacity);
+    ctx.fillStyle = "#d9b66d"; ctx.fillRect(72, 1012, heldWidth, 20); ctx.fillStyle = C.green; ctx.fillRect(72, 1012, confirmedWidth, 20); ctx.restore();
+    text(model.spots ? L("storySpotsN", { n:model.spots }) : L("storyFull"), 72, 1061, 936, 38, 46, 1, C.ink, 700);
+    if (model.pending) text(L("storyAwaitingN", { n:model.pending }) + " · " + L("storyReservedN", { n:model.reserved }), 72, 1121, 936, 30, 38, 2, C.amber, 600);
+    else if (model.reserved > model.capacity) text(L("storyOverCapacity", { n:model.reserved - model.capacity }), 72, 1121, 936, 30, 38, 2, C.amber, 600);
+    if (model.weather) {
+      roundRect(72, 1242, 936, 195, 28, C.pale);
+      text(model.weather.title, 102, 1268, 570, 28, 35, 1, C.muted, 600);
+      text(model.weather.value, 102, 1320, 570, 57, 68, 1, C.ink, 750);
+      if (model.weather.sub) text(model.weather.sub, 620, 1291, 354, 27, 37, 3, C.ink, 600);
+    }
+    if (model.teamsEnabled) model.sides.forEach(function(side, i) {
+      const x = i ? 560 : 72;
+      dot(x + 14, 1505, side.color, 14);
+      text(side.title, x + 40, 1485, 400, 35, 43, 2, C.ink, 750);
+      text(L("storyShirt", { color:side.shirt }), x, 1590, 448, 29, 37, 2, C.muted, 550);
+    });
+    if (model.teamsStale) text(L("storyLineupsStaleDetail"), 72, 1717, 936, 28, 35, 1, C.amber, 650);
+    else if (options.includeNames && model.namesShown) text(L("storyNamesNext"), 72, 1717, 936, 28, 35, 1, C.muted, 550);
+  }
+  line(1804);
+  const footerNote = options.includeNames && model.totalNames > model.namesShown ? L("storyRosterLimit", { n:model.namesShown, total:model.totalNames }) : L("storySnapshot", { date:model.stamp });
+  text(footerNote, 72, 1834, 730, 24, 31, 2, C.muted, 500);
+  text((page.index + 1) + " / " + page.total, 845, 1835, 163, 27, 34, 1, C.muted, 650, "right");
+  return canvas;
+}
+
+const PitchPulseStoryCards = (function() {
+  let active = null;
+  const MAX_PHOTO_BYTES = 20 * 1024 * 1024, MAX_PHOTO_EDGE = 2048;
+  function own(s) { return active === s && !s.disposed && s.section && s.section.isConnected; }
+  function authorized(s) { return own(s) && !!currentUser && myEmail() === s.owner && F("featStoryCards") && !!findGame(s.gameId); }
+  function alive(s, revision) { return authorized(s) && (revision === undefined || revision === s.revision); }
+  function el(s, id) { return s.section.querySelector("#pp-story-" + id); }
+  function setStatus(s, message, error) { if (!own(s)) return; const node = el(s, "status"); node.textContent = message || ""; node.dataset.error = error ? "true" : "false"; }
+  function revoke(s, url) { if (!url) return; try { URL.revokeObjectURL(url); } catch (e) {} s.urls.delete(url); }
+  function urlFor(s, blob) { const url = URL.createObjectURL(blob); s.urls.add(url); return url; }
+  function releasePhoto(s) { if (s.photo) { s.photo.width = 1; s.photo.height = 1; s.photo = null; } }
+  function dispose() {
+    const s = active; active = null;
+    if (!s) return;
+    s.disposed = true; s.revision++; s.photoSequence++;
+    clearTimeout(s.timer); if (s.observer) s.observer.disconnect(); if (s.cancelDecode) s.cancelDecode();
+    s.urls.forEach(function(url) { try { URL.revokeObjectURL(url); } catch (e) {} }); s.urls.clear();
+    s.ready = []; s.files = []; releasePhoto(s);
+    if (s.canvas) { s.canvas.width = 1; s.canvas.height = 1; s.canvas = null; }
+    if (s.section) { const input = el(s, "photo"), preview = el(s, "preview"); if (input) input.value = ""; if (preview) preview.removeAttribute("src"); }
+    s.section = null;
+  }
+  function check(s) { if (authorized(s)) return true; if (own(s)) { dispose(); closeModal(); } return false; }
+  function canShare(files) {
+    try { return !!(files.length && navigator.share && navigator.canShare && navigator.canShare({ files:files })); } catch (e) { return false; }
+  }
+  function shareChoice(s) {
+    const selected = s.files[s.page] ? [s.files[s.page]] : [];
+    if (s.all && s.files.length > 1 && canShare(s.files)) return { files:s.files, all:true };
+    return { files:canShare(selected) ? selected : [], all:false };
+  }
+  function updateControls(s) {
+    if (!own(s)) return;
+    const ready = s.ready.length === s.pages.length && !s.dirty && !s.drawing && !s.photoBusy, many = s.pages.length > 1;
+    el(s, "prev").disabled = s.page === 0; el(s, "next").disabled = s.page >= s.pages.length - 1;
+    el(s, "pages").hidden = !many;
+    el(s, "page-label").textContent = t("storyPageCount", { n:s.page + 1, total:s.pages.length });
+    el(s, "scope-group").hidden = !many;
+    el(s, "download-hint").hidden = !many;
+    const choice = ready ? shareChoice(s) : { files:[], all:false };
+    const share = el(s, "share");
+    share.hidden = !navigator.share || !navigator.canShare;
+    share.disabled = !ready || !choice.files.length || s.sharing;
+    share.textContent = choice.all ? t("storyShareAll", { n:s.pages.length }) : many ? t("storyShareSelected") : t("storyShare");
+    el(s, "share-fallback").hidden = !(ready && s.all && many && !choice.all && choice.files.length);
+    const save = el(s, "save"); save.textContent = many ? t("storySaveSelected") : t("storySave"); save.disabled = !ready;
+    el(s, "names-empty").hidden = !s.includeNames || s.model.namesShown > 0 || s.model.kind === "cancelled";
+    el(s, "names-limit").hidden = !s.includeNames || s.model.totalNames <= s.model.namesShown;
+    el(s, "photo-group").hidden = !s.model.photoAllowed;
+    el(s, "photo").disabled = s.photoBusy;
+    el(s, "photo-remove").hidden = !s.photo && !s.photoBusy;
+    el(s, "crop").hidden = !s.photo;
+    el(s, "focal").hidden = !s.photo || s.photoMode === "contain";
+    el(s, "preview-wrap").setAttribute("aria-busy", s.dirty || s.drawing || s.photoBusy ? "true" : "false");
+  }
+  function currentPreview(s) {
+    if (!own(s)) return;
+    const blob = s.ready[s.page], img = el(s, "preview");
+    if (!blob) return;
+    const old = s.previewUrl; s.previewUrl = urlFor(s, blob); img.src = s.previewUrl; img.hidden = false; revoke(s, old);
+    img.alt = t("storyPreviewAlt", { n:s.page + 1, total:s.pages.length, title:s.model.title });
+    el(s, "placeholder").hidden = true;
+    el(s, "text").textContent = storyCardTextVersion(s.model, s.pages[s.page], { includeNames:s.includeNames, photo:!!s.photo });
+  }
+  function pngBlob(canvas) {
+    return new Promise(function(resolve, reject) {
+      let settled = false;
+      const timer = setTimeout(function() { if (!settled) { settled = true; reject(new Error("png-timeout")); } }, 15000);
+      try {
+        canvas.toBlob(function(blob) { if (settled) return; settled = true; clearTimeout(timer); if (blob && blob.size) resolve(blob); else reject(new Error("png-empty")); }, "image/png");
+      } catch (error) { settled = true; clearTimeout(timer); reject(error); }
+    });
+  }
+  async function render(s) {
+    if (!alive(s) || s.photoBusy || s.drawing || !s.dirty) return;
+    s.drawing = true; updateControls(s);
+    try {
+      while (alive(s) && s.dirty && !s.photoBusy) {
+        s.dirty = false;
+        const rev = s.revision, model = s.model, pages = s.pages, blobs = [], files = [];
+        const options = { includeNames:s.includeNames, photo:s.photo, photoMode:s.photoMode, focalX:s.focalX, focalY:s.focalY };
+        let failed = null;
+        for (let i = 0; i < pages.length; i++) {
+          if (!alive(s, rev)) break;
+          try {
+            drawStoryCard(s.canvas, model, pages[i], options);
+            const blob = await pngBlob(s.canvas);
+            if (!alive(s, rev)) break;
+            blobs.push(blob);
+            try { files.push(new File([blob], "pitch-pulse-" + model.fileDate + "-p" + (i + 1) + ".png", { type:"image/png" })); } catch (e) { files.push(null); }
+          } catch (error) { failed = error; break; }
+        }
+        if (!alive(s, rev)) continue;
+        if (failed) {
+          const unsupported = failed.message === "canvas-unavailable" || typeof s.canvas.toBlob !== "function";
+          const message = t(unsupported ? "storyCanvasUnsupported" : "storyRenderError");
+          setStatus(s, message, true); el(s, "placeholder").textContent = message; el(s, "retry").hidden = unsupported; break;
+        }
+        s.ready = blobs; s.files = files.every(Boolean) ? files : [];
+        currentPreview(s);
+        setStatus(s, pages.length > 1 ? t("storyReadyPages", { n:pages.length }) : t("storyReady"));
+      }
+    } finally { s.drawing = false; if (own(s)) updateControls(s); }
+  }
+  function schedule(s, delay) {
+    if (!alive(s)) return;
+    s.revision++; s.dirty = true; s.ready = []; s.files = [];
+    clearTimeout(s.timer); el(s, "retry").hidden = true;
+    // The accessible alternative is available even if PNG creation is unsupported or fails.
+    el(s, "text").textContent = storyCardTextVersion(s.model, s.pages[s.page], { includeNames:s.includeNames, photo:!!s.photo });
+    setStatus(s, t(s.photoBusy ? "storyPhotoWorking" : "storyPreparing")); updateControls(s);
+    s.timer = setTimeout(function() { render(s); }, delay || 0);
+  }
+  function refreshPages(s) {
+    s.pages = storyCardPages(s.model, s.includeNames); s.page = Math.min(s.page, s.pages.length - 1); schedule(s);
+  }
+  function setPage(s, page) {
+    if (!check(s)) return;
+    s.page = Math.max(0, Math.min(s.pages.length - 1, page));
+    el(s, "text").textContent = storyCardTextVersion(s.model, s.pages[s.page], { includeNames:s.includeNames, photo:!!s.photo });
+    currentPreview(s); updateControls(s);
+  }
+  function share(s) {
+    if (!check(s) || s.dirty || s.drawing || s.photoBusy || s.sharing) return;
+    const choice = shareChoice(s); if (!choice.files.length) return;
+    // No await before this call: files are prepared, preserving the tap's user activation.
+    s.sharing = true; updateControls(s);
+    let promise;
+    try { promise = navigator.share({ files:choice.files, title:s.model.title }); }
+    catch (error) { promise = Promise.reject(error); }
+    Promise.resolve(promise).catch(function(error) { if (own(s) && (!error || error.name !== "AbortError")) setStatus(s, t("storyShareError"), true); })
+      .finally(function() { s.sharing = false; if (own(s)) updateControls(s); });
+  }
+  function save(s) {
+    if (!check(s) || s.dirty || s.drawing || s.photoBusy || !s.ready[s.page]) return;
+    const url = urlFor(s, s.ready[s.page]), a = document.createElement("a");
+    a.href = url; a.download = "pitch-pulse-" + s.model.fileDate + "-p" + (s.page + 1) + ".png"; a.rel = "noopener";
+    try { document.body.appendChild(a); a.click(); }
+    catch (error) { setStatus(s, t("storySaveError"), true); }
+    finally { a.remove(); }
+    setTimeout(function() { revoke(s, url); }, 60000);
+  }
+  function photoError(key) { const error = new Error(key); error.storyKey = key; return error; }
+  // Header preflight is a size check, not a replacement for the browser's image validator.
+  // Keep this helper's raw (unrotated) width/height contract; orientation is read separately.
+  function photoHeaderSize(bytes, png, jpeg) {
+    if (png && bytes.length >= 24 && bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71 && bytes[4] === 13 && bytes[5] === 10 && bytes[6] === 26 && bytes[7] === 10 && bytes[8] === 0 && bytes[9] === 0 && bytes[10] === 0 && bytes[11] === 13 && bytes[12] === 73 && bytes[13] === 72 && bytes[14] === 68 && bytes[15] === 82) {
+      const u32 = function(i) { return bytes[i] * 16777216 + (bytes[i + 1] << 16) + (bytes[i + 2] << 8) + bytes[i + 3]; };
+      const width = u32(16), height = u32(20);
+      return width && height ? { width:width, height:height } : null;
+    }
+    if (!jpeg || bytes.length < 2 || bytes[0] !== 255 || bytes[1] !== 216) return null;
+    for (let i = 2; i + 1 < bytes.length;) {
+      if (bytes[i] !== 255) return null;
+      const marker = bytes[i + 1];
+      if (marker === 255) { i++; continue; }
+      if (marker === 1 || (marker >= 208 && marker <= 215)) { i += 2; continue; }
+      if (marker === 217 || marker === 218) return null;
+      if (marker === 0 || marker === 216 || i + 3 >= bytes.length) return null;
+      const length = (bytes[i + 2] << 8) + bytes[i + 3], end = i + 2 + length;
+      if (length < 2 || end > bytes.length) return null;
+      if (marker >= 192 && marker <= 207 && marker !== 196 && marker !== 200 && marker !== 204) {
+        if (length < 11 || !bytes[i + 9] || length !== 8 + 3 * bytes[i + 9]) return null;
+        const height = (bytes[i + 5] << 8) + bytes[i + 6], width = (bytes[i + 7] << 8) + bytes[i + 8];
+        return width && height ? { width:width, height:height } : null;
+      }
+      i = end;
+    }
+    return null;
+  }
+  // Only the TIFF IFD0 orientation tag is needed. No thumbnail/next-IFD recursion, and
+  // every offset is checked against its enclosing EXIF chunk, not the entire photo.
+  // Zero means indeterminate metadata: keep native orientation and do not request a resize.
+  function photoTiffOrientation(bytes, start, end) {
+    if (start < 0 || end > bytes.length || end - start < 8) return 0;
+    const little = bytes[start] === 73 && bytes[start + 1] === 73;
+    if (!little && !(bytes[start] === 77 && bytes[start + 1] === 77)) return 0;
+    const u16 = function(i) { return little ? bytes[i] + (bytes[i + 1] << 8) : (bytes[i] << 8) + bytes[i + 1]; };
+    const u32 = function(i) { return little ? bytes[i] + (bytes[i + 1] << 8) + (bytes[i + 2] << 16) + bytes[i + 3] * 16777216 : bytes[i] * 16777216 + (bytes[i + 1] << 16) + (bytes[i + 2] << 8) + bytes[i + 3]; };
+    if (u16(start + 2) !== 42) return 0;
+    const offset = u32(start + 4);
+    if (!offset) return 1;
+    const ifd = start + offset;
+    if (offset < 8 || ifd + 2 > end) return 0;
+    const count = u16(ifd);
+    if (count > Math.floor((end - ifd - 2) / 12)) return 0;
+    let orientation = 1, found = false;
+    for (let n = 0; n < count; n++) {
+      const entry = ifd + 2 + n * 12;
+      if (u16(entry) !== 274) continue;
+      if (u16(entry + 2) !== 3 || u32(entry + 4) !== 1) return 0;
+      const value = u16(entry + 8);
+      if (value < 1 || value > 8 || (found && orientation !== value)) return 0;
+      orientation = value; found = true;
+    }
+    return orientation;
+  }
+  function photoHeaderOrientation(bytes, png, jpeg) {
+    let orientation = 1, seen = false;
+    const merge = function(value) { if (!value || (seen && orientation !== value)) orientation = 0; else if (orientation) orientation = value; seen = true; };
+    const result = function(complete) { return { orientation:orientation, complete:complete }; };
+    if (jpeg) {
+      for (let i = 2; i < bytes.length;) {
+        if (i + 1 >= bytes.length) return result(false);
+        if (bytes[i] !== 255) return { orientation:0, complete:true };
+        const marker = bytes[i + 1];
+        if (marker === 255) { i++; continue; }
+        if (marker === 1 || (marker >= 208 && marker <= 215)) { i += 2; continue; }
+        // EXIF belongs in the JPEG header. Do not scan the compressed image stream.
+        if (marker === 217 || marker === 218) return result(true);
+        if (marker === 0 || marker === 216) return { orientation:0, complete:true };
+        if (i + 3 >= bytes.length) return result(false);
+        const length = (bytes[i + 2] << 8) + bytes[i + 3], end = i + 2 + length;
+        if (length < 2) return { orientation:0, complete:true };
+        if (end > bytes.length) return result(false);
+        const p = i + 4;
+        if (marker === 225 && length >= 8 && bytes[p] === 69 && bytes[p + 1] === 120 && bytes[p + 2] === 105 && bytes[p + 3] === 102 && bytes[p + 4] === 0 && bytes[p + 5] === 0) merge(photoTiffOrientation(bytes, p + 6, end));
+        i = end;
+      }
+      return result(false);
+    }
+    if (png) {
+      for (let i = 8; i < bytes.length;) {
+        if (i + 8 > bytes.length) return result(false);
+        const length = bytes[i] * 16777216 + (bytes[i + 1] << 16) + (bytes[i + 2] << 8) + bytes[i + 3], end = i + 12 + length;
+        if (length > 2147483647) return { orientation:0, complete:true };
+        if (end > bytes.length) return result(false);
+        const p = i + 4;
+        if (bytes[p] === 101 && bytes[p + 1] === 88 && bytes[p + 2] === 73 && bytes[p + 3] === 102) merge(photoTiffOrientation(bytes, i + 8, end - 4));
+        if (bytes[p] === 73 && bytes[p + 1] === 69 && bytes[p + 2] === 78 && bytes[p + 3] === 68) return result(true);
+        i = end;
+      }
+      return result(false);
+    }
+    return { orientation:0, complete:true };
+  }
+  function photoTooLarge(w, h) { return !w || !h || w > 32768 || h > 32768 || w * h > 80000000 || Math.max(w / h, h / w) > 20; }
+  async function verifyPhotoFile(file) {
+    if (!file || !file.size) throw photoError("storyFileType");
+    if (file.size > MAX_PHOTO_BYTES) throw photoError("storyFileSize");
+    // Most headers fit in the prefix. A larger JPEG header, or PNG EXIF after image data,
+    // gets one bounded fallback read. The 20 MiB file limit is checked before either read.
+    let bytes = new Uint8Array(await file.slice(0, 262144).arrayBuffer());
+    const ascii = function(start, end) { return String.fromCharCode.apply(null, Array.from(bytes.slice(start, end))); };
+    const jpeg = bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
+    const png = bytes[0] === 137 && ascii(1, 4) === "PNG";
+    const webp = ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP";
+    const iso = ascii(4, 8) === "ftyp" && /avif|avis|heic|heix|hevc|hevx|mif1|msf1/.test(ascii(8, 128));
+    if (!jpeg && !png && !webp && !iso) throw photoError("storyFileType");
+    let size = photoHeaderSize(bytes, png, jpeg);
+    if (size && photoTooLarge(size.width, size.height)) throw photoError("storyPhotoTooLarge");
+    let metadata = photoHeaderOrientation(bytes, png, jpeg);
+    if ((png || jpeg) && (!size || !metadata.complete) && bytes.length < file.size) {
+      bytes = new Uint8Array(await file.arrayBuffer());
+      size = photoHeaderSize(bytes, png, jpeg);
+      if (size && photoTooLarge(size.width, size.height)) throw photoError("storyPhotoTooLarge");
+      metadata = photoHeaderOrientation(bytes, png, jpeg);
+    }
+    // PNG eXIf rotation is not applied consistently by image decoders. If it swaps axes,
+    // leave resizing to the final canvas instead of guessing the decoder's output shape.
+    const orientation = metadata.complete && !(png && metadata.orientation >= 5) ? metadata.orientation : 0;
+    return size ? { width:size.width, height:size.height, orientation:orientation } : null;
+  }
+  function imageFallback(s, file, sequence) {
+    return new Promise(function(resolve, reject) {
+      const image = new Image(), url = urlFor(s, file);
+      let done = false;
+      const finish = function(error) {
+        if (done) return; done = true; clearTimeout(timer); image.onload = null; image.onerror = null; s.cancelDecode = null;
+        if (error) { image.src = ""; revoke(s, url); reject(error); }
+        else resolve({ image:image, release:function() { image.src = ""; revoke(s, url); } });
+      };
+      const timer = setTimeout(function() { finish(photoError("storyDecodeError")); }, 20000);
+      s.cancelDecode = function() { finish(photoError("storyDecodeError")); };
+      image.onload = function() { if (!alive(s) || sequence !== s.photoSequence) finish(photoError("storyDecodeError")); else finish(); };
+      image.onerror = function() { finish(photoError("storyDecodeError")); };
+      image.src = url;
+    });
+  }
+  async function decodePhoto(s, file, sequence, size) {
+    let source = null;
+    if (typeof createImageBitmap === "function") {
+      // Resize along the displayed long edge, including EXIF orientations 5–8 that swap
+      // width/height. Unknown sizes/orientation get no resize request, avoiding accidental
+      // enlargement. Their native decoder can still allocate the original image first.
+      const decodeOptions = { imageOrientation:"from-image" };
+      if (size && size.orientation !== 0 && Math.max(size.width, size.height) > MAX_PHOTO_EDGE) {
+        const swap = size.orientation >= 5 && size.orientation <= 8;
+        const width = swap ? size.height : size.width, height = swap ? size.width : size.height;
+        decodeOptions[height > width ? "resizeHeight" : "resizeWidth"] = MAX_PHOTO_EDGE;
+        decodeOptions.resizeQuality = "high";
+      }
+      try {
+        // Decoder resizing reduces the transient allocation where the browser supports it.
+        const bitmap = await new Promise(function(resolve, reject) {
+          let settled = false;
+          const timer = setTimeout(function() { if (!settled) { settled = true; reject(photoError("storyDecodeError")); } }, 20000);
+          Promise.resolve().then(function() { return createImageBitmap(file, decodeOptions); })
+            .then(function(image) {
+              if (settled) { image.close(); return; }
+              settled = true; clearTimeout(timer); resolve(image);
+            }, function(error) { if (!settled) { settled = true; clearTimeout(timer); reject(error); } });
+        });
+        source = { image:bitmap, release:function() { bitmap.close(); } };
+      } catch (e) { /* Safari/HEIC may need the normal image decoder instead. */ }
+    }
+    if (!alive(s) || sequence !== s.photoSequence) { if (source) source.release(); throw photoError("storyDecodeError"); }
+    if (!source) source = await imageFallback(s, file, sequence);
+    try {
+      if (!alive(s) || sequence !== s.photoSequence) throw photoError("storyDecodeError");
+      const w = source.image.naturalWidth || source.image.width, h = source.image.naturalHeight || source.image.height;
+      if (photoTooLarge(w, h)) throw photoError("storyPhotoTooLarge");
+      const scale = Math.min(1, MAX_PHOTO_EDGE / Math.max(w, h)), photo = document.createElement("canvas");
+      photo.width = Math.max(1, Math.round(w * scale)); photo.height = Math.max(1, Math.round(h * scale));
+      const ctx = photo.getContext("2d"); if (!ctx) throw photoError("storyDecodeError");
+      ctx.fillStyle = "#e1e9e2"; ctx.fillRect(0, 0, photo.width, photo.height); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(source.image, 0, 0, photo.width, photo.height); return photo;
+    } finally { source.release(); }
+  }
+  async function choosePhoto(s, file) {
+    if (!file || !check(s) || !s.model.photoAllowed) return;
+    const sequence = ++s.photoSequence;
+    if (s.cancelDecode) s.cancelDecode();
+    s.photoBusy = true; schedule(s);
+    try {
+      const size = await verifyPhotoFile(file);
+      if (!alive(s) || sequence !== s.photoSequence) return;
+      const photo = await decodePhoto(s, file, sequence, size);
+      if (!alive(s) || sequence !== s.photoSequence) { photo.width = 1; photo.height = 1; return; }
+      releasePhoto(s);
+      s.photo = photo; s.focalX = .5; s.focalY = .5; s.photoMode = "cover";
+      el(s, "photo-mode").value = "cover"; el(s, "photo-x").value = "50"; el(s, "photo-y").value = "50";
+    } catch (error) {
+      if (alive(s) && sequence === s.photoSequence) s.photoError = t(error.storyKey || "storyDecodeError");
+    } finally {
+      if (alive(s) && sequence === s.photoSequence) {
+        s.photoBusy = false; el(s, "photo").value = ""; schedule(s);
+        if (s.photoError) { const message = s.photoError; s.photoError = ""; showToast(message, true); }
+      }
+    }
+  }
+  function removePhoto(s) {
+    if (!check(s)) return;
+    s.photoSequence++; if (s.cancelDecode) s.cancelDecode(); s.photoBusy = false; releasePhoto(s); el(s, "photo").value = ""; schedule(s);
+  }
+  function contextChanged() {
+    const s = active; if (!s) return;
+    if (!check(s)) return;
+    const model = createStoryCardModel(findGame(s.gameId), s.model.capturedAt);
+    if (JSON.stringify(model) === JSON.stringify(s.model)) return;
+    s.model = createStoryCardModel(findGame(s.gameId));
+    if (!s.model.photoAllowed) { s.photoSequence++; if (s.cancelDecode) s.cancelDecode(); s.photoBusy = false; releasePhoto(s); }
+    refreshPages(s);
+  }
+  function open(gameId) {
+    if (!currentUser) { showLoginModal(); return; }
+    if (!F("featStoryCards")) { showToast(t("storyFeatureOff")); return; }
+    const game = findGame(gameId); if (!game) { showToast(t("storyUnavailable"), true); return; }
+    const model = createStoryCardModel(game), owner = myEmail();
+    renderSheetModal(`${sheetHeader(escHtml(t("storyTitle")), escHtml(t("storySub")), "share")}
+      <section id="pp-story-card-sheet" class="pp-story-sheet">
+        <div class="pp-story-layout">
+          <div class="pp-story-preview-column">
+            <div id="pp-story-preview-wrap" class="pp-story-preview-wrap" aria-busy="true">
+              <img id="pp-story-preview" class="pp-story-preview" width="1080" height="1920" alt="" hidden>
+              <p id="pp-story-placeholder" class="pp-story-placeholder">${escHtml(t("storyPreparing"))}</p>
+            </div>
+            <div id="pp-story-pages" class="pp-story-pages" hidden>
+              <button id="pp-story-prev" type="button" class="pp-story-nav" aria-label="${escHtml(t("storyPrevious"))}">${ic("chevRight", "w-5 h-5")}</button>
+              <span id="pp-story-page-label" class="pp-story-page-label" aria-live="polite"></span>
+              <button id="pp-story-next" type="button" class="pp-story-nav" aria-label="${escHtml(t("storyNext"))}">${ic("chevRight", "w-5 h-5")}</button>
+            </div>
+            <details class="pp-story-text"><summary>${escHtml(t("storyDetails"))}</summary><pre id="pp-story-text"></pre></details>
+          </div>
+          <div class="pp-story-controls">
+            <p class="pp-story-note">${escHtml(t("storyPrivacy"))}</p>
+            <label class="pp-story-checkbox"><input id="pp-story-names" type="checkbox"><span class="pp-story-checkbox-text"><span class="pp-story-label">${escHtml(t("storyIncludeNames"))}</span><span class="pp-story-note">${escHtml(t("storyNamesHelp"))}</span></span></label>
+            <p id="pp-story-names-empty" class="pp-story-note" hidden>${escHtml(t("storyNoNamesAvailable"))}</p>
+            <p id="pp-story-names-limit" class="pp-story-note" hidden>${escHtml(t("storyRosterLimitHelp"))}</p>
+            <div id="pp-story-photo-group" class="pp-story-group" ${model.photoAllowed ? "" : "hidden"}>
+              <label for="pp-story-photo" class="pp-story-label">${escHtml(t("storyPhotoTitle"))}</label>
+              <p class="pp-story-note">${escHtml(t("storyPhotoHelp"))}</p>
+              <input id="pp-story-photo" type="file" accept="image/*" class="pp-story-file" aria-describedby="pp-story-photo-formats">
+              <p id="pp-story-photo-formats" class="pp-story-note">${escHtml(t("storyPhotoFormats"))}</p>
+              <button id="pp-story-photo-remove" type="button" class="pp-story-button pp-story-small" hidden>${escHtml(t("storyRemovePhoto"))}</button>
+              <div id="pp-story-crop" class="pp-story-crop" hidden>
+                <label class="pp-story-label" for="pp-story-photo-mode">${escHtml(t("storyPhotoFit"))}</label>
+                <select id="pp-story-photo-mode" class="pp-story-select"><option value="cover">${escHtml(t("storyCropFill"))}</option><option value="contain">${escHtml(t("storyCropFit"))}</option></select>
+                <div id="pp-story-focal" class="pp-story-crop">
+                  <label class="pp-story-range-label" for="pp-story-photo-x">${escHtml(t("storyCropHorizontal"))}<input id="pp-story-photo-x" class="pp-story-range" type="range" min="0" max="100" step="1" value="50"></label>
+                  <label class="pp-story-range-label" for="pp-story-photo-y">${escHtml(t("storyCropVertical"))}<input id="pp-story-photo-y" class="pp-story-range" type="range" min="0" max="100" step="1" value="50"></label>
+                  <button id="pp-story-photo-center" type="button" class="pp-story-button pp-story-small">${escHtml(t("storyCropReset"))}</button>
+                </div>
+              </div>
+            </div>
+            <div id="pp-story-scope-group" class="pp-story-group" hidden><label for="pp-story-scope" class="pp-story-label">${escHtml(t("storyShareScope"))}</label><select id="pp-story-scope" class="pp-story-select"><option value="all">${escHtml(t("storyScopeAll"))}</option><option value="current">${escHtml(t("storyScopeCurrent"))}</option></select></div>
+            <div class="pp-story-actions">
+              <button id="pp-story-share" type="button" class="pp-story-button pp-story-primary" disabled>${escHtml(t("storyShare"))}</button>
+              <button id="pp-story-save" type="button" class="pp-story-button" disabled>${escHtml(t("storySave"))}</button>
+              <p id="pp-story-share-fallback" class="pp-story-note" hidden>${escHtml(t("storyShareFallback"))}</p>
+              <p id="pp-story-download-hint" class="pp-story-note" hidden>${escHtml(t("storyDownloadHint"))}</p>
+              <button id="pp-story-copy" type="button" class="pp-story-button pp-story-small">${escHtml(t("storyCopy"))}</button>
+              <button id="pp-story-retry" type="button" class="pp-story-button pp-story-small" hidden>${escHtml(t("storyRetry"))}</button>
+            </div>
+            <p id="pp-story-status" class="pp-story-status" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>`, "pp-story-wide");
+    const s = { section:byId("pp-story-card-sheet"), model:model, owner:owner, gameId:String(gameId), pages:storyCardPages(model, false), page:0, includeNames:false, photo:null, photoMode:"cover", focalX:.5, focalY:.5, photoSequence:0, photoBusy:false, revision:0, urls:new Set(), ready:[], files:[], all:true, dirty:false, drawing:false, disposed:false, sharing:false, canvas:document.createElement("canvas") };
+    active = s;
+    el(s, "names").addEventListener("change", function(e) { if (check(s)) { s.includeNames = e.target.checked; s.page = 0; refreshPages(s); } });
+    el(s, "prev").addEventListener("click", function() { setPage(s, s.page - 1); });
+    el(s, "next").addEventListener("click", function() { setPage(s, s.page + 1); });
+    el(s, "share").addEventListener("click", function() { share(s); });
+    el(s, "save").addEventListener("click", function() { save(s); });
+    el(s, "copy").addEventListener("click", function() { if (check(s)) copyText(matchSummaryText(findGame(s.gameId), { includeRoster:s.includeNames, includeNames:s.includeNames }), t("storyCopied")); });
+    el(s, "retry").addEventListener("click", function() { schedule(s); });
+    el(s, "scope").addEventListener("change", function(e) { if (check(s)) { s.all = e.target.value === "all"; updateControls(s); } });
+    el(s, "photo").addEventListener("change", function(e) { choosePhoto(s, e.target.files && e.target.files[0]); });
+    el(s, "photo-remove").addEventListener("click", function() { removePhoto(s); });
+    el(s, "photo-mode").addEventListener("change", function(e) { if (check(s)) { s.photoMode = e.target.value === "contain" ? "contain" : "cover"; schedule(s); } });
+    el(s, "photo-x").addEventListener("input", function(e) { if (check(s)) { s.focalX = Number(e.target.value) / 100; schedule(s, 140); } });
+    el(s, "photo-y").addEventListener("input", function(e) { if (check(s)) { s.focalY = Number(e.target.value) / 100; schedule(s, 140); } });
+    el(s, "photo-center").addEventListener("click", function() { if (check(s)) { s.focalX = s.focalY = .5; el(s, "photo-x").value = el(s, "photo-y").value = "50"; schedule(s); } });
+    if (typeof MutationObserver !== "undefined") { s.observer = new MutationObserver(function() { if (active === s && !s.section.isConnected) dispose(); }); s.observer.observe(byId("modal-root"), { childList:true }); }
+    schedule(s);
+  }
+  return { open:open, dispose:dispose, contextChanged:contextChanged };
+})();
+function openStoryCardSheet(gameId) { PitchPulseStoryCards.open(gameId); }
+function disposeStoryCard() { PitchPulseStoryCards.dispose(); }
+function storyCardContextChanged() { PitchPulseStoryCards.contextChanged(); }
+    // STORY-CARD-JS-V555-END
     // =========================================================================
     // INVITE LINKS (?invite=…&email=…) & BOOT
     // =========================================================================
